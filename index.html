@@ -1,0 +1,2297 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0e1218">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="Discipline">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Daily Discipline</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Big+Shoulders+Display:wght@600;800&display=swap">
+<style>
+/* Layout: one column scoreboard. Game clock on top, then streak and week, form, chart, records, 8-week log. */
+:root {
+  --bg: #0e1218;
+  --panel: #151b24;
+  --panel-2: #1c2430;
+  --line: #283140;
+  --ink: #ece8df;
+  --dim: #9aa4b3;
+  --accent: #ffb21e;
+  --accent-ink: #1b1300;
+  --elite: #6fd48f;
+  --sharp: #4cb774;
+  --ontime: #37935e;
+  --late: #e8883f;
+  --lost: #e0614f;
+  --on-fill: #09110c;
+  --good-t: #6fd48f;
+  --warn-t: #f0a050;
+  --bad-t: #f07a68;
+  --font-display: 'Big Shoulders Display', 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
+  --font-body: 'Barlow', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --bg: #e6e9ee; --panel: #f5f6f8; --panel-2: #dde1e8; --line: #c2c9d4;
+    --ink: #131822; --dim: #566070; --accent: #b45f00; --accent-ink: #ffffff;
+    --elite: #4fb879; --sharp: #79c995; --ontime: #a3d9b6; --late: #f0a15c; --lost: #e8806f;
+    --on-fill: #0c1a12; --good-t: #17713b; --warn-t: #a85a00; --bad-t: #b3321f;
+    color-scheme: light;
+  }
+}
+:root[data-theme="light"] {
+  --bg: #e6e9ee; --panel: #f5f6f8; --panel-2: #dde1e8; --line: #c2c9d4;
+  --ink: #131822; --dim: #566070; --accent: #b45f00; --accent-ink: #ffffff;
+  --elite: #4fb879; --sharp: #79c995; --ontime: #a3d9b6; --late: #f0a15c; --lost: #e8806f;
+  --on-fill: #0c1a12; --good-t: #17713b; --warn-t: #a85a00; --bad-t: #b3321f;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.45;
+  padding-block: 16px 48px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 720px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+h1, h2, h3, p { margin: 0; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+/* header */
+.top { display: flex; align-items: center; gap: 12px; padding: 4px 0 2px; }
+.brand { min-width: 0; }
+.top h1 { font-family: var(--font-display); font-weight: 800; font-size: 28px; letter-spacing: .06em; line-height: 1; border-bottom: 3px solid var(--accent); padding-bottom: 3px; white-space: nowrap; }
+.tag { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-top: 4px; white-space: nowrap; }
+.rec { margin-left: auto; text-align: right; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-variant-numeric: tabular-nums; }
+.rec b { font-family: var(--font-display); font-size: 24px; letter-spacing: .04em; color: var(--ink); font-weight: 800; }
+.icon-btn { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; width: 40px; height: 40px; display: grid; place-items: center; color: var(--dim); }
+.icon-btn:hover { color: var(--ink); }
+
+/* cards */
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 16px; min-width: 0; }
+.card h2 { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: .1em; margin-bottom: 12px; }
+.card h2 small { font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .08em; color: var(--dim); margin-left: 8px; }
+.note { color: var(--dim); font-size: 13px; margin-top: 10px; }
+.lead { color: var(--dim); margin-bottom: 14px; }
+.lead b { color: var(--ink); font-weight: 600; }
+.dim { color: var(--dim); }
+
+/* game clock */
+.clock-card { padding: 0; overflow: hidden; }
+.bar-top { display: flex; justify-content: space-between; gap: 12px; background: var(--panel-2); border-bottom: 1px solid var(--line); padding: 9px 16px; font-size: 12px; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; color: var(--dim); }
+.pad { padding: 18px 16px 20px; display: flex; flex-direction: column; gap: 14px; }
+.center { align-items: stretch; text-align: center; }
+.clock { font-family: var(--font-display); font-weight: 800; line-height: .9; font-size: clamp(96px, 30vw, 176px); color: var(--accent); white-space: nowrap; }
+.clock.long { font-size: clamp(60px, 17vw, 112px); }
+.clock.sm { font-size: clamp(72px, 22vw, 120px); }
+.clock small { font-size: .26em; letter-spacing: .08em; margin-left: .2em; color: var(--dim); }
+.dg { display: inline-block; width: .58em; text-align: center; }
+.cl { display: inline-block; width: .26em; text-align: center; }
+[data-zone="win"] .clock { color: var(--warn-t); }
+[data-zone="late"] .clock { color: var(--bad-t); }
+.dwrap { position: relative; margin-top: 18px; }
+.drain { height: 10px; background: var(--panel-2); border-radius: 5px; overflow: hidden; }
+.drain i { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+[data-zone="win"] .drain i { background: var(--warn-t); }
+[data-zone="late"] .drain i { background: var(--lost); }
+.dmark { position: absolute; left: 75%; top: -4px; bottom: -4px; width: 2px; background: var(--ink); opacity: .75; }
+.dlab { position: absolute; left: 75%; top: -20px; transform: translateX(-50%); font-size: 11px; font-weight: 600; letter-spacing: .14em; color: var(--dim); white-space: nowrap; }
+.drow { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 8px; align-items: center; }
+.drow .chip { min-width: 0; width: 100%; }
+.drow input[type="time"]:disabled { opacity: .35; }
+.gl.elite { stroke: var(--elite); stroke-dasharray: 2 3; stroke-width: 1.5; }
+.onLine { font-size: 13px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); font-variant-numeric: tabular-nums; }
+.onLine b { font-family: var(--font-display); font-size: 30px; color: var(--ink); letter-spacing: .02em; margin-right: 2px; }
+.cta { width: 100%; min-height: 88px; border: 0; border-radius: 10px; background: var(--accent); color: var(--accent-ink); font-family: var(--font-display); font-weight: 800; font-size: 44px; letter-spacing: .08em; }
+.cta:active:not(:disabled) { transform: translateY(2px); }
+.cta:disabled { background: var(--panel-2); color: var(--dim); cursor: not-allowed; font-size: 26px; }
+.hint { color: var(--dim); font-size: 14px; }
+.targets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.targets div { background: var(--panel-2); border-radius: 8px; padding: 8px 6px; }
+.targets span { display: block; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); }
+.targets b { font-family: var(--font-display); font-size: 24px; font-weight: 800; letter-spacing: .03em; font-variant-numeric: tabular-nums; }
+.countdown { font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-variant-numeric: tabular-nums; }
+.pill { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; padding: 3px 10px; border-radius: 99px; color: var(--on-fill); }
+.bg-elite { background: var(--elite); } .bg-sharp { background: var(--sharp); } .bg-ontime { background: var(--ontime); }
+.bg-late { background: var(--late); } .bg-lost { background: var(--lost); }
+.res-line { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; }
+.res-line .pts { font-family: var(--font-display); font-weight: 800; font-size: 28px; letter-spacing: .04em; }
+.verdict { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: .2em; }
+.verdict.win { color: var(--good-t); } .verdict.loss { color: var(--bad-t); }
+.facts { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; color: var(--dim); font-size: 15px; }
+.facts li b { color: var(--ink); font-weight: 600; }
+.banner { background: var(--accent); color: var(--accent-ink); font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: .14em; padding: 6px 10px; border-radius: 6px; }
+.next { border-top: 1px solid var(--line); padding-top: 12px; font-size: 14px; color: var(--dim); }
+.next b { color: var(--ink); font-weight: 600; }
+.link { background: none; border: 0; padding: 4px 0; color: var(--dim); text-decoration: underline; text-underline-offset: 3px; font-size: 14px; align-self: center; }
+.link:hover { color: var(--ink); }
+.pop { animation: pop .45s ease-out; }
+@keyframes pop { 0% { transform: scale(.96); opacity: .4; } 100% { transform: scale(1); opacity: 1; } }
+
+/* stats */
+.grid2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.stat { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; min-width: 0; }
+.stat label, .tile label { display: block; font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.stat .num { font-family: var(--font-display); font-weight: 800; font-size: 76px; line-height: 1; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.stat .num span { font-size: 34px; color: var(--dim); margin-left: 2px; }
+.stat .sub { color: var(--dim); font-size: 14px; }
+.chase { grid-column: 1 / -1; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
+.chase .track { height: 10px; background: var(--panel-2); border-radius: 5px; overflow: hidden; margin-top: 8px; }
+.chase .track i { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+.chase p { font-size: 14px; color: var(--dim); }
+.chase p b { color: var(--ink); font-weight: 600; }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tile { background: var(--panel-2); border-radius: 8px; padding: 12px; min-width: 0; }
+.tile .v { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1.05; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.tile .s { font-size: 13px; color: var(--dim); }
+.good { color: var(--good-t); } .bad { color: var(--bad-t); }
+.rows { margin: 0; display: flex; flex-direction: column; }
+.rows > div { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--line); }
+.rows > div:first-child { border-top: 0; padding-top: 0; }
+.rows dt { font-weight: 500; }
+.rows dt small { display: block; color: var(--dim); font-size: 13px; font-weight: 400; }
+.rows dd { margin: 0; font-family: var(--font-display); font-weight: 800; font-size: 30px; letter-spacing: .03em; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+
+/* chart */
+#chart { width: 100%; min-height: 200px; }
+#chart svg { display: block; width: 100%; height: auto; }
+.ax { fill: var(--dim); font: 500 11px var(--font-body); }
+.ax.today { fill: var(--ink); font-weight: 600; }
+.ax.bad { fill: var(--bad-t); font-size: 14px; }
+.gl { stroke: var(--line); stroke-width: 1; }
+.gl.cut { stroke: var(--accent); stroke-dasharray: 5 4; stroke-width: 1.5; }
+.f-elite { fill: var(--elite); } .f-sharp { fill: var(--sharp); } .f-ontime { fill: var(--ontime); }
+.f-late { fill: var(--late); } .f-lost { fill: var(--lost); }
+.empty-msg { fill: var(--dim); font: 500 13px var(--font-body); }
+
+/* log */
+.cal { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)) 46px; gap: 4px; }
+.cal.head { margin-bottom: 4px; }
+.cal.head span { text-align: center; font-size: 11px; font-weight: 600; letter-spacing: .12em; color: var(--dim); }
+.cell { position: relative; aspect-ratio: 1 / 1; min-height: 38px; border: 1px solid transparent; border-radius: 6px; background: var(--panel-2); padding: 0; display: grid; place-items: center; color: var(--on-fill); font-family: var(--font-display); font-weight: 800; font-size: 17px; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.cell i { position: absolute; top: 2px; left: 4px; font: 500 9px var(--font-body); font-style: normal; opacity: .75; }
+.cell.c-elite { background: var(--elite); } .cell.c-sharp { background: var(--sharp); } .cell.c-ontime { background: var(--ontime); }
+.cell.c-late { background: var(--late); } .cell.c-lost { background: var(--lost); }
+.cell.c-miss { background: transparent; border-color: var(--lost); color: var(--bad-t); }
+.cell.c-rest { background: transparent; border: 1px dashed var(--line); color: var(--dim); }
+.cell.c-pend { background: transparent; border-color: var(--accent); color: var(--accent); }
+.cell.c-pre, .cell.c-future { background: transparent; border: 1px solid var(--line); color: var(--dim); opacity: .45; }
+.cell.is-today { box-shadow: 0 0 0 2px var(--ink); }
+.cell.c-rest i, .cell.c-miss i, .cell.c-pend i, .cell.c-pre i, .cell.c-future i { opacity: 1; color: var(--dim); }
+.wk { display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 16px; color: var(--dim); border-radius: 6px; font-variant-numeric: tabular-nums; }
+.wk.hit { background: var(--accent); color: var(--accent-ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 12px; font-size: 12px; color: var(--dim); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend em { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 1px solid transparent; }
+
+/* form controls and modal */
+.form { display: flex; flex-direction: column; gap: 14px; margin-bottom: 16px; }
+.fld > span { display: block; font-size: 12px; font-weight: 600; letter-spacing: .14em; color: var(--dim); margin-bottom: 6px; }
+input[type="time"], input[type="number"], input[type="text"], input[type="date"], input[type="email"], input[type="password"], select { width: 100%; background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 500 20px var(--font-body); min-height: 48px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; min-width: 52px; min-height: 44px; font-weight: 600; color: var(--dim); }
+.chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.modal { position: fixed; inset: 0; background: rgba(5, 8, 12, .72); display: flex; align-items: center; justify-content: center; padding: 16px; padding-top: max(16px, env(safe-area-inset-top, 0px)); padding-bottom: max(16px, env(safe-area-inset-bottom, 0px)); z-index: 20; overflow-y: auto; }
+.sheet { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; width: 100%; max-width: 420px; padding: 20px; display: flex; flex-direction: column; gap: 14px; max-height: 100%; overflow-y: auto; }
+.sheet h3 { font-family: var(--font-display); font-weight: 800; font-size: 28px; letter-spacing: .08em; }
+.two { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.prev { min-height: 24px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 0 18px; min-height: 46px; font-weight: 600; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.btn.danger { color: var(--bad-t); }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(20px, env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-weight: 500; z-index: 30; max-width: calc(100% - 32px); }
+.foot { text-align: center; color: var(--dim); font-size: 12px; letter-spacing: .04em; padding-top: 4px; }
+/* tabs, home and habit boards */
+.tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 6px; }
+.tabbtn { min-height: 46px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--dim); font-family: var(--font-display); font-weight: 800; font-size: 16px; letter-spacing: .06em; }
+.tabbtn[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.tab { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.clock.xs { font-size: clamp(56px, 17vw, 96px); }
+.clock.ok { color: var(--good-t); }
+.clock.idle { color: var(--dim); }
+.rows2 { display: flex; flex-direction: column; }
+.trow { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.trow:first-child { border-top: 0; padding-top: 0; }
+.trow .lbl { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: .1em; }
+.trow .main { font-weight: 600; min-width: 0; font-variant-numeric: tabular-nums; }
+.trow .sub { color: var(--dim); font-size: 13px; font-weight: 400; }
+.trow .btn { min-height: 44px; }
+.trio { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.tabstat { text-align: left; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 12px; min-width: 0; }
+.tabstat label { display: block; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); cursor: pointer; }
+.tabstat .num { font-family: var(--font-display); font-weight: 800; font-size: 56px; line-height: 1; font-variant-numeric: tabular-nums; }
+.tabstat .sub { color: var(--dim); font-size: 13px; }
+.pips { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+.pip { width: 30px; height: 30px; border-radius: 50%; border: 2px solid var(--line); }
+.pip.on { background: var(--accent); border-color: var(--accent); }
+.stepper { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.stepper .lbl { font-size: 12px; font-weight: 600; letter-spacing: .14em; color: var(--dim); margin-right: auto; }
+.stepper .btn { width: 48px; padding: 0; font-size: 24px; }
+.stepper b { font-family: var(--font-display); font-weight: 800; font-size: 30px; min-width: 96px; text-align: center; }
+.stepper b small { font-family: var(--font-body); font-size: 13px; font-weight: 500; color: var(--dim); margin-left: 4px; }
+/* reading plan */
+.phead { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 4px; }
+.phead .big { font-family: var(--font-display); font-weight: 800; font-size: 76px; line-height: 1; letter-spacing: .02em; font-variant-numeric: tabular-nums; }
+.phead .big.bad { color: var(--bad-t); } .phead .big.good { color: var(--good-t); }
+.phead .what { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: .12em; }
+.ptrack { height: 10px; background: var(--panel-2); border-radius: 5px; overflow: hidden; margin: 10px 0 6px; }
+.ptrack i { display: block; height: 100%; background: var(--accent); border-radius: 5px; }
+.plist { display: flex; flex-direction: column; margin-top: 4px; }
+.plist h3 { font-size: 12px; font-weight: 600; letter-spacing: .14em; color: var(--dim); margin: 14px 0 4px; text-transform: uppercase; }
+.prow { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 4px 0; min-height: 52px; color: var(--ink); }
+.prow:first-of-type { border-top: 0; }
+.prow .box { width: 28px; height: 28px; border-radius: 6px; border: 2px solid var(--line); display: grid; place-items: center; margin-inline: auto; font-weight: 800; color: var(--accent-ink); }
+.prow.on .box { background: var(--accent); border-color: var(--accent); }
+.prow .ref { font-weight: 600; font-size: 17px; }
+.prow .meta { color: var(--dim); font-size: 13px; }
+.prow .late { font-size: 12px; font-weight: 600; letter-spacing: .06em; color: var(--bad-t); white-space: nowrap; }
+.prow .late.ok { color: var(--dim); }
+.prow.today { background: var(--panel-2); border-radius: 8px; border-top: 0; padding-inline: 4px; }
+.prow.today + .prow { border-top: 0; }
+/* plan points, mode picker, takeaways */
+.tiles3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 12px 0 4px; }
+.tiles3 .tile { padding: 10px; }
+.tiles3 .tile .v { font-size: 30px; }
+.tiles3 .tile label { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; font-weight: 600; color: var(--dim); display: block; }
+.pm { font-size: 12px; font-weight: 700; letter-spacing: .06em; color: var(--good-t); white-space: nowrap; text-align: right; }
+.pm small { display: block; font-weight: 500; color: var(--dim); letter-spacing: .04em; }
+.modes { display: flex; flex-direction: column; gap: 8px; }
+.modebtn { display: flex; align-items: center; justify-content: space-between; gap: 10px; min-height: 56px; padding: 0 16px; background: var(--panel-2); border: 2px solid var(--line); border-radius: 10px; color: var(--ink); text-align: left; font-size: 16px; }
+.modebtn b { font-weight: 600; }
+.modebtn span { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: .06em; white-space: nowrap; }
+.modebtn.sel { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.nlab { display: block; font-weight: 600; font-size: 14px; margin: 10px 0 4px; }
+textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 400 16px/1.4 var(--font-body); resize: vertical; min-height: 84px; }
+.nrow { grid-template-columns: minmax(0, 1fr) auto; }
+.nx { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* books */
+.blist { display: flex; flex-direction: column; }
+.brow { display: grid; grid-template-columns: minmax(0, 1fr) repeat(2, auto); gap: 8px; align-items: center; border-top: 1px solid var(--line); padding: 10px 0; }
+.blist > .brow:first-child { border-top: 0; padding-top: 0; }
+.brow .open { background: none; border: 0; padding: 0; text-align: left; color: var(--ink); min-width: 0; min-height: 44px; }
+.brow .t { font-weight: 600; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.brow .a { color: var(--dim); font-size: 13px; }
+.bar { height: 8px; background: var(--panel-2); border-radius: 4px; overflow: hidden; margin: 6px 0 2px; }
+.bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
+.prow.srow { grid-template-columns: minmax(0, 1fr) auto; }
+/* notes viewer */
+.nvh { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 18px 0 6px; padding-bottom: 4px; border-bottom: 2px solid var(--accent); font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: .08em; }
+.nvh small { font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .06em; color: var(--dim); }
+.ncard { display: block; width: 100%; text-align: left; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-top: 8px; color: var(--ink); }
+.ncard .nh { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.ncard .nh b { font-weight: 600; }
+.ncard .nh span { color: var(--dim); font-size: 12px; white-space: nowrap; }
+.ncard .nt { margin-top: 4px; white-space: pre-wrap; overflow-wrap: anywhere; font-size: 15px; line-height: 1.4; }
+.ncard .ne { margin-top: 4px; color: var(--dim); font-size: 12px; }
+.nvtools { display: flex; flex-direction: column; gap: 10px; margin: 10px 0 4px; }
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
+</style>
+<body>
+<script src="firebase-config.js"></script>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1>DAILY DISCIPLINE</h1><div class="tag">Build the good. Kill the bad.</div></div>
+    <div class="rec" id="rec"></div>
+    <button class="icon-btn" id="gear" data-action="open-settings" aria-label="Board settings">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+    </button>
+  </header>
+  <nav class="tabs" role="tablist" aria-label="Scoreboards">
+    <button class="tabbtn" id="tb-home" role="tab" data-action="tab" data-tab="home" aria-selected="true">HOME</button>
+    <button class="tabbtn" id="tb-wake" role="tab" data-action="tab" data-tab="wake" aria-selected="false">WAKE</button>
+    <button class="tabbtn" id="tb-bible" role="tab" data-action="tab" data-tab="bible" aria-selected="false">BIBLE</button>
+    <button class="tabbtn" id="tb-books" role="tab" data-action="tab" data-tab="books" aria-selected="false">BOOKS</button>
+    <button class="tabbtn" id="tb-gym" role="tab" data-action="tab" data-tab="gym" aria-selected="false">GYM</button>
+  </nav>
+  <main class="wrap" style="padding:0">
+    <div class="tab" id="tab-home" role="tabpanel">
+      <section id="home-today" class="card" aria-label="Today"></section>
+      <section id="home-score" class="trio" aria-label="Streaks"></section>
+      <section id="home-combo" class="card" aria-label="Combos"></section>
+      <section id="home-data" class="card" aria-label="Backup" hidden></section>
+      <input type="file" id="imp-file" accept="application/json,.json" hidden>
+    </div>
+    <div class="tab" id="tab-wake" role="tabpanel" hidden>
+    <section id="clockCard" class="card clock-card" aria-label="Game clock"></section>
+    <section id="streakCard" class="grid2" aria-label="Streak and week"></section>
+    <section id="formCard" class="card" aria-label="Form"></section>
+    <section id="chartCard" class="card" aria-label="Last 14 mornings">
+      <h2>LAST 14 MORNINGS</h2>
+      <div id="chart"></div>
+      <p class="note">Bar height is your scored time from alarm to I'm Up. Get under the green dotted line (0:30) for full points. The amber dashed line is the 2:00 win line.</p>
+    </section>
+    <section id="recordsCard" class="card" aria-label="Records"></section>
+    <section id="logCard" class="card" aria-label="Eight week log"></section>
+    </div>
+    <div class="tab" id="tab-bible" role="tabpanel" hidden>
+      <section id="bible-notesview" class="card" aria-label="All Bible notes" hidden></section>
+      <section id="bible-hero" class="card clock-card" aria-label="Bible today"></section>
+      <section id="bible-plan" class="card" aria-label="Bible reading plan"></section>
+      <section id="bible-notes" class="card" aria-label="Bible takeaways"></section>
+      <section id="bible-streak" class="grid2" aria-label="Bible streak and week"></section>
+      <section id="bible-form" class="card" aria-label="Bible form"></section>
+      <section id="bible-rec" class="card" aria-label="Bible records"></section>
+      <section id="bible-log" class="card" aria-label="Bible log"></section>
+      <section id="bible-goal" class="card" aria-label="Bible weekly goal"></section>
+    </div>
+    <div class="tab" id="tab-books" role="tabpanel" hidden>
+      <section id="books-hero" class="card clock-card" aria-label="Reading today"></section>
+      <section id="books-rank" class="card" aria-label="Rank and week"></section>
+      <section id="books-shelf" class="card" aria-label="Bookshelf"></section>
+      <section id="books-stats" class="card" aria-label="Reading stats"></section>
+      <section id="books-log" class="card" aria-label="Recent sessions"></section>
+      <section id="books-goal" class="card" aria-label="Weekly reading goal"></section>
+    </div>
+    <div class="tab" id="tab-gym" role="tabpanel" hidden>
+      <section id="gym-hero" class="card clock-card" aria-label="Gym this week"></section>
+      <section id="gym-streak" class="grid2" aria-label="Gym streak and week"></section>
+      <section id="gym-form" class="card" aria-label="Gym form"></section>
+      <section id="gym-rec" class="card" aria-label="Gym records"></section>
+      <section id="gym-log" class="card" aria-label="Gym log"></section>
+      <section id="gym-goal" class="card" aria-label="Gym weekly goal"></section>
+    </div>
+  </main>
+  <div class="foot" id="foot"></div>
+</div>
+
+<div id="modal" class="modal" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" id="sheet"></div>
+</div>
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script>
+(function () {
+  'use strict';
+  var LS = 'dailydiscipline.v1';
+  var WIN = 120;          // seconds to win
+  var END = 10800;        // check-in window after alarm: 3 hours
+  var DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  var DOWL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var ORDER = [1, 2, 3, 4, 5, 6, 0];
+
+  var PLAN_START = '2026-01-04';   // week 1 begins Sunday
+  var PLAN_COLS = ['Epistles', 'Law', 'History', 'Psalms', 'Poetry', 'Prophecy', 'Gospels'];
+  var PLAN = [["Rom 1-2","Gen 1-3","Josh 1-5","Ps 1-2","Job 1-2","Isa 1-6","Matt 1-2"],["Rom 3-4","Gen 4-7","Josh 6-10","Ps 3-5","Job 3-4","Isa 7-11","Matt 3-4"],["Rom 5-6","Gen 8-11","Josh 11-15","Ps 6-8","Job 5-6","Isa 12-17","Matt 5-7"],["Rom 7-8","Gen 12-15","Josh 16-20","Ps 9-11","Job 7-8","Isa 18-22","Matt 8-10"],["Rom 9-10","Gen 16-19","Josh 21-24","Ps 12-14","Job 9-10","Isa 23-28","Matt 11-13"],["Rom 11-12","Gen 20-23","Judg 1-6","Ps 15-17","Job 11-12","Isa 29-33","Matt 14-16"],["Rom 13-14","Gen 24-27","Judg 7-11","Ps 18-20","Job 13-14","Isa 34-39","Matt 17-19"],["Rom 15-16","Gen 28-31","Judg 12-16","Ps 21-23","Job 15-16","Isa 40-44","Matt 20-22"],["1Cor 1-2","Gen 32-35","Judg 17-21","Ps 24-26","Job 17-18","Isa 45-50","Matt 23-25"],["1Cor 3-4","Gen 36-39","Ruth","Ps 27-29","Job 19-20","Isa 51-55","Matt 26-28"],["1Cor 5-6","Gen 40-43","1Sam 1-5","Ps 30-32","Job 21-22","Isa 56-61","Mark 1-2"],["1Cor 7-8","Gen 44-47","1Sam 6-10","Ps 33-35","Job 23-24","Isa 62-66","Mark 3-4"],["1Cor 9-10","Gen 48-50","1Sam 11-15","Ps 36-38","Job 25-26","Jer 1-6","Mark 5-6"],["1Cor 11-12","Ex 1-4","1Sam 16-20","Ps 39-41","Job 27-28","Jer 7-11","Mark 7-8"],["1Cor 13-14","Ex 5-8","1Sam 21-25","Ps 42-44","Job 29-30","Jer 12-16","Mark 9-10"],["1Cor 15-16","Ex 9-12","1Sam 26-31","Ps 45-47","Job 31-32","Jer 17-21","Mark 11-12"],["2Cor 1-3","Ex 13-16","2Sam 1-4","Ps 48-50","Job 33-34","Jer 22-26","Mark 13-14"],["2Cor 4-5","Ex 17-20","2Sam 5-9","Ps 51-53","Job 35-36","Jer 27-31","Mark 15-16"],["2Cor 6-8","Ex 21-24","2Sam 10-14","Ps 54-56","Job 37-38","Jer 32-36","Luke 1-2"],["2Cor 9-10","Ex 25-28","2Sam 15-19","Ps 57-59","Job 39-40","Jer 37-41","Luke 3-4"],["2Cor 11-13","Ex 29-32","2Sam 20-24","Ps 60-62","Job 41-42","Jer 42-46","Luke 5-6"],["Gal 1-3","Ex 33-36","1Ki 1-4","Ps 63-65","Prov 1","Jer 47-52","Luke 7-8"],["Gal 4-6","Ex 37-40","1Ki 5-9","Ps 66-68","Prov 2-3","Lamentations","Luke 9-10"],["Eph 1-3","Lev 1-3","1Ki 10-13","Ps 69-71","Prov 4","Ezek 1-6","Luke 11-12"],["Eph 4-6","Lev 4-6","1Ki 14-18","Ps 72-74","Prov 5-6","Ezek 7-12","Luke 13-14"],["Phil 1-2","Lev 7-9","1Ki 19-22","Ps 75-77","Prov 7","Ezek 13-18","Luke 15-16"],["Phil 3-4","Lev 10-12","2Ki 1-5","Ps 78-80","Prov 8-9","Ezek 19-24","Luke 17-18"],["Col 1-2","Lev 13-15","2Ki 6-10","Ps 81-83","Prov 10","Ezek 25-30","Luke 19-20"],["Col 3-4","Lev 16-18","2Ki 11-15","Ps 84-86","Prov 11-12","Ezek 31-36","Luke 21-22"],["1Thes 1-3","Lev 19-21","2Ki 16-20","Ps 87-89","Prov 13","Ezek 37-42","Luke 23-24"],["1Thes 4-5","Lev 22-24","2Ki 21-25","Ps 90-92","Prov 14-15","Ezek 43-48","John 1-2"],["2Thes","Lev 25-27","1Chr 1-4","Ps 93-95","Prov 16","Dan 1-6","John 3-4"],["1Tim 1-3","Num 1-4","1Chr 5-9","Ps 96-98","Prov 17-18","Dan 7-12","John 5-6"],["1Tim 4-6","Num 5-8","1Chr 10-14","Ps 99-101","Prov 19","Hosea 1-7","John 7-9"],["2Tim 1-2","Num 9-12","1Chr 15-19","Ps 102-104","Prov 20-21","Hosea 8-14","John 10-12"],["2Tim 3-4","Num 13-16","1Chr 20-24","Ps 105-107","Prov 22","Joel","John 13-15"],["Titus","Num 17-20","1Chr 25-29","Ps 108-110","Prov 23-24","Amos 1-4","John 16-18"],["Philemon","Num 21-24","2Chr 1-5","Ps 111-113","Prov 25","Amos 5-9","John 19-21"],["Heb 1-4","Num 25-28","2Chr 6-10","Ps 114-116","Prov 26-27","Obadiah","Acts 1-2"],["Heb 5-7","Num 29-32","2Chr 11-15","Ps 117-118","Prov 28","Jonah","Acts 3-4"],["Heb 8-10","Num 33-36","2Chr 16-20","Ps 119","Prov 29-30","Micah","Acts 5-6"],["Heb 11-13","Deut 1-3","2Chr 21-24","Ps 120-121","Prov 31","Nahum","Acts 7-8"],["James 1-3","Deut 4-6","2Chr 25-28","Ps 122-124","Eccl 1-2","Habakkuk","Acts 9-10"],["James 4-5","Deut 7-9","2Chr 29-32","Ps 125-127","Eccl 3-4","Zephaniah","Acts 11-12"],["1Pet 1-3","Deut 10-12","2Chr 33-36","Ps 128-130","Eccl 5-6","Haggai","Acts 13-14"],["1Pet 4-5","Deut 13-15","Ezra 1-5","Ps 131-133","Eccl 7-8","Zechariah 1-7","Acts 15-16"],["2Pet","Deut 16-19","Ezra 6-10","Ps 134-136","Eccl 9-10","Zechariah 8-14","Acts 17-18"],["1John 1-3","Deut 20-22","Neh 1-4","Ps 137-139","Eccl 11-12","Malachi","Acts 19-20"],["1John 4-5","Deut 23-25","Neh 5-9","Ps 140-142","Song 1-2","Rev 1-6","Acts 21-22"],["2John","Deut 26-28","Neh 10-13","Ps 143-145","Song 3-4","Rev 7-11","Acts 23-24"],["3John","Deut 29-31","Esther 1-5","Ps 146-148","Song 5-6","Rev 12-17","Acts 25-26"],["Jude","Deut 32-34","Esther 6-10","Ps 149-150","Song 7-8","Rev 18-22","Acts 27-28"]];
+  var PLAN_N = 364;
+  var PLAN_SEED = new Array(279).join('1') + new Array(87).join('0'); // markups: weeks 1-39 plus Sun-Thu of week 40
+  var planDone = PLAN_SEED;
+  var MODES = { R: { label: 'Read only' }, B: { label: 'Read + listen' }, L: { label: 'Listen only' } };
+  var planlog = {};   // reading index -> { i, mode, date, late, at }
+  var notes = {};     // chapter id -> { id, ref, text, at }
+  var planSheet = null;
+  var nv = false, nvQuery = '', nvSort = 'bible';
+  var FMT = { P: 'Paper', E: 'E-book', A: 'Audio' };
+  var SHOWUP = 20, FINISH = 250;
+  var RANKS = [[0, 'Reader'], [250, 'Page Turner'], [750, 'Bookworm'], [1500, 'Scholar'], [3000, 'Bibliophile'], [6000, 'Sage'], [12000, 'Legend']];
+  var books = {};     // book id -> { id, title, author, pages, done, queued, doneDate, added }
+  var reads = {};     // session id -> { id, bookId, title, date, minutes, pages, fmt, lucky, at }
+  var fmtSel = 'P', sheetFmt = 'P', lastBook = '', readPop = false, readEdit = null, libOpen = false, finOpen = false;
+  var settings = null;
+  var checkins = {};
+  var habits = { bible: {}, gym: {} };
+  var goals = { bible: 6, gym: 4, read: 120 };
+  var tab = 'home';
+  var habPop = null;
+  var db = null;
+  var syncState = 'local';
+  var dbChecked = false;
+  var fb = null, fbResolve = null;
+  var pendingImport = null;
+  var writing = false;
+  var justSaved = false;
+  var formDays = new Set([1, 2, 3, 4, 5, 6, 0]);
+  var curModel = null;
+  var sig = '';
+  var lastClk = '';
+
+  function $(s) { return document.querySelector(s); }
+  function pad(n) { return String(n).padStart(2, '0'); }
+  function dkey(d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); }
+  function fromKey(k) { var p = k.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2], 12); }
+  function addDays(d, n) { var x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
+  function alarmAt(k, a) {
+    var p = k.split('-').map(Number), t = a.split(':').map(Number);
+    return new Date(p[0], p[1] - 1, p[2], t[0], t[1], 0, 0);
+  }
+  function weekStart(d) { return addDays(d, -((d.getDay() + 6) % 7)); }
+  function fmt(s) {
+    s = Math.max(0, Math.round(s));
+    if (s >= 3600) return Math.floor(s / 3600) + ':' + pad(Math.floor((s % 3600) / 60)) + ':' + pad(s % 60);
+    return Math.floor(s / 60) + ':' + pad(s % 60);
+  }
+  function clock12(d) { var h = d.getHours(); return ((h % 12) || 12) + ':' + pad(d.getMinutes()) + ' ' + (h < 12 ? 'AM' : 'PM'); }
+  function dateLabel(k) { var d = fromKey(k); return MON[d.getMonth()] + ' ' + d.getDate(); }
+  function esc(s) { return String(s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  function pts(s) {
+    if (s <= 30) return 100;
+    if (s <= WIN) return Math.round(80 - ((s - 30) / 90) * 25);
+    if (s <= 600) return Math.round(30 - ((s - WIN) / 480) * 20);
+    if (s <= 900) return Math.round(10 - ((s - 600) / 300) * 10);
+    return 0;
+  }
+  function zoneOf(d) { return d <= 30 ? 'elite' : d <= WIN ? 'win' : 'late'; }
+  function alarmFor(dow) { return settings && settings.alarms ? (settings.alarms[dow] || null) : null; }
+  function walkSecs() { return settings && settings.walk ? settings.walk : 0; }
+  function scored(diff) { return Math.max(0, diff - walkSecs()); }
+  function tierOf(s) {
+    if (s <= 30) return { label: 'Elite', fill: 'elite' };
+    if (s <= 60) return { label: 'Sharp', fill: 'sharp' };
+    if (s <= WIN) return { label: 'On time', fill: 'ontime' };
+    if (s <= 300) return { label: 'Late', fill: 'late' };
+    if (s <= 600) return { label: 'Dragging', fill: 'lost' };
+    return { label: 'Lost it', fill: 'lost' };
+  }
+
+  /* ---------- data cleaning ---------- */
+  function cleanSettings(o) {
+    if (!o || typeof o !== 'object') return null;
+    var alarms = {};
+    if (o.alarms && typeof o.alarms === 'object') {
+      Object.keys(o.alarms).forEach(function (k) {
+        var n = parseInt(k, 10);
+        if (n >= 0 && n <= 6 && /^\d{2}:\d{2}$/.test(o.alarms[k] || '')) alarms[n] = o.alarms[k];
+      });
+    } else if (/^\d{2}:\d{2}$/.test(o.alarm || '')) {
+      var ds = Array.isArray(o.days) ? o.days : [1, 2, 3, 4, 5, 6, 0];
+      ds.forEach(function (n) { if (Number.isInteger(n) && n >= 0 && n <= 6) alarms[n] = o.alarm; });
+    }
+    var days = Object.keys(alarms).map(Number);
+    if (!days.length) return null;
+    var wt = Math.min(7, Math.max(1, parseInt(o.weeklyTarget, 10) || 5));
+    var sd = /^\d{4}-\d{2}-\d{2}$/.test(o.startDate || '') ? o.startDate : dkey(new Date());
+    var wk = Math.min(60, Math.max(0, parseInt(o.walk, 10) || 0));
+    return { alarms: alarms, days: days, weeklyTarget: wt, startDate: sd, walk: wk };
+  }
+  function cleanEntry(id, o) {
+    if (!o || typeof o !== 'object' || !/^\d{4}-\d{2}-\d{2}$/.test(id)) return null;
+    var s = Number(o.seconds);
+    if (!isFinite(s) || s < 0 || s > END) return null;
+    s = Math.round(s);
+    return { date: id, seconds: s, points: pts(s), win: s <= WIN, alarm: /^\d{2}:\d{2}$/.test(o.alarm || '') ? o.alarm : '', at: typeof o.at === 'string' ? o.at : '', manual: !!o.manual };
+  }
+
+  /* ---------- storage ---------- */
+  function writeLocal() {
+    try { localStorage.setItem(LS, JSON.stringify({ settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym, goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads })); } catch (e) {}
+  }
+  function loadLocal() {
+    try {
+      var raw = localStorage.getItem(LS);
+      if (!raw) return;
+      applyState(JSON.parse(raw));
+    } catch (e) {}
+  }
+  function applyState(o) {
+    {
+      settings = cleanSettings(o.settings);
+      checkins = {};
+      Object.keys(o.checkins || {}).forEach(function (k) { var e = cleanEntry(k, o.checkins[k]); if (e) checkins[k] = e; });
+      ['bible', 'gym'].forEach(function (kd) {
+        habits[kd] = {};
+        Object.keys(o[kd] || {}).forEach(function (k) { var e = cleanHabit(k, o[kd][k]); if (e) habits[kd][k] = e; });
+      });
+      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read });
+      planDone = cleanPlan({ done: o.plan });
+      planlog = {}; Object.keys(o.planlog || {}).forEach(function (k) { var r = cleanPlanLog('r' + k, o.planlog[k]); if (r) planlog[r.i] = r; });
+      notes = {}; Object.keys(o.notes || {}).forEach(function (k) { var n = cleanNote(k, o.notes[k]); if (n) notes[k] = n; });
+      books = {}; Object.keys(o.books || {}).forEach(function (k) { var b = cleanBook(k, o.books[k]); if (b) books[k] = b; });
+      reads = {}; Object.keys(o.reads || {}).forEach(function (k) { var r = cleanRead(k, o.reads[k]); if (r) reads[k] = r; });
+    }
+  }
+  function cleanHabit(id, o) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(id) || !o || typeof o !== 'object') return null;
+    return { date: id, at: typeof o.at === 'string' ? o.at : '', manual: !!o.manual };
+  }
+  function cleanPlan(o) {
+    return o && typeof o.done === 'string' && /^[01]{364}$/.test(o.done) ? o.done : PLAN_SEED;
+  }
+  function cleanPlanLog(id, o) {
+    if (!/^r\d+$/.test(id) || !o || typeof o !== 'object') return null;
+    var i = parseInt(id.slice(1), 10);
+    if (!(i >= 0 && i < PLAN_N) || !MODES[o.mode] || typeof o.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(o.date)) return null;
+    return { i: i, mode: o.mode, date: o.date, late: !!o.late, at: typeof o.at === 'string' ? o.at : '' };
+  }
+  function cleanNote(id, o) {
+    if (!/^[A-Za-z0-9+._~:@-]{1,60}$/.test(id) || !o || typeof o.text !== 'string' || !o.text.trim()) return null;
+    var at = typeof o.at === 'string' ? o.at : '';
+    return { id: id, ref: typeof o.ref === 'string' ? o.ref.slice(0, 60) : id, text: o.text.slice(0, 4000), at: at, born: typeof o.born === 'string' && o.born ? o.born : at };
+  }
+  function cleanGoals(o) {
+    var g = { bible: 6, gym: 4, read: 120 };
+    if (o && typeof o === 'object') {
+      var b = parseInt(o.bibleTarget, 10), y = parseInt(o.gymTarget, 10);
+      if (b >= 1 && b <= 7) g.bible = b;
+      if (y >= 1 && y <= 7) g.gym = y;
+      var rm = parseInt(o.readMinutes, 10);
+      if (rm >= 30 && rm <= 1200) g.read = rm;
+    }
+    return g;
+  }
+  function toast(msg) {
+    var t = $('#toast');
+    t.textContent = msg;
+    t.hidden = false;
+    clearTimeout(toast._t);
+    toast._t = setTimeout(function () { t.hidden = true; }, 4000);
+  }
+  function setSync(kind) { syncState = kind; renderFoot(); }
+
+  async function reloadFromDb() {
+    if (!db) return;
+    try {
+      var s = await db.doc('app/settings').get();
+      settings = s.exists ? cleanSettings(s.data()) : null;
+      var q = await db.collection('checkins').get();
+      checkins = {};
+      q.docs.forEach(function (d) { var e = cleanEntry(d.id, d.data()); if (e) checkins[d.id] = e; });
+      var g = await db.doc('app/habits').get();
+      goals = cleanGoals(g.exists ? g.data() : null);
+      var pl = await db.doc('app/plan').get();
+      planDone = cleanPlan(pl.exists ? pl.data() : null);
+      var lq = await db.collection('planlog').get();
+      planlog = {};
+      lq.docs.forEach(function (d) { var r = cleanPlanLog(d.id, d.data()); if (r) planlog[r.i] = r; });
+      var bq = await db.collection('books').get();
+      books = {};
+      bq.docs.forEach(function (d) { var b = cleanBook(d.id, d.data()); if (b) books[d.id] = b; });
+      var rq = await db.collection('reads').get();
+      reads = {};
+      rq.docs.forEach(function (d) { var r = cleanRead(d.id, d.data()); if (r) reads[d.id] = r; });
+      var nq = await db.collection('notes').get();
+      notes = {};
+      nq.docs.forEach(function (d) { var n = cleanNote(d.id, d.data()); if (n) notes[d.id] = n; });
+      for (var kd of ['bible', 'gym']) {
+        var hq = await db.collection(kd).get();
+        habits[kd] = {};
+        hq.docs.forEach(function (d) { var e = cleanHabit(d.id, d.data()); if (e) habits[kd][d.id] = e; });
+      }
+      writeLocal();
+      renderAll();
+    } catch (e) {}
+  }
+  async function persist(fn) {
+    writeLocal();
+    if (!db) return;
+    try { await fn(db); }
+    catch (e) {
+      toast('Could not save that. Check your connection and try again.');
+      await reloadFromDb();
+    }
+  }
+  async function saveEntry(key, seconds, manual) {
+    var e = cleanEntry(key, { seconds: seconds, alarm: alarmFor(fromKey(key).getDay()) || '', at: new Date().toISOString(), manual: manual });
+    checkins[key] = e;
+    renderAll();
+    await persist(function (d) { return d.doc('checkins/' + key).set(e); });
+  }
+  async function removeEntry(key) {
+    delete checkins[key];
+    renderAll();
+    await persist(function (d) { return d.doc('checkins/' + key).delete(); });
+  }
+  async function saveSettings(s) {
+    settings = s;
+    renderAll();
+    var out = { alarms: {}, weeklyTarget: s.weeklyTarget, startDate: s.startDate, walk: s.walk || 0 };
+    Object.keys(s.alarms).forEach(function (k) { out.alarms[k] = s.alarms[k]; });
+    await persist(function (d) { return d.doc('app/settings').set(out); });
+  }
+
+  async function connect() {
+    var d = null;
+    try { if (window.claude && window.claude.use) d = await window.claude.use('db'); } catch (e) { d = null; }
+    if (!d && fbOn()) d = await fbConnect();
+    if (!d) { dbChecked = true; setSync('local'); renderAll(); return; }
+    db = d;
+    dbChecked = true;
+    setSync('synced');
+    if (fbOn()) await fbFirstRun();
+    function fail() { setSync('error'); }
+    db.doc('app/settings').onSnapshot(function (snap) {
+      settings = snap.exists ? cleanSettings(snap.data()) : null;
+      writeLocal();
+      renderAll();
+      autoWake();
+    }, fail);
+    db.doc('app/habits').onSnapshot(function (snap) {
+      goals = cleanGoals(snap.exists ? snap.data() : null);
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.doc('app/plan').onSnapshot(function (snap) {
+      planDone = cleanPlan(snap.exists ? snap.data() : null);
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('planlog').onSnapshot(function (snap) {
+      planlog = {};
+      snap.docs.forEach(function (x) { var r = cleanPlanLog(x.id, x.data()); if (r) planlog[r.i] = r; });
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('books').onSnapshot(function (snap) {
+      books = {};
+      snap.docs.forEach(function (x) { var b = cleanBook(x.id, x.data()); if (b) books[x.id] = b; });
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('reads').onSnapshot(function (snap) {
+      reads = {};
+      snap.docs.forEach(function (x) { var r = cleanRead(x.id, x.data()); if (r) reads[x.id] = r; });
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('notes').onSnapshot(function (snap) {
+      notes = {};
+      snap.docs.forEach(function (x) { var n = cleanNote(x.id, x.data()); if (n) notes[x.id] = n; });
+      writeLocal();
+      renderAll();
+    }, fail);
+    ['bible', 'gym'].forEach(function (kd) {
+      db.collection(kd).onSnapshot(function (snap) {
+        habits[kd] = {};
+        snap.docs.forEach(function (x) { var e = cleanHabit(x.id, x.data()); if (e) habits[kd][x.id] = e; });
+        writeLocal();
+        renderAll();
+      }, fail);
+    });
+    db.collection('checkins').onSnapshot(function (snap) {
+      checkins = {};
+      snap.docs.forEach(function (x) { var e = cleanEntry(x.id, x.data()); if (e) checkins[x.id] = e; });
+      writeLocal();
+      renderAll();
+    }, fail);
+  }
+
+  /* ---------- model ---------- */
+  function avgOf(arr) {
+    var e = arr.filter(function (x) { return x.e; });
+    if (!e.length) return null;
+    return { avg: e.reduce(function (a, x) { return a + x.e.seconds; }, 0) / e.length, n: e.length };
+  }
+  function model() {
+    if (!settings) return null;
+    var now = new Date(), tk = dkey(now);
+    var start = settings.startDate;
+    var keys = Object.keys(checkins).sort();
+    if (keys.length && keys[0] < start) start = keys[0];
+    if (start > tk) start = tk;
+    var aStr = alarmFor(now.getDay());
+    var todayClosed = aStr ? (now - alarmAt(tk, aStr)) / 1000 > END : false;
+    var days = [], byKey = {};
+    for (var d = fromKey(start); dkey(d) <= tk; d = addDays(d, 1)) {
+      var k = dkey(d), e = checkins[k] || null, active = settings.days.indexOf(d.getDay()) >= 0, st;
+      if (e) st = e.win ? 'win' : 'loss';
+      else if (k < tk) st = active ? 'miss' : 'rest';
+      else st = !active ? 'rest' : (todayClosed ? 'miss' : 'pending');
+      var o = { k: k, d: d, e: e, active: active, st: st };
+      days.push(o); byKey[k] = o;
+    }
+    var w = 0, l = 0, ptsT = 0, run = 0, best = 0, bestEnd = null, elite = 0, fastest = null;
+    days.forEach(function (x) {
+      if (x.st === 'win') { w++; run++; if (run > best) { best = run; bestEnd = x.k; } }
+      else if (x.st === 'loss' || x.st === 'miss') { l++; run = 0; }
+      if (x.e) {
+        ptsT += x.e.points;
+        if (x.e.seconds <= 30) elite++;
+        if (!fastest || x.e.seconds < fastest.seconds) fastest = { seconds: x.e.seconds, k: x.k };
+      }
+    });
+    var weeks = {};
+    days.forEach(function (x) {
+      var wk = dkey(weekStart(x.d));
+      var o = weeks[wk] || (weeks[wk] = { wins: 0 });
+      if (x.st === 'win') o.wins++;
+    });
+    var curWk = dkey(weekStart(now));
+    var weekWins = (weeks[curWk] || { wins: 0 }).wins;
+    var bestWeek = 0, bestWeekKey = null, weeksHit = 0;
+    Object.keys(weeks).sort().forEach(function (k) {
+      var v = weeks[k].wins;
+      if (v > bestWeek) { bestWeek = v; bestWeekKey = k; }
+      if (v >= settings.weeklyTarget) weeksHit++;
+    });
+    var weekLeft = 0;
+    for (var i = 0; i < 7; i++) {
+      var dd = addDays(now, i);
+      if (((dd.getDay() + 6) % 7) < ((now.getDay() + 6) % 7)) break;
+      if (settings.days.indexOf(dd.getDay()) < 0) continue;
+      var kk = dkey(dd);
+      if (kk > tk) weekLeft++;
+      else if (kk === tk && !checkins[tk] && !todayClosed) weekLeft++;
+    }
+    var last7 = avgOf(days.slice(-7)), prev7 = avgOf(days.slice(-14, -7)), last30 = avgOf(days.slice(-30));
+    var best7 = null;
+    for (var j = 6; j < days.length; j++) {
+      var a = avgOf(days.slice(j - 6, j + 1));
+      if (a && a.n >= 4 && (!best7 || a.avg < best7.avg)) best7 = { avg: a.avg, end: days[j].k };
+    }
+    var w30 = 0, l30 = 0, e30 = 0;
+    days.slice(-30).forEach(function (x) { if (x.st === 'win') w30++; else if (x.st === 'loss' || x.st === 'miss') l30++; if (x.e && x.e.seconds <= 30) e30++; });
+    return {
+      now: now, tk: tk, days: days, byKey: byKey, start: start, w: w, l: l, ptsT: ptsT, streak: run, best: best, bestEnd: bestEnd,
+      elite: elite, fastest: fastest, weekWins: weekWins, weekLeft: weekLeft, bestWeek: bestWeek, bestWeekKey: bestWeekKey,
+      weeksHit: weeksHit, last7: last7, prev7: prev7, last30: last30, best7: best7, w30: w30, l30: l30, e30: e30
+    };
+  }
+
+  function phase() {
+    if (!settings) return { p: 'setup' };
+    var now = new Date(), k = dkey(now), e = checkins[k];
+    if (e) return { p: 'done', e: e, k: k };
+    if (settings.days.indexOf(now.getDay()) < 0) return { p: 'rest', k: k };
+    var aT = alarmAt(k, alarmFor(now.getDay())), diff = (now - aT) / 1000;
+    if (diff < -10) return { p: 'wait', diff: diff, aT: aT, k: k };
+    if (diff <= END) return { p: 'live', diff: diff, aT: aT, k: k };
+    return { p: 'missed', k: k };
+  }
+  function nextGame() {
+    var now = new Date();
+    for (var i = 0; i < 8; i++) {
+      var d = addDays(now, i);
+      if (settings.days.indexOf(d.getDay()) < 0) continue;
+      var aT = alarmAt(dkey(d), alarmFor(d.getDay()));
+      if (aT > now) return { aT: aT, i: i, d: d };
+    }
+    return null;
+  }
+  function nextLabel() {
+    var n = nextGame();
+    if (!n) return 'No game scheduled';
+    var day = n.i === 0 ? 'Today' : n.i === 1 ? 'Tomorrow' : DOWL[n.d.getDay()];
+    return day + ' ' + clock12(n.aT);
+  }
+
+  /* ---------- rendering ---------- */
+  function digits(str) {
+    return str.split('').map(function (c) { return c === ':' ? '<span class="cl">:</span>' : '<span class="dg">' + c + '</span>'; }).join('');
+  }
+  function clkClass(str) { return str.length > 5 ? 'clock long' : 'clock'; }
+  function drainW(d) { return Math.max(0, 100 * (1 - d / WIN)); }
+  function lineText(d) {
+    if (d > WIN) return 'Window closed &middot; <b>' + pts(d) + '</b> pts left';
+    if (d <= 30) return '<b>100</b> pts on the line &middot; Elite, ' + Math.max(0, 30 - Math.floor(d)) + 's left';
+    return '<b>' + pts(d) + '</b> pts on the line &middot; Elite is gone';
+  }
+  function targetsHTML(m) {
+    return '<div class="targets">' +
+      '<div><span>Record</span><b>' + (m.fastest ? fmt(m.fastest.seconds) : 'None') + '</b></div>' +
+      '<div><span>7-day avg</span><b>' + (m.last7 ? fmt(m.last7.avg) : 'None') + '</b></div>' +
+      '<div><span>Elite line</span><b>0:30</b></div></div>';
+  }
+  function formHTML(s) {
+    var wt = s ? s.weeklyTarget : 5;
+    formDays = new Set(s ? s.days : [1, 2, 3, 4, 5, 6, 0]);
+    return '<div class="form">' +
+      '<div class="fld"><span>ALARM TIME BY DAY</span><div class="form" style="gap:8px;margin:0">' +
+      ORDER.map(function (n) {
+        var on = formDays.has(n), v = (s && s.alarms[n]) || '06:00';
+        return '<div class="drow"><button type="button" class="chip" data-action="toggle-day" data-d="' + n + '" aria-pressed="' + on + '">' + DOW[n] + '</button>' +
+          '<input type="time" id="f-t-' + n + '" value="' + v + '" aria-label="' + DOWL[n] + ' alarm time"' + (on ? '' : ' disabled') + '></div>';
+      }).join('') +
+      '</div><button type="button" class="link" data-action="copy-time" style="margin-top:8px">Use the first active day\'s time for every day</button>' +
+      '<p class="note" style="margin-top:4px">Turn a day off to make it a rest day. Rest days never break your streak.</p></div>' +
+      '<label class="fld"><span>WALK TO YOUR PHONE</span><select id="f-walk">' +
+      [0, 5, 10, 15, 20, 30, 45, 60].map(function (n) { var cur = s ? (s.walk || 0) : 10; return '<option value="' + n + '"' + (n === cur ? ' selected' : '') + '>' + (n ? n + ' seconds' : 'No allowance') + '</option>'; }).join('') +
+      '</select><span style="margin:6px 0 0;font-weight:400;letter-spacing:0;font-size:13px">Your phone stays outside the bedroom, so this many seconds are taken off your time for the walk. Set it to how long it really takes.</span></label>' +
+      '<label class="fld"><span>WINS NEEDED PER WEEK</span><select id="f-target">' +
+      [1, 2, 3, 4, 5, 6, 7].map(function (n) { return '<option value="' + n + '"' + (n === wt ? ' selected' : '') + '>' + n + '</option>'; }).join('') +
+      '</select></label></div>';
+  }
+
+  function renderClock(m) {
+    var el = $('#clockCard'), ph = phase(), h = '';
+    if (ph.p === 'setup') {
+      h = '<div class="bar-top"><span>Set the board</span></div><div class="pad">' +
+        '<p class="lead">Keep your phone outside the bedroom and let your watch wake you. The clock runs from your alarm time until you tap <b>I\'m Up</b> at the phone, minus a walk allowance you set below. Under 0:30 pays full points. Under 2:00 still counts as a win. Every second past that costs you.</p>' +
+        formHTML(null) + '<button class="cta" data-action="save-settings" data-mode="setup">START SEASON</button></div>';
+    } else if (ph.p === 'live') {
+      var sc = scored(ph.diff), str = fmt(sc);
+      lastClk = str;
+      h = '<div class="bar-top"><span>Game clock</span><span>Alarm ' + clock12(ph.aT) + '</span></div>' +
+        '<div class="pad center" id="liveBox" data-zone="' + zoneOf(sc) + '">' +
+        '<div class="' + clkClass(str) + '" id="clk">' + digits(str) + '</div>' +
+        '<div class="dwrap" aria-hidden="true"><div class="drain"><i id="drain" style="width:' + drainW(sc) + '%"></i></div><span class="dmark"></span><span class="dlab">ELITE 0:30</span></div>' +
+        '<div class="onLine" id="onLine">' + lineText(sc) + '</div>' +
+        '<button class="cta" id="cta" data-action="wake-up">I\'M UP</button>' +
+        '<p class="hint">Tap when you reach your phone.' + (walkSecs() ? ' The clock starts after your ' + walkSecs() + 's walk allowance.' : '') + '</p>' + targetsHTML(m) + '</div>';
+    } else if (ph.p === 'wait') {
+      var hh = ph.aT.getHours();
+      h = '<div class="bar-top"><span>Next game</span><span>' + (ph.diff < -43200 ? '' : 'Today') + '</span></div>' +
+        '<div class="pad center"><div class="clock sm">' + digits(((hh % 12) || 12) + ':' + pad(ph.aT.getMinutes())) + '<small>' + (hh < 12 ? 'AM' : 'PM') + '</small></div>' +
+        '<div class="countdown" id="cd">' + cdText(ph.diff) + '</div>' +
+        '<button class="cta" disabled>LOCKED UNTIL ALARM</button>' +
+        (awake ? '<p class="hint">Screen stays on while this page is open. Leave the phone on its charger.</p>'
+               : '<button class="btn" data-action="keep-awake">Keep screen on overnight</button><p class="hint">Leave this page open on the charger outside your bedroom so it is ready when you get there.</p>') +
+        '<p class="hint">Set your watch alarm to match this phone\'s clock.</p>' + targetsHTML(m) + '</div>';
+    } else if (ph.p === 'done') {
+      var e = ph.e, t = tierOf(e.seconds), cs = fmt(e.seconds);
+      var others = m.days.filter(function (x) { return x.e && x.k !== ph.k; });
+      var prevBest = others.length ? Math.min.apply(null, others.map(function (x) { return x.e.seconds; })) : null;
+      var avg = avgOf(m.days.slice(-8, -1));
+      var facts = '';
+      var banner = '';
+      if (prevBest === null) banner = '<div class="banner">FIRST MORNING ON THE BOARD</div>';
+      else if (e.seconds < prevBest) { banner = '<div class="banner">NEW PERSONAL BEST</div>'; facts += '<li><b>' + fmt(prevBest - e.seconds) + '</b> faster than the old record of ' + fmt(prevBest) + '</li>'; }
+      else if (e.seconds === prevBest) facts += '<li>Matched your personal best of <b>' + fmt(prevBest) + '</b></li>';
+      else facts += '<li><b>' + fmt(e.seconds - prevBest) + '</b> off your best of ' + fmt(prevBest) + '</li>';
+      if (e.seconds <= 30) facts += '<li>Elite. Full points.</li>';
+      else if (e.win) facts += '<li><b>' + (e.seconds - 30) + 's</b> past the elite line. Go for sub 0:30 next time.</li>';
+      if (avg) {
+        var dv = Math.round(avg.avg - e.seconds);
+        facts += '<li><b>' + Math.abs(dv) + 's</b> ' + (dv > 0 ? 'faster' : dv < 0 ? 'slower' : 'even') + (dv === 0 ? ' with' : ' than') + ' your 7-day average</li>';
+      }
+      if (e.win) facts += '<li>Streak at <b>' + m.streak + '</b></li>';
+      else facts += '<li>Past the 2:00 line. Your records stay. Win the next one.</li>';
+      h = '<div class="bar-top"><span>Today\'s result</span><span>Alarm ' + (e.alarm ? clock12(alarmAt(ph.k, e.alarm)) : '') + '</span></div>' +
+        '<div class="pad center' + (justSaved ? ' pop' : '') + '" data-zone="' + zoneOf(e.seconds) + '">' +
+        (banner || '') +
+        '<div class="verdict ' + (e.win ? 'win' : 'loss') + '">' + (e.win ? 'WIN' : 'LOSS') + '</div>' +
+        '<div class="' + clkClass(cs) + '">' + digits(cs) + '</div>' +
+        '<div class="res-line"><span class="pill bg-' + t.fill + '">' + t.label + '</span><span class="pts">+' + e.points + ' PTS</span></div>' +
+        '<ul class="facts">' + facts + '</ul>' +
+        '<div class="next">Next game: <b>' + nextLabel() + '</b></div>' +
+        '<button class="link" data-action="edit" data-key="' + ph.k + '">Fix this entry</button></div>';
+      justSaved = false;
+    } else if (ph.p === 'missed') {
+      h = '<div class="bar-top"><span>Morning missed</span><span>Alarm ' + clock12(alarmAt(ph.k, alarmFor(fromKey(ph.k).getDay()))) + '</span></div>' +
+        '<div class="pad center" data-zone="late"><div class="clock sm">0<small>PTS</small></div>' +
+        '<p class="lead" style="margin:0">No check-in within 3 hours of the alarm, so this one counts as a loss. Your records stay.</p>' +
+        '<div class="next">Next game: <b>' + nextLabel() + '</b></div>' +
+        '<button class="link" data-action="edit" data-key="' + ph.k + '">Forgot to tap? Log it</button></div>';
+    } else {
+      h = '<div class="bar-top"><span>Rest day</span></div>' +
+        '<div class="pad center"><div class="clock sm" style="color:var(--dim)">OFF</div>' +
+        '<div class="next" style="border:0;padding:0">Next game: <b>' + nextLabel() + '</b></div>' +
+        '<button class="link" data-action="edit" data-key="' + ph.k + '">Log a morning anyway</button></div>';
+    }
+    el.innerHTML = h;
+    sig = ph.p + '|' + dkey(new Date());
+  }
+  function cdText(diff) {
+    var r = Math.round(-diff);
+    if (r >= 3600) return 'Alarm in ' + Math.floor(r / 3600) + 'h ' + pad(Math.floor((r % 3600) / 60)) + 'm';
+    return 'Alarm in ' + Math.floor(r / 60) + ':' + pad(r % 60);
+  }
+
+  function renderStreak(m) {
+    var tgt = settings.weeklyTarget, need = Math.max(0, tgt - m.weekWins);
+    var wkSub;
+    if (need === 0) wkSub = 'Weekly goal hit';
+    else if (need > m.weekLeft) wkSub = 'Out of reach. Next week starts clean.';
+    else wkSub = need + ' more ' + (need === 1 ? 'win' : 'wins') + ' to hit the goal';
+    var chaseTxt, pct;
+    if (m.best === 0) { chaseTxt = 'Win your first morning to start a streak.'; pct = 0; }
+    else if (m.streak >= m.best) { chaseTxt = '<b>Record streak.</b> Every win extends it.'; pct = 100; }
+    else { chaseTxt = '<b>' + (m.best - m.streak) + '</b> more ' + (m.best - m.streak === 1 ? 'win ties' : 'wins tie') + ' your record of ' + m.best + '.'; pct = 100 * m.streak / m.best; }
+    $('#streakCard').innerHTML =
+      '<div class="stat"><label>Streak</label><div class="num">' + m.streak + '</div><div class="sub">Best ' + m.best + '</div></div>' +
+      '<div class="stat"><label>This week</label><div class="num">' + m.weekWins + '<span>/' + tgt + '</span></div><div class="sub">' + wkSub + '</div></div>' +
+      '<div class="chase"><p>' + chaseTxt + '</p><div class="track"><i style="width:' + pct + '%"></i></div></div>';
+  }
+  function renderForm(m) {
+    var delta = '';
+    if (m.last7 && m.prev7) {
+      var dv = Math.round(m.prev7.avg - m.last7.avg);
+      delta = dv === 0 ? 'Same as the week before' : '<span class="' + (dv > 0 ? 'good' : 'bad') + '">' + Math.abs(dv) + 's ' + (dv > 0 ? 'faster' : 'slower') + '</span> than the week before';
+    } else delta = 'Needs two weeks to compare';
+    var n30 = m.w30 + m.l30;
+    var rate = n30 ? Math.round(100 * m.w30 / n30) + '%' : '-';
+    var played = m.w + m.l;
+    var avgScore = played ? Math.round(m.ptsT / played) : null;
+    $('#formCard').innerHTML = '<h2>FORM</h2><div class="tiles">' +
+      '<div class="tile"><label>7-day average</label><div class="v">' + (m.last7 ? fmt(m.last7.avg) : '-') + '</div><div class="s">' + delta + '</div></div>' +
+      '<div class="tile"><label>30-day average</label><div class="v">' + (m.last30 ? fmt(m.last30.avg) : '-') + '</div><div class="s">' + (m.last30 ? m.last30.n + ' mornings logged' : 'No mornings yet') + '</div></div>' +
+      '<div class="tile"><label>Win rate, 30 days</label><div class="v">' + rate + '</div><div class="s">' + m.w30 + ' wins, ' + m.l30 + ' losses, ' + m.e30 + ' elite</div></div>' +
+      '<div class="tile"><label>Average score</label><div class="v">' + (avgScore === null ? '-' : avgScore) + '</div><div class="s">Per morning, 100 is the max</div></div></div>';
+  }
+  function renderRecords(m) {
+    var rows = [
+      ['Fastest morning', m.fastest ? fmt(m.fastest.seconds) : '-', m.fastest ? dateLabel(m.fastest.k) : 'Not set yet'],
+      ['Longest streak', m.best ? String(m.best) : '-', m.bestEnd ? 'Ended ' + dateLabel(m.bestEnd) : 'Not set yet'],
+      ['Best week', m.bestWeek ? m.bestWeek + (m.bestWeek === 1 ? ' win' : ' wins') : '-', m.bestWeekKey ? 'Week of ' + dateLabel(m.bestWeekKey) : 'Not set yet'],
+      ['Best 7-day average', m.best7 ? fmt(m.best7.avg) : '-', m.best7 ? 'Through ' + dateLabel(m.best7.end) : 'Needs 4 mornings in one week'],
+      ['Elite mornings', String(m.elite), 'Up in under 0:30'],
+      ['Weeks hit', String(m.weeksHit), 'Goal is ' + settings.weeklyTarget + ' wins a week'],
+      ['Points', String(m.ptsT), 'Season total']
+    ];
+    $('#recordsCard').innerHTML = '<h2>RECORDS</h2><dl class="rows">' +
+      rows.map(function (r) { return '<div><dt>' + r[0] + '<small>' + r[2] + '</small></dt><dd>' + r[1] + '</dd></div>'; }).join('') + '</dl>';
+  }
+  function renderLog(m) {
+    var now = new Date(), tk = m.tk, first = addDays(weekStart(now), -49), tgt = settings.weeklyTarget;
+    var h = '<h2>LOG<small>Tap a day to edit</small></h2><div class="cal head">' +
+      ORDER.map(function (n) { return '<span>' + DOW[n].charAt(0) + '</span>'; }).join('') + '<span>WK</span></div><div class="cal">';
+    for (var r = 0; r < 8; r++) {
+      var wins = 0, known = false, cells = '';
+      for (var c = 0; c < 7; c++) {
+        var d = addDays(first, r * 7 + c), k = dkey(d), day = m.byKey[k], cls = 'c-pre', txt = '', desc = 'no data';
+        var label = DOWL[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate();
+        var editable = false;
+        if (k > tk) { cls = 'c-future'; }
+        else if (day) {
+          editable = true; known = true;
+          if (day.e) { var t = tierOf(day.e.seconds); cls = 'c-' + t.fill; txt = fmt(day.e.seconds); desc = txt + ', ' + t.label + (day.e.win ? ', win' : ', loss'); if (day.e.win) wins++; }
+          else if (day.st === 'miss') { cls = 'c-miss'; txt = '✕'; desc = 'missed'; }
+          else if (day.st === 'pending') { cls = 'c-pend'; txt = '•'; desc = 'today, not logged yet'; }
+          else { cls = 'c-rest'; desc = 'rest day'; editable = true; }
+        }
+        var inner = '<i>' + d.getDate() + '</i>' + esc(txt);
+        var today = k === tk ? ' is-today' : '';
+        cells += editable
+          ? '<button class="cell ' + cls + today + '" data-action="edit" data-key="' + k + '" aria-label="' + label + ': ' + desc + '">' + inner + '</button>'
+          : '<div class="cell ' + cls + today + '" aria-label="' + label + '">' + inner + '</div>';
+      }
+      h += cells + '<span class="wk' + (known && wins >= tgt ? ' hit' : '') + '">' + (known ? wins + '/' + tgt : '·') + '</span>';
+    }
+    h += '</div><div class="legend">' +
+      '<span><em class="bg-elite"></em>Under 0:30</span><span><em class="bg-sharp"></em>Under 1:00</span><span><em class="bg-ontime"></em>Under 2:00 (win)</span>' +
+      '<span><em class="bg-late"></em>Late</span><span><em class="bg-lost"></em>Over 5:00</span>' +
+      '<span><em style="border-color:var(--lost)"></em>Missed</span><span><em style="border:1px dashed var(--dim)"></em>Rest day</span></div>';
+    $('#logCard').innerHTML = h;
+  }
+
+  function drawChart() {
+    var m = curModel, host = $('#chart');
+    if (!m) { host.innerHTML = ''; return; }
+    var W = Math.max(260, Math.floor(host.clientWidth || 340)), H = 200, pl = 40, pr = 6, pt = 12, pb = 24;
+    var iw = W - pl - pr, ih = H - pt - pb, N = 14, MAXS = 300;
+    function y(s) { return pt + ih - Math.min(s, MAXS) / MAXS * ih; }
+    var slot = iw / N, bw = Math.min(24, slot * 0.62), g = '', any = false;
+    [[0, '0:00'], [30, '0:30'], [120, '2:00'], [300, '5:00+']].forEach(function (a) {
+      g += '<line class="gl' + (a[0] === 120 ? ' cut' : a[0] === 30 ? ' elite' : '') + '" x1="' + pl + '" x2="' + (W - pr) + '" y1="' + y(a[0]) + '" y2="' + y(a[0]) + '"/>';
+      g += '<text class="ax" x="' + (pl - 6) + '" y="' + (y(a[0]) + 4) + '" text-anchor="end">' + a[1] + '</text>';
+    });
+    for (var i = 0; i < N; i++) {
+      var d = addDays(new Date(), -(N - 1 - i)), k = dkey(d), x = pl + slot * i + slot / 2, day = m.byKey[k];
+      if (day && day.e) {
+        any = true;
+        var s = day.e.seconds, t = tierOf(s), top = y(s);
+        g += '<rect class="f-' + t.fill + '" x="' + (x - bw / 2) + '" y="' + top + '" width="' + bw + '" height="' + Math.max(2, pt + ih - top) + '" rx="2"/>';
+        if (s > MAXS) g += '<text class="ax" x="' + x + '" y="' + (top - 3) + '" text-anchor="middle">+</text>';
+      } else if (day && day.st === 'miss') {
+        g += '<text class="ax bad" x="' + x + '" y="' + (y(0) - 4) + '" text-anchor="middle">✕</text>';
+      }
+      g += '<text class="ax' + (k === m.tk ? ' today' : '') + '" x="' + x + '" y="' + (H - 6) + '" text-anchor="middle">' + d.getDate() + '</text>';
+    }
+    if (!any) g += '<text class="empty-msg" x="' + (pl + iw / 2) + '" y="' + (pt + ih / 2) + '" text-anchor="middle">Your first morning shows up here</text>';
+    host.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Seconds from alarm to out of bed for the last 14 days, with the 2 minute win line">' + g + '</svg>';
+  }
+
+  function renderHeader(m) {
+    var h = '';
+    if (tab === 'wake') h = m ? 'Season <b>' + m.w + '-' + m.l + '</b><br>' + m.ptsT + ' pts' : '';
+    else if (tab === 'bible') { var hb = hModel('bible'); h = 'Streak <b>' + hb.dayStreak + '</b><br>' + hb.total + ' days read'; }
+    else if (tab === 'books') { var hr = readModel(); h = 'Streak <b>' + hr.cur + '</b><br>' + nfmt(hr.total) + ' pts'; }
+    else if (tab === 'gym') { var hg = hModel('gym'); h = 'Week streak <b>' + hg.wrun + '</b><br>' + hg.total + ' sessions'; }
+    else h = 'Today <b>' + todayTally() + '/4</b>';
+    $('#rec').innerHTML = h;
+    $('#gear').hidden = !(settings && tab === 'wake');
+  }
+  function renderFoot() {
+    var t = { synced: fbOn() ? 'Synced to your account. Works offline and catches up when you are back online.' : 'Saved to your Claude board. Ask Claude for your numbers any time.', local: 'Saved on this phone only. Back up from Home now and then.', error: 'Sync problem. Changes are kept on this device.' }[syncState];
+    $('#foot').textContent = t;
+  }
+  function renderAll() {
+    var m = model();
+    curModel = m;
+    renderHeader(m);
+    renderClock(m);
+    ['streakCard', 'formCard', 'chartCard', 'recordsCard', 'logCard'].forEach(function (id) { $('#' + id).hidden = !settings; });
+    if (m) { renderStreak(m); renderForm(m); renderRecords(m); renderLog(m); drawChart(); }
+    renderHome();
+    renderHabit('bible');
+    renderHabit('gym');
+    renderPlan();
+    renderData();
+    renderNotes();
+    renderNotesView();
+    renderBooks();
+    renderFoot();
+    habPop = null;
+    readPop = false;
+  }
+  function setTab(t) {
+    tab = t;
+    ['home', 'wake', 'bible', 'books', 'gym'].forEach(function (n) {
+      $('#tab-' + n).hidden = n !== t;
+      $('#tb-' + n).setAttribute('aria-selected', n === t ? 'true' : 'false');
+    });
+    try { localStorage.setItem(LS + '.tab', t); } catch (e) {}
+    renderHeader(curModel);
+    if (t === 'wake') drawChart();
+    try { window.scrollTo(0, 0); } catch (e) {}
+  }
+  function autoWake() {
+    if (tab !== 'wake' && settings && phase().p === 'live') setTab('wake');
+  }
+
+  /* ---------- habits: Bible and gym ---------- */
+  function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+  function monthLabel(mk) { return MON[parseInt(mk.slice(5), 10) - 1] + ' ' + mk.slice(0, 4); }
+  function atLabel(e) {
+    if (!e || !e.at || e.manual) return '';
+    var d = new Date(e.at);
+    return isNaN(d.getTime()) ? '' : clock12(d);
+  }
+  async function toggleHabit(kd, key) {
+    var today = dkey(new Date());
+    if (habits[kd][key]) {
+      delete habits[kd][key];
+      renderAll();
+      if (key !== today) toast('Removed ' + dateLabel(key));
+      await persist(function (d) { return d.doc(kd + '/' + key).delete(); });
+    } else {
+      var e = { date: key, at: new Date().toISOString(), manual: key !== today };
+      habits[kd][key] = e;
+      renderAll();
+      if (key !== today) toast('Logged ' + dateLabel(key));
+      await persist(function (d) { return d.doc(kd + '/' + key).set(e); });
+    }
+  }
+  async function setGoal(kd, n) {
+    goals[kd] = Math.min(7, Math.max(1, n));
+    renderAll();
+    await persist(function (d) { return d.doc('app/habits').set({ bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read }); });
+  }
+  function hModel(kd) {
+    var ent = habits[kd], target = goals[kd], now = new Date(), tk = dkey(now), curWk = dkey(weekStart(now));
+    var keys = Object.keys(ent).sort();
+    var start = keys.length && keys[0] < tk ? keys[0] : tk;
+    var days = [], byKey = {};
+    for (var d = fromKey(start); dkey(d) <= tk; d = addDays(d, 1)) {
+      var k = dkey(d), done = !!ent[k];
+      var st = done ? 'done' : (k < tk ? (kd === 'bible' ? 'miss' : 'none') : 'pending');
+      var o = { k: k, d: d, e: ent[k] || null, st: st };
+      days.push(o); byKey[k] = o;
+    }
+    var run = 0, best = 0, bestEnd = null;
+    if (kd === 'bible') {
+      days.forEach(function (x) {
+        if (x.st === 'done') { run++; if (run > best) { best = run; bestEnd = x.k; } }
+        else if (x.st === 'miss') run = 0;
+      });
+    }
+    var weeks = {};
+    for (var w = weekStart(fromKey(start)); dkey(w) <= curWk; w = addDays(w, 7)) weeks[dkey(w)] = 0;
+    keys.forEach(function (k) { var wk = dkey(weekStart(fromKey(k))); if (weeks[wk] !== undefined) weeks[wk]++; });
+    var wkKeys = Object.keys(weeks).sort(), wrun = 0, wbest = 0, wHit = 0, wMiss = 0, bestWeek = 0, bestWeekKey = null;
+    wkKeys.forEach(function (k) {
+      var c = weeks[k], hit = c >= target;
+      if (c > bestWeek) { bestWeek = c; bestWeekKey = k; }
+      if (k < curWk) { if (hit) { wrun++; wHit++; } else { wrun = 0; wMiss++; } }
+      else if (hit) { wrun++; wHit++; }
+      if (wrun > wbest) wbest = wrun;
+    });
+    var months = {};
+    keys.forEach(function (k) { var mk = k.slice(0, 7); months[mk] = (months[mk] || 0) + 1; });
+    var bestMonth = 0, bestMonthKey = null;
+    Object.keys(months).sort().forEach(function (k) { if (months[k] > bestMonth) { bestMonth = months[k]; bestMonthKey = k; } });
+    var todayDone = !!ent[tk];
+    var weekLeft = (6 - ((now.getDay() + 6) % 7)) + (todayDone ? 0 : 1);
+    var comp = wkKeys.filter(function (k) { return k < curWk; }).slice(-4);
+    var avg4 = comp.length ? comp.reduce(function (a, k) { return a + weeks[k]; }, 0) / comp.length : null;
+    var d30 = 0, n30 = 0;
+    days.slice(-30).forEach(function (x) { if (x.st === 'done') { d30++; n30++; } else if (x.st === 'miss') n30++; });
+    return {
+      kd: kd, tk: tk, target: target, days: days, byKey: byKey, total: keys.length, dayStreak: run, best: best, bestEnd: bestEnd,
+      weeks: weeks, weekCount: weeks[curWk] || 0, weekLeft: weekLeft, todayDone: todayDone, wrun: wrun, wbest: wbest, wHit: wHit, wMiss: wMiss,
+      bestWeek: bestWeek, bestWeekKey: bestWeekKey, monthCount: months[tk.slice(0, 7)] || 0, bestMonth: bestMonth, bestMonthKey: bestMonthKey,
+      avg4: avg4, rate30: n30 ? Math.round(100 * d30 / n30) : null, d30: d30, n30: n30
+    };
+  }
+  function chaseHTML(cur, best, unit, startTxt) {
+    var txt, pct;
+    if (best === 0) { txt = startTxt; pct = 0; }
+    else if (cur >= best) { txt = '<b>Record streak.</b> Keep it going.'; pct = 100; }
+    else { var n = best - cur; txt = '<b>' + n + '</b> more ' + unit + (n === 1 ? ' ties' : 's tie') + ' your record of ' + best + '.'; pct = 100 * cur / best; }
+    return '<div class="chase"><p>' + txt + '</p><div class="track"><i style="width:' + pct + '%"></i></div></div>';
+  }
+  function habitHero(kd, m) {
+    var now = new Date(), tk = m.tk, e = habits[kd][tk], pop = habPop === kd ? ' pop' : '';
+    var dl = DOW[now.getDay()] + ', ' + MON[now.getMonth()] + ' ' + now.getDate();
+    if (kd === 'bible') {
+      var top = '<div class="bar-top"><span>Bible today</span><span>' + dl + '</span></div><div class="pad center' + pop + '">';
+      if (e) {
+        var al = atLabel(e);
+        return top + '<div class="clock xs ok">READ</div><p class="lead" style="margin:0">' + (al ? 'Logged ' + al + '. ' : 'Logged. ') + 'Streak at <b>' + m.dayStreak + '</b>.</p>' +
+          '<button class="link" data-action="hab-toggle" data-kind="bible" data-key="' + tk + '">Undo</button></div>';
+      }
+      var line = m.dayStreak > 0 ? 'Your <b>' + m.dayStreak + '-day</b> streak is on the line today.' : (m.total === 0 ? 'Log your first day to start the season.' : 'Read today to start a new streak.');
+      return top + '<div class="clock xs idle">NOT YET</div><p class="lead" style="margin:0">' + line + '</p>' +
+        '<button class="cta" data-action="hab-toggle" data-kind="bible" data-key="' + tk + '">I READ TODAY</button></div>';
+    }
+    var need = Math.max(0, m.target - m.weekCount), st;
+    if (need === 0) st = 'Weekly goal hit. Anything more is bonus.';
+    else if (need > m.weekLeft) st = 'Out of reach this week. Next week starts clean.';
+    else st = '<b>' + plural(need, 'session', 'sessions') + '</b> to go, ' + plural(m.weekLeft, 'day', 'days') + ' left.';
+    var pips = '';
+    for (var i = 0; i < m.target; i++) pips += '<span class="pip' + (i < m.weekCount ? ' on' : '') + '"></span>';
+    var head = '<div class="bar-top"><span>Gym this week</span><span>Goal ' + m.target + '</span></div><div class="pad center' + pop + '">' +
+      '<div class="clock xs' + (need === 0 ? ' ok' : '') + '">' + m.weekCount + '<small>/' + m.target + '</small></div>' +
+      '<div class="pips" aria-hidden="true">' + pips + '</div><p class="lead" style="margin:0">' + st + '</p>';
+    if (e) {
+      var al2 = atLabel(e);
+      return head + '<div class="verdict win">TRAINED TODAY</div>' + (al2 ? '<p class="hint">Logged ' + al2 + '</p>' : '') +
+        '<button class="link" data-action="hab-toggle" data-kind="gym" data-key="' + tk + '">Undo</button></div>';
+    }
+    return head + '<button class="cta" data-action="hab-toggle" data-kind="gym" data-key="' + tk + '">I TRAINED</button></div>';
+  }
+  function habitStats(kd, m) {
+    var bible = kd === 'bible';
+    var cur = bible ? m.dayStreak : m.wrun, best = bible ? m.best : m.wbest;
+    var need = Math.max(0, m.target - m.weekCount), wsub;
+    if (need === 0) wsub = 'Weekly goal hit';
+    else if (need > m.weekLeft) wsub = 'Out of reach. Next week starts clean.';
+    else wsub = plural(need, bible ? 'more day' : 'more session', bible ? 'more days' : 'more sessions') + ' to hit the goal';
+    return '<div class="stat"><label>' + (bible ? 'Streak' : 'Week streak') + '</label><div class="num">' + cur + '</div><div class="sub">Best ' + best + (bible ? '' : (best === 1 ? ' week' : ' weeks')) + '</div></div>' +
+      '<div class="stat"><label>This week</label><div class="num">' + m.weekCount + '<span>/' + m.target + '</span></div><div class="sub">' + wsub + '</div></div>' +
+      chaseHTML(cur, best, bible ? 'day' : 'week', bible ? 'Read today to start a streak.' : 'Hit your weekly goal to start a streak.');
+  }
+  function habitForm(kd, m) {
+    var bible = kd === 'bible', t;
+    if (bible) t = [
+      ['30-day rate', m.rate30 === null ? '-' : m.rate30 + '%', m.n30 ? m.d30 + ' of ' + m.n30 + ' days' : 'No days yet'],
+      ['This month', String(m.monthCount), 'Days read in ' + MON[new Date().getMonth()]],
+      ['Total days', String(m.total), 'Since your first log'],
+      ['Weeks hit', String(m.wHit), m.wMiss + ' missed']
+    ]; else t = [
+      ['Avg per week', m.avg4 === null ? '-' : String(Math.round(m.avg4 * 10) / 10), 'Last 4 full weeks'],
+      ['This month', String(m.monthCount), 'Sessions in ' + MON[new Date().getMonth()]],
+      ['Total sessions', String(m.total), 'Since your first log'],
+      ['Weeks hit', String(m.wHit), m.wMiss + ' missed']
+    ];
+    return '<h2>FORM</h2><div class="tiles">' + t.map(function (x) { return '<div class="tile"><label>' + x[0] + '</label><div class="v">' + x[1] + '</div><div class="s">' + x[2] + '</div></div>'; }).join('') + '</div>';
+  }
+  function habitRecords(kd, m) {
+    var bible = kd === 'bible', unit = bible ? 'day' : 'session', units = bible ? 'days' : 'sessions', rows = [];
+    if (bible) rows.push(['Longest streak', m.best ? String(m.best) : '-', m.bestEnd ? 'Ended ' + dateLabel(m.bestEnd) : 'Not set yet']);
+    rows.push(['Longest week streak', m.wbest ? String(m.wbest) : '-', 'Weeks at ' + m.target + ' or more']);
+    rows.push(['Best week', m.bestWeek ? plural(m.bestWeek, unit, units) : '-', m.bestWeekKey ? 'Week of ' + dateLabel(m.bestWeekKey) : 'Not set yet']);
+    rows.push(['Best month', m.bestMonth ? plural(m.bestMonth, unit, units) : '-', m.bestMonthKey ? monthLabel(m.bestMonthKey) : 'Not set yet']);
+    rows.push([bible ? 'Total days' : 'Total sessions', String(m.total), 'Since your first log']);
+    if (!bible) rows.push(['Weeks hit', String(m.wHit), 'Goal is ' + m.target + ' a week']);
+    return '<h2>RECORDS</h2><dl class="rows">' + rows.map(function (r) { return '<div><dt>' + r[0] + '<small>' + r[2] + '</small></dt><dd>' + r[1] + '</dd></div>'; }).join('') + '</dl>';
+  }
+  function habitLog(kd, m) {
+    var now = new Date(), tk = m.tk, first = addDays(weekStart(now), -49), tgt = m.target, bible = kd === 'bible';
+    var h = '<h2>LOG<small>Tap a day to log or undo</small></h2><div class="cal head">' +
+      ORDER.map(function (n) { return '<span>' + DOW[n].charAt(0) + '</span>'; }).join('') + '<span>WK</span></div><div class="cal">';
+    for (var r = 0; r < 8; r++) {
+      var rowKey = dkey(addDays(first, r * 7)), cells = '';
+      for (var c = 0; c < 7; c++) {
+        var d = addDays(first, r * 7 + c), k = dkey(d), day = m.byKey[k], cls = 'c-pre', txt = '', desc = 'not logged';
+        var label = DOWL[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate();
+        if (k > tk) cls = 'c-future';
+        else if (day && day.st === 'done') { cls = 'c-ontime'; txt = '✓'; desc = 'done'; }
+        else if (day && day.st === 'miss') { cls = 'c-miss'; txt = '✕'; desc = 'missed'; }
+        else if (day && day.st === 'pending') { cls = 'c-pend'; txt = '•'; desc = 'today, not logged yet'; }
+        else if (day) { cls = 'c-rest'; desc = 'no session'; }
+        var inner = '<i>' + d.getDate() + '</i>' + txt, today = k === tk ? ' is-today' : '';
+        cells += k > tk
+          ? '<div class="cell ' + cls + '" aria-label="' + label + '">' + inner + '</div>'
+          : '<button class="cell ' + cls + today + '" data-action="hab-toggle" data-kind="' + kd + '" data-key="' + k + '" aria-label="' + label + ': ' + desc + '">' + inner + '</button>';
+      }
+      var cnt = m.weeks[rowKey];
+      h += cells + '<span class="wk' + (cnt !== undefined && cnt >= tgt ? ' hit' : '') + '">' + (cnt !== undefined ? cnt + '/' + tgt : '·') + '</span>';
+    }
+    h += '</div><div class="legend"><span><em class="bg-ontime"></em>' + (bible ? 'Read' : 'Trained') + '</span>' +
+      (bible ? '<span><em style="border-color:var(--lost)"></em>Missed</span>' : '<span><em style="border:1px dashed var(--dim)"></em>No session</span>') +
+      '<span><em style="border-color:var(--accent)"></em>Today</span></div>';
+    return h;
+  }
+  function goalHTML(kd, m) {
+    var bible = kd === 'bible';
+    return '<div class="stepper"><span class="lbl">WEEKLY GOAL</span>' +
+      '<button class="btn" data-action="goal" data-kind="' + kd + '" data-n="-1" aria-label="Lower the weekly goal">&minus;</button>' +
+      '<b>' + m.target + '<small>' + (bible ? 'days' : 'sessions') + '</small></b>' +
+      '<button class="btn" data-action="goal" data-kind="' + kd + '" data-n="1" aria-label="Raise the weekly goal">+</button></div>' +
+      '<p class="note">' + (bible ? 'Days of reading you need each week to hit the goal.' : 'Gym sessions you need each week to hit the goal.') + ' A week only counts as hit at ' + m.target + ' or more.</p>';
+  }
+  function renderHabit(kd) {
+    var m = hModel(kd);
+    $('#' + kd + '-hero').innerHTML = habitHero(kd, m);
+    $('#' + kd + '-streak').innerHTML = habitStats(kd, m);
+    $('#' + kd + '-form').innerHTML = habitForm(kd, m);
+    $('#' + kd + '-rec').innerHTML = habitRecords(kd, m);
+    $('#' + kd + '-log').innerHTML = habitLog(kd, m);
+    $('#' + kd + '-goal').innerHTML = goalHTML(kd, m);
+  }
+  /* ---------- reading plan ---------- */
+  function planDateOf(i) { return addDays(fromKey(PLAN_START), i); }
+  function planToday() { return Math.round((fromKey(dkey(new Date())) - fromKey(PLAN_START)) / 86400000); }
+  function planRef(i) { return PLAN[Math.floor(i / 7)][i % 7]; }
+  function planModel() {
+    var ti = planToday(), last = Math.min(ti, PLAN_N - 1), overdue = [], ahead = 0, done = 0, i;
+    for (i = 0; i < PLAN_N; i++) {
+      var d = planDone.charAt(i) === '1';
+      if (d) { done++; if (i > ti) ahead++; }
+      else if (i <= last) overdue.push(i);
+    }
+    var upcoming = [];
+    for (i = Math.max(0, ti + 1); i < PLAN_N && upcoming.length < 3; i++) upcoming.push(i);
+    var todayDone = ti >= 0 && ti < PLAN_N ? planDone.charAt(ti) === '1' : null;
+    var past = overdue.filter(function (x) { return x !== ti; });
+    return { ti: ti, done: done, overdue: overdue, past: past, ahead: ahead, upcoming: upcoming, todayDone: todayDone, behind: overdue.length };
+  }
+  function planChapters(i) {
+    var ref = planRef(i), m = ref.match(/^(\S+)\s+(\d+)(?:-(\d+))?$/);
+    if (!m) return [{ id: ref.replace(/\s+/g, '-'), label: ref }];
+    var out = [], lo = +m[2], hi = m[3] ? +m[3] : lo;
+    for (var c = lo; c <= hi; c++) out.push({ id: m[1] + '-' + c, label: m[1] + ' ' + c });
+    return out;
+  }
+  var CH_INDEX = {};
+  (function () { for (var i = 0; i < PLAN_N; i++) planChapters(i).forEach(function (c) { CH_INDEX[c.id] = i; }); })();
+  function hasNotes(i) { return planChapters(i).some(function (c) { return notes[c.id]; }); }
+  function modeStats() {
+    var all = { R: 0, B: 0, L: 0 }, recent = { R: 0, B: 0, L: 0 }, n = 0, cut = dkey(addDays(new Date(), -29));
+    Object.keys(planlog).forEach(function (k) {
+      var r = planlog[k]; all[r.mode]++; n++;
+      if (r.date >= cut) recent[r.mode]++;
+    });
+    return { all: all, recent: recent, n: n };
+  }
+  function planRow(i, ti, today) {
+    var on = planDone.charAt(i) === '1', dt = planDateOf(i), lg = planlog[i], right = '';
+    var diff = ti - i;
+    if (lg) right = '<span class="pm">' + MODES[lg.mode].label + '</span>';
+    else if (!on && diff > 0) right = '<span class="late">' + plural(diff, 'day', 'days') + ' late</span>';
+    else if (i > ti && !on) right = '<span class="late ok">' + (i - ti === 1 ? 'Tomorrow' : 'In ' + (i - ti) + ' days') + '</span>';
+    return '<button class="prow' + (on ? ' on' : '') + (today ? ' today' : '') + '" data-action="plan-open" data-i="' + i + '" aria-label="' + esc(planRef(i)) + ', ' + DOW[dt.getDay()] + ' ' + dateLabel(dkey(dt)) + (on ? ', done' : '') + '">' +
+      '<span class="box">' + (on ? '&#10003;' : '') + '</span>' +
+      '<span><div class="ref">' + esc(planRef(i)) + '</div><div class="meta">' + DOW[dt.getDay()] + ' ' + dateLabel(dkey(dt)) + ' &middot; ' + PLAN_COLS[i % 7] + (hasNotes(i) ? ' &middot; has notes' : '') + '</div></span>' +
+      '<span>' + right + '</span></button>';
+  }
+  function renderPlan() {
+    var p = planModel(), pct = Math.round(100 * p.done / PLAN_N), h, ms = modeStats();
+    if (p.ti < 0) {
+      $('#bible-plan').innerHTML = '<h2>READING PLAN</h2><p class="lead">Starts ' + DOWL[planDateOf(0).getDay()] + ', ' + dateLabel(PLAN_START) + '.</p>';
+      return;
+    }
+    var big, cls, what;
+    if (p.behind > 0) { big = p.behind; cls = 'bad'; what = 'BEHIND'; }
+    else if (p.ahead > 0) { big = p.ahead; cls = 'good'; what = 'AHEAD'; }
+    else { big = '0'; cls = 'good'; what = 'ON PACE'; }
+    var wk = Math.min(52, Math.floor(p.ti / 7) + 1);
+    h = '<h2>READING PLAN<small>Week ' + wk + ' of 52</small></h2>' +
+      '<div class="phead"><span class="big ' + cls + '">' + big + '</span><span class="what">' + what + '</span></div>' +
+      '<p class="lead" style="margin:0">' + (p.behind > 0 ? (p.behind === 1 ? '1 reading' : p.behind + ' readings') + ' due and not checked off.' : p.ahead > 0 ? 'Every reading due so far is done, plus ' + plural(p.ahead, 'extra', 'extras') + '.' : 'Every reading due so far is done.') + '</p>' +
+      '<div class="ptrack" role="progressbar" aria-valuemin="0" aria-valuemax="' + PLAN_N + '" aria-valuenow="' + p.done + '"><i style="width:' + pct + '%"></i></div>' +
+      '<p class="note" style="margin-top:0">' + p.done + ' of ' + PLAN_N + ' readings done &middot; ' + pct + '%</p>' +
+      '<div class="tiles3">' + ['R', 'B', 'L'].map(function (k) {
+        return '<div class="tile"><label>' + MODES[k].label + '</label><div class="v">' + ms.all[k] + '</div><div class="s">' + (ms.n ? Math.round(100 * ms.all[k] / ms.n) + '% of logged' : 'None logged') + '</div></div>';
+      }).join('') + '</div>' +
+      '<p class="note" style="margin:0 0 4px">' + (ms.n ? 'Last 30 days: ' + ms.recent.R + ' read, ' + ms.recent.B + ' read + listen, ' + ms.recent.L + ' listen.' : 'Log how you take in each reading to see the split here.') + '</p>' +
+      '<div class="plist">';
+    if (p.ti < PLAN_N) h += '<h3>Today</h3>' + planRow(p.ti, p.ti, true);
+    if (p.past.length) {
+      var cap = 12, show = p.past.slice(0, cap);
+      h += '<h3>Catch up<span style="text-transform:none;letter-spacing:0;font-weight:500"> &middot; oldest first</span></h3>' + show.map(function (i) { return planRow(i, p.ti, false); }).join('');
+      if (p.past.length > cap) h += '<p class="note">+ ' + (p.past.length - cap) + ' more behind these.</p>';
+      h += '<button class="link" data-action="plan-caught-up" style="margin-top:8px">I\'m caught up, mark everything due as done</button>';
+    }
+    if (p.upcoming.length) h += '<h3>Up next</h3>' + p.upcoming.map(function (i) { return planRow(i, p.ti, false); }).join('');
+    h += '</div><p class="note">Tap a reading to log how you took it in and to write your takeaways.</p>';
+    $('#bible-plan').innerHTML = h;
+  }
+  var BOOKS = [['Gen', 'Genesis'], ['Ex', 'Exodus'], ['Lev', 'Leviticus'], ['Num', 'Numbers'], ['Deut', 'Deuteronomy'], ['Josh', 'Joshua'], ['Judg', 'Judges'], ['Ruth', 'Ruth'],
+    ['1Sam', '1 Samuel'], ['2Sam', '2 Samuel'], ['1Ki', '1 Kings'], ['2Ki', '2 Kings'], ['1Chr', '1 Chronicles'], ['2Chr', '2 Chronicles'], ['Ezra', 'Ezra'], ['Neh', 'Nehemiah'], ['Esther', 'Esther'],
+    ['Job', 'Job'], ['Ps', 'Psalms'], ['Prov', 'Proverbs'], ['Eccl', 'Ecclesiastes'], ['Song', 'Song of Solomon'], ['Isa', 'Isaiah'], ['Jer', 'Jeremiah'], ['Lamentations', 'Lamentations'], ['Ezek', 'Ezekiel'],
+    ['Dan', 'Daniel'], ['Hosea', 'Hosea'], ['Joel', 'Joel'], ['Amos', 'Amos'], ['Obadiah', 'Obadiah'], ['Jonah', 'Jonah'], ['Micah', 'Micah'], ['Nahum', 'Nahum'], ['Habakkuk', 'Habakkuk'],
+    ['Zephaniah', 'Zephaniah'], ['Haggai', 'Haggai'], ['Zechariah', 'Zechariah'], ['Malachi', 'Malachi'], ['Matt', 'Matthew'], ['Mark', 'Mark'], ['Luke', 'Luke'], ['John', 'John'], ['Acts', 'Acts'],
+    ['Rom', 'Romans'], ['1Cor', '1 Corinthians'], ['2Cor', '2 Corinthians'], ['Gal', 'Galatians'], ['Eph', 'Ephesians'], ['Phil', 'Philippians'], ['Col', 'Colossians'], ['1Thes', '1 Thessalonians'],
+    ['2Thes', '2 Thessalonians'], ['1Tim', '1 Timothy'], ['2Tim', '2 Timothy'], ['Titus', 'Titus'], ['Philemon', 'Philemon'], ['Heb', 'Hebrews'], ['James', 'James'], ['1Pet', '1 Peter'], ['2Pet', '2 Peter'],
+    ['1John', '1 John'], ['2John', '2 John'], ['3John', '3 John'], ['Jude', 'Jude'], ['Rev', 'Revelation']];
+  var BK_IDX = {}, BK_NAME = {};
+  BOOKS.forEach(function (b, i) { BK_IDX[b[0]] = i; BK_NAME[b[0]] = b[1]; });
+  function noteParts(n) {
+    var m = n.id.match(/^(.+?)-(\d+)$/);
+    return m ? { book: m[1], ch: +m[2] } : { book: n.id, ch: 0 };
+  }
+  function dayFull(iso) {
+    var d = iso ? new Date(iso) : null;
+    return d && !isNaN(d.getTime()) ? MON[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() : '';
+  }
+  function applyBibleView() {
+    ['hero', 'plan', 'notes', 'streak', 'form', 'rec', 'log', 'goal'].forEach(function (k) { $('#bible-' + k).hidden = nv; });
+    $('#bible-notesview').hidden = !nv;
+  }
+  function nvList() {
+    var q = nvQuery.trim().toLowerCase();
+    var all = Object.keys(notes).map(function (k) { return notes[k]; }).filter(function (n) { return CH_INDEX[n.id] !== undefined; });
+    var list = all.filter(function (n) {
+      if (!q) return true;
+      var p = noteParts(n);
+      return n.text.toLowerCase().indexOf(q) >= 0 || n.ref.toLowerCase().indexOf(q) >= 0 || (BK_NAME[p.book] || '').toLowerCase().indexOf(q) >= 0;
+    });
+    if (!all.length) return '<p class="lead" style="margin:12px 0 0">No notes yet. Open a reading and write what stood out.</p>';
+    if (!list.length) return '<p class="lead" style="margin:12px 0 0">No notes match that search.</p>';
+    function card(n, showBook) {
+      var w = dayFull(n.born || n.at), e = dayFull(n.at);
+      return '<button class="ncard" data-action="plan-open" data-i="' + CH_INDEX[n.id] + '"><div class="nh"><b>' + esc(n.ref) + '</b><span>Written ' + w + '</span></div>' +
+        '<div class="nt">' + esc(n.text) + '</div>' + (e && e !== w ? '<div class="ne">Edited ' + e + '</div>' : '') + '</button>';
+    }
+    if (nvSort === 'date') {
+      return list.slice().sort(function (a, b) { var x = a.born || a.at, y = b.born || b.at; return x < y ? 1 : x > y ? -1 : 0; }).map(card).join('');
+    }
+    var groups = {};
+    list.forEach(function (n) { var p = noteParts(n); (groups[p.book] = groups[p.book] || []).push(n); });
+    return Object.keys(groups).sort(function (a, b) { return BK_IDX[a] - BK_IDX[b]; }).map(function (b) {
+      var arr = groups[b].sort(function (x, y) { return noteParts(x).ch - noteParts(y).ch; });
+      return '<div class="nvh"><span>' + esc(BK_NAME[b] || b) + '</span><small>' + plural(arr.length, 'note', 'notes') + '</small></div>' + arr.map(card).join('');
+    }).join('');
+  }
+  function renderNotesView() {
+    applyBibleView();
+    if (!nv) return;
+    var el = $('#bible-notesview'), search = $('#n-search');
+    var count = Object.keys(notes).filter(function (k) { return CH_INDEX[k] !== undefined; }).length;
+    if (search && document.activeElement === search && $('#nv-list')) { $('#nv-list').innerHTML = nvList(); return; }
+    el.innerHTML = '<h2>NOTES<small>' + plural(count, 'note', 'notes') + '</small></h2>' +
+      '<button class="btn" data-action="nv-close">Back to Bible</button>' +
+      '<div class="nvtools"><input type="text" id="n-search" placeholder="Search your notes" autocomplete="off" value="' + esc(nvQuery) + '">' +
+      '<div class="chips"><button type="button" class="chip" data-action="nv-sort" data-s="bible" aria-pressed="' + (nvSort === 'bible') + '">Bible order</button>' +
+      '<button type="button" class="chip" data-action="nv-sort" data-s="date" aria-pressed="' + (nvSort === 'date') + '">Newest first</button></div></div>' +
+      '<div id="nv-list">' + nvList() + '</div>';
+  }
+  function renderNotes() {
+    var list = Object.keys(notes).map(function (k) { return notes[k]; }).filter(function (n) { return CH_INDEX[n.id] !== undefined; })
+      .sort(function (a, b) { return a.at < b.at ? 1 : a.at > b.at ? -1 : 0; });
+    var h = '<h2>TAKEAWAYS<small>' + plural(list.length, 'note', 'notes') + '</small></h2>';
+    if (list.length) h += '<button class="btn primary" data-action="nv-open" style="width:100%;margin-bottom:10px">View all notes by book</button>';
+    if (!list.length) h += '<p class="lead" style="margin:0">Open any reading above to write what stood out, chapter by chapter.</p>';
+    else {
+      h += '<div class="plist">' + list.slice(0, 6).map(function (n) {
+        var d = n.at ? new Date(n.at) : null;
+        return '<button class="prow nrow" data-action="plan-open" data-i="' + CH_INDEX[n.id] + '"><span><div class="ref">' + esc(n.ref) + '</div><div class="meta nx">' + esc(n.text) + '</div></span>' +
+          '<span class="late ok">' + (d && !isNaN(d.getTime()) ? dateLabel(dkey(d)) : '') + '</span></button>';
+      }).join('') + '</div>';
+      if (list.length > 6) h += '<p class="note">+ ' + (list.length - 6) + ' older. Open the reading to find them.</p>';
+    }
+    $('#bible-notes').innerHTML = h;
+  }
+  function planSheetHTML(i) {
+    var dt = planDateOf(i), on = planDone.charAt(i) === '1', lg = planlog[i], tk = dkey(new Date());
+    var h = '<h3>' + esc(planRef(i)) + '</h3><p class="note" style="margin:-6px 0 0">' + DOWL[dt.getDay()] + ', ' + dateLabel(dkey(dt)) + ' &middot; ' + PLAN_COLS[i % 7] + '</p>';
+    h += '<div class="fld"><span>' + (lg ? 'HOW YOU TOOK IT IN' : 'HOW DID YOU TAKE IT IN?') + '</span><div class="modes">' +
+      ['R', 'B', 'L'].map(function (k) {
+        return '<button class="modebtn' + (lg && lg.mode === k ? ' sel' : '') + '" data-action="plan-mode" data-i="' + i + '" data-mode="' + k + '"><b>' + MODES[k].label + '</b></button>';
+      }).join('') + '</div></div>';
+    if (lg) h += '<p class="note" style="margin:0">Logged ' + dateLabel(lg.date) + (lg.late ? ' (read late)' : '') + '. Tap another mode to change it.</p>';
+    else if (on) h += '<p class="note" style="margin:0">Already checked off. Pick a mode to add it to your stats.</p>';
+    h += '<div class="fld"><span>TAKEAWAYS</span>' + planChapters(i).map(function (c) {
+      return '<label class="nlab" for="n-' + c.id + '">' + esc(c.label) + '</label><textarea id="n-' + c.id + '" data-note="' + c.id + '" data-ref="' + esc(c.label) + '" rows="3" placeholder="What stood out?">' + esc(notes[c.id] ? notes[c.id].text : '') + '</textarea>';
+    }).join('') + '</div>';
+    h += '<div class="row"><button class="btn primary" data-action="close-modal">Save and close</button>' + (on ? '<button class="btn danger" data-action="plan-clear" data-i="' + i + '">Mark not done</button>' : '') + '</div>';
+    return h;
+  }
+  function planOpen(i) { planSheet = i; openModal(planSheetHTML(i)); }
+  function collectNotes() {
+    var out = [];
+    if (planSheet === null) return out;
+    Array.prototype.forEach.call($('#sheet').querySelectorAll('textarea[data-note]'), function (t) {
+      var id = t.dataset.note, txt = t.value.trim().slice(0, 4000), old = notes[id] ? notes[id].text : '';
+      if (txt === old) return;
+      if (!txt) { delete notes[id]; out.push({ id: id, del: true }); }
+      else { var nowIso = new Date().toISOString(); notes[id] = { id: id, ref: t.dataset.ref || id, text: txt, at: nowIso, born: notes[id] ? (notes[id].born || notes[id].at || nowIso) : nowIso }; out.push({ id: id, rec: notes[id] }); }
+    });
+    return out;
+  }
+  async function saveNotes() {
+    var ch = collectNotes();
+    if (!ch.length) return;
+    renderAll();
+    await persist(async function (d) {
+      for (var k = 0; k < ch.length; k++) {
+        if (ch[k].del) await d.doc('notes/' + ch[k].id).delete();
+        else await d.doc('notes/' + ch[k].id).set(ch[k].rec);
+      }
+    });
+  }
+  function refreshSheet(i) { if (planSheet === i) $('#sheet').innerHTML = planSheetHTML(i); }
+  async function setPlanMode(i, mode) {
+    saveNotes();
+    var tk = dkey(new Date()), old = planlog[i], wasDone = planDone.charAt(i) === '1';
+    var due = dkey(planDateOf(i));
+    var rec = old ? { i: i, mode: mode, date: old.date, late: old.late, at: old.at }
+      : wasDone ? { i: i, mode: mode, date: due, late: false, at: new Date().toISOString() }
+      : { i: i, mode: mode, date: tk, late: tk > due, at: new Date().toISOString() };
+    planlog[i] = rec;
+    var a = planDone.split(''); a[i] = '1'; planDone = a.join('');
+    var logged = false;
+    if (!wasDone && !habits.bible[tk]) {
+      habits.bible[tk] = { date: tk, at: new Date().toISOString(), manual: false };
+      logged = true; habPop = 'bible';
+    }
+    renderAll();
+    refreshSheet(i);
+    toast('Logged: ' + MODES[mode].label);
+    var pd = planDone, he = habits.bible[tk];
+    await persist(async function (d) {
+      await d.doc('planlog/r' + i).set(rec);
+      if (!wasDone) await d.doc('app/plan').set({ done: pd });
+      if (logged) await d.doc('bible/' + tk).set(he);
+    });
+  }
+  async function clearPlan(i) {
+    saveNotes();
+    var had = !!planlog[i];
+    delete planlog[i];
+    var a = planDone.split(''); a[i] = '0'; planDone = a.join('');
+    renderAll();
+    refreshSheet(i);
+    var pd = planDone;
+    await persist(async function (d) {
+      await d.doc('app/plan').set({ done: pd });
+      if (had) await d.doc('planlog/r' + i).delete();
+    });
+  }
+  async function planCaughtUp() {
+    var p = planModel(), a = planDone.split('');
+    p.overdue.forEach(function (i) { a[i] = '1'; });
+    planDone = a.join('');
+    closeModal();
+    renderAll();
+    var pd = planDone;
+    await persist(function (d) { return d.doc('app/plan').set({ done: pd }); });
+  }
+  function todayTally() {
+    var ph = phase(), tk = dkey(new Date()), n = 0;
+    if (ph.p === 'done' && ph.e.win) n++;
+    if (habits.bible[tk]) n++;
+    if (habits.gym[tk]) n++;
+    if (readModel().todays.length) n++;
+    return n;
+  }
+  /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
+  function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
+  async function fbConnect() {
+    var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
+    try {
+      var m = await Promise.all([import(base + 'firebase-app.js'), import(base + 'firebase-auth.js'), import(base + 'firebase-firestore.js')]);
+      var fapp = m[0].initializeApp(window.DD_FIREBASE), A = m[1], F = m[2], store;
+      try { store = F.initializeFirestore(fapp, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) }); }
+      catch (e) { store = F.getFirestore(fapp); }
+      fb = { A: A, F: F, auth: A.getAuth(fapp), store: store };
+    } catch (e) { toast('Could not load sync. Using this phone only for now.'); return null; }
+    var user = await new Promise(function (res) {
+      var off = fb.A.onAuthStateChanged(fb.auth, function (u) { off(); res(u); });
+    });
+    if (!user) {
+      fbPromptSignIn();
+      user = await new Promise(function (res) { fbResolve = res; });
+    }
+    return fbAdapter(user.uid);
+  }
+  function fbAdapter(uid) {
+    var F = fb.F, st = fb.store;
+    function bad() { setSync('error'); }
+    function P(p) { return 'users/' + uid + '/' + p; }
+    function snapDoc(s) { return { id: s.id, exists: s.exists(), data: function () { return s.data(); } }; }
+    return {
+      doc: function (p) {
+        var ref = F.doc(st, P(p));
+        return {
+          get: async function () { return snapDoc(await F.getDoc(ref)); },
+          set: function (o) { F.setDoc(ref, o).catch(bad); return Promise.resolve(); },
+          delete: function () { F.deleteDoc(ref).catch(bad); return Promise.resolve(); },
+          onSnapshot: function (cb, err) {
+            return F.onSnapshot(ref, function (s) {
+              if (s.metadata.fromCache && !s.exists()) return;
+              cb(snapDoc(s));
+            }, err);
+          }
+        };
+      },
+      collection: function (c) {
+        var ref = F.collection(st, P(c));
+        function snapCol(q) { return { docs: q.docs.map(snapDoc) }; }
+        return {
+          get: async function () { return snapCol(await F.getDocs(ref)); },
+          onSnapshot: function (cb, err) {
+            return F.onSnapshot(ref, function (q) {
+              if (q.metadata.fromCache && q.empty) return;
+              cb(snapCol(q));
+            }, err);
+          }
+        };
+      }
+    };
+  }
+  function fbSignInHTML() {
+    return '<h3>SIGN IN</h3><p>Sign in to sync your data. Use the email and password you made for your Daily Discipline account.</p>' +
+      '<label class="fld"><span>EMAIL</span><input type="email" id="fb-email" autocomplete="username" autocapitalize="none" inputmode="email"></label>' +
+      '<label class="fld"><span>PASSWORD</span><input type="password" id="fb-pass" autocomplete="current-password"></label>' +
+      '<div class="row"><button class="btn primary" data-action="fb-signin">Sign in</button><button class="btn" data-action="fb-create">Create account</button></div>' +
+      '<p class="note" id="fb-msg" style="margin:0">First time? Tap Create account.</p>';
+  }
+  function fbPromptSignIn() { if (fb) openModal(fbSignInHTML(), '#fb-email'); }
+  function fbErr(e) {
+    var c = e && e.code || '';
+    if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-email') return 'Wrong email or password.';
+    if (c === 'auth/email-already-in-use') return 'That email already has an account. Tap Sign in.';
+    if (c === 'auth/weak-password') return 'Use at least 6 characters.';
+    if (c === 'auth/network-request-failed') return 'No connection. Try again online.';
+    if (c === 'auth/operation-not-allowed') return 'Account creation is turned off in Firebase.';
+    if (c === 'auth/too-many-requests') return 'Too many tries. Wait a minute and try again.';
+    return 'Could not sign in (' + (c || 'unknown') + ').';
+  }
+  async function fbAuth(create) {
+    var email = ($('#fb-email').value || '').trim(), pass = $('#fb-pass').value || '', msg = $('#fb-msg');
+    if (!email || !pass) { msg.textContent = 'Enter your email and password.'; return; }
+    if (create && pass.length < 6) { msg.textContent = 'Use at least 6 characters.'; return; }
+    msg.textContent = 'Working...';
+    try {
+      var cred = create ? await fb.A.createUserWithEmailAndPassword(fb.auth, email, pass) : await fb.A.signInWithEmailAndPassword(fb.auth, email, pass);
+      closeModal();
+      if (fbResolve) { var r = fbResolve; fbResolve = null; r(cred.user); }
+    } catch (e) { msg.textContent = fbErr(e); }
+  }
+  async function pushAll(replace) {
+    var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, planlog: {} };
+    Object.keys(planlog).forEach(function (k) { sets.planlog['r' + k] = planlog[k]; });
+    if (settings) {
+      var out = { alarms: {}, weeklyTarget: settings.weeklyTarget, startDate: settings.startDate, walk: settings.walk || 0 };
+      Object.keys(settings.alarms).forEach(function (k) { out.alarms[k] = settings.alarms[k]; });
+      w.push(db.doc('app/settings').set(out));
+    } else if (replace) w.push(db.doc('app/settings').delete());
+    w.push(db.doc('app/habits').set({ bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read }));
+    w.push(db.doc('app/plan').set({ done: planDone }));
+    var names = Object.keys(sets);
+    for (var i = 0; i < names.length; i++) {
+      var c = names[i];
+      Object.keys(sets[c]).forEach(function (k) { w.push(db.doc(c + '/' + k).set(sets[c][k])); });
+      if (replace) {
+        var q = await db.collection(c).get();
+        q.docs.forEach(function (d) { if (!sets[c][d.id]) w.push(db.doc(c + '/' + d.id).delete()); });
+      }
+    }
+    await Promise.all(w);
+  }
+  async function fbFirstRun() {
+    try {
+      var meta = await db.doc('app/meta').get();
+      if (!meta.exists) {
+        await pushAll(false);
+        await db.doc('app/meta').set({ at: new Date().toISOString() });
+      }
+    } catch (e) {}
+  }
+
+  /* ---------- backup (standalone app only) ---------- */
+  function backupObj() {
+    return { app: 'dailydiscipline', v: 1, exportedAt: new Date().toISOString(), settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym,
+      goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads };
+  }
+  function markBackup() { try { localStorage.setItem(LS + '.backup', new Date().toISOString()); } catch (e) {} renderAll(); }
+  async function exportBackup() {
+    var json = JSON.stringify(backupObj(), null, 1), name = 'daily-discipline-backup-' + dkey(new Date()) + '.json';
+    try {
+      var f = new File([json], name, { type: 'application/json' });
+      if (navigator.canShare && navigator.canShare({ files: [f] })) {
+        await navigator.share({ files: [f], title: 'Daily Discipline backup' });
+        markBackup();
+        return;
+      }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 4000);
+    markBackup();
+  }
+  function importChosen(text) {
+    var o;
+    try { o = JSON.parse(text); } catch (e) { toast('That file is not a Daily Discipline backup.'); return; }
+    if (!o || typeof o !== 'object' || o.app !== 'dailydiscipline') { toast('That file is not a Daily Discipline backup.'); return; }
+    pendingImport = o;
+    var nb = Object.keys(o.books || {}).length, nr = Object.keys(o.reads || {}).length, nn = Object.keys(o.notes || {}).length;
+    openModal('<h3>REPLACE EVERYTHING?</h3><p>This backup has ' + plural(nb, 'book', 'books') + ', ' + plural(nr, 'reading session', 'reading sessions') + ' and ' + plural(nn, 'note', 'notes') +
+      '. Restoring replaces all the data on this phone with it.</p><div class="row"><button class="btn primary" data-action="import-yes">Restore</button><button class="btn" data-action="close-modal">Cancel</button></div>');
+  }
+  function importApply() {
+    if (!pendingImport) return;
+    applyState(pendingImport);
+    pendingImport = null;
+    writeLocal();
+    closeModal();
+    renderAll();
+    toast('Backup restored.');
+    if (db && fbOn()) pushAll(true);
+  }
+  function renderData() {
+    var el = $('#home-data');
+    if (window.claude) { el.hidden = true; return; }
+    el.hidden = false;
+    var cfg = !!window.DD_FIREBASE, last = '';
+    try { last = localStorage.getItem(LS + '.backup') || ''; } catch (e) {}
+    var d = last ? new Date(last) : null, ok = d && !isNaN(d.getTime());
+    var age = ok ? Math.floor((Date.now() - d.getTime()) / 86400000) : null;
+    var bk = ok ? 'Last backup file: <b>' + dateLabel(dkey(d)) + '</b>' + (age > 30 ? ' (' + age + ' days ago).' : '.') : 'No backup file yet.';
+    var h;
+    if (cfg && !db) {
+      h = '<h2>SYNC</h2><p class="lead" style="margin:0 0 10px"><b>Not signed in.</b> Changes are saved on this phone only until you sign in.</p>' +
+        '<div class="row"><button class="btn primary" data-action="fb-open">Sign in</button></div>';
+    } else if (cfg) {
+      h = '<h2>SYNC</h2><p class="lead" style="margin:0 0 10px">Your data syncs to your account. ' + bk + '</p>' +
+        '<div class="row"><button class="btn primary" data-action="export">Export backup</button><button class="btn" data-action="import">Restore from backup</button><button class="btn" data-action="fb-signout">Sign out</button></div>' +
+        '<p class="note">A backup file is an extra safety copy. Restoring replaces everything in your account with the file.</p>';
+    } else {
+      h = '<h2>BACKUP</h2><p class="lead" style="margin:0 0 10px">Your data lives only on this phone. ' + (ok ? bk : '<b>No backup yet.</b> Make one now.') + '</p>' +
+        '<div class="row"><button class="btn primary" data-action="export">Export backup</button><button class="btn" data-action="import">Restore from backup</button></div>' +
+        '<p class="note">Export opens the share sheet. Save the file to Files or send it to yourself.</p>';
+    }
+    el.innerHTML = h;
+  }
+  function renderHome() {
+    var tk = dkey(new Date()), ph = phase(), mb = hModel('bible'), mg = hModel('gym'), m = curModel;
+    var wMain, wSub = '', wAct = '';
+    if (ph.p === 'done') {
+      var t = tierOf(ph.e.seconds);
+      wMain = fmt(ph.e.seconds) + ' &middot; ' + t.label; wSub = (ph.e.win ? 'Win' : 'Loss') + ', +' + ph.e.points + ' pts';
+      wAct = '<span class="pill bg-' + t.fill + '">' + (ph.e.win ? 'Win' : 'Loss') + '</span>';
+    } else if (ph.p === 'setup') {
+      wMain = 'Not set up'; wSub = 'Add your alarm times'; wAct = '<button class="btn primary" data-action="tab" data-tab="wake">Set up</button>';
+    } else if (ph.p === 'wait') {
+      wMain = 'Alarm ' + clock12(ph.aT); wSub = 'Under 0:30 is elite'; wAct = '<button class="btn" data-action="tab" data-tab="wake">Open</button>';
+    } else if (ph.p === 'live') {
+      wMain = 'Clock running'; wSub = 'Tap I\'m Up at your phone'; wAct = '<button class="btn primary" data-action="tab" data-tab="wake">Open</button>';
+    } else if (ph.p === 'missed') {
+      wMain = 'Missed'; wSub = 'No check-in after the alarm'; wAct = '<button class="btn" data-action="tab" data-tab="wake">Open</button>';
+    } else { wMain = 'Rest day'; wSub = 'Next: ' + nextLabel(); }
+    var be = habits.bible[tk], bMain, bSub, bAct;
+    if (be) { bMain = 'Read'; bSub = 'Streak ' + mb.dayStreak + (atLabel(be) ? ' &middot; ' + atLabel(be) : ''); bAct = '<span class="pill bg-ontime">Done</span>'; }
+    else { bMain = 'Not yet'; bSub = mb.dayStreak ? mb.dayStreak + '-day streak on the line' : 'Start a streak today'; bAct = '<button class="btn primary" data-action="hab-toggle" data-kind="bible" data-key="' + tk + '">Mark read</button>'; }
+    var pm = planModel();
+    if (pm.ti >= 0) bSub += ' &middot; ' + (pm.behind > 0 ? pm.behind + ' behind on plan' : pm.ahead > 0 ? pm.ahead + ' ahead on plan' : 'plan on pace');
+    var ge = habits.gym[tk], gMain, gSub, gAct;
+    if (ge) { gMain = 'Trained'; gSub = mg.weekCount + '/' + mg.target + ' this week' + (atLabel(ge) ? ' &middot; ' + atLabel(ge) : ''); gAct = '<span class="pill bg-ontime">Done</span>'; }
+    else { gMain = 'Not logged'; gSub = mg.weekCount + '/' + mg.target + ' this week'; gAct = '<button class="btn primary" data-action="hab-toggle" data-kind="gym" data-key="' + tk + '">Log gym</button>'; }
+    var mr = readModel(), kMain, kSub, kAct;
+    if (mr.todays.length) {
+      var tm = 0; mr.todays.forEach(function (r) { tm += r.minutes; });
+      kMain = 'Read ' + tm + ' min'; kSub = 'Streak ' + mr.cur + ' &middot; ' + nfmt(mr.weekPts) + ' pts this week'; kAct = '<span class="pill bg-ontime">Done</span>';
+    } else {
+      kMain = 'Not yet'; kSub = mr.cur ? mr.cur + '-day streak on the line' : 'Start a streak today'; kAct = '<button class="btn primary" data-action="read-log">Log</button>';
+    }
+    function row(l, main, sub, act) {
+      return '<div class="trow"><span class="lbl">' + l + '</span><div class="main">' + main + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div><div>' + act + '</div></div>';
+    }
+    $('#home-today').innerHTML = '<h2>TODAY<small>' + todayTally() + ' of 4 done</small></h2><div class="rows2">' +
+      row('WAKE', wMain, wSub, wAct) + row('BIBLE', bMain, bSub, bAct) + row('GYM', gMain, gSub, gAct) + row('BOOKS', kMain, kSub, kAct) + '</div>';
+    function card(tabName, label, num, sub) {
+      return '<button class="tabstat" data-action="tab" data-tab="' + tabName + '"><label>' + label + '</label><div class="num">' + num + '</div><div class="sub">' + sub + '</div></button>';
+    }
+    $('#home-score').innerHTML =
+      card('wake', 'Wake streak', m ? m.streak : 0, 'Best ' + (m ? m.best : 0)) +
+      card('bible', 'Bible streak', mb.dayStreak, 'Best ' + mb.best) +
+      card('books', 'Reading streak', mr.cur, 'Best ' + mr.best) +
+      card('gym', 'Gym weeks', mg.wrun, 'Best ' + mg.wbest);
+    var triple = 0, dbl = 0;
+    if (m) m.days.forEach(function (x) {
+      if (x.st === 'win' && habits.bible[x.k]) { dbl++; if (habits.gym[x.k]) triple++; }
+    });
+    $('#home-combo').innerHTML = '<h2>COMBOS</h2><div class="tiles">' +
+      '<div class="tile"><label>Triple days</label><div class="v">' + triple + '</div><div class="s">Wake win, Bible and gym, same day</div></div>' +
+      '<div class="tile"><label>Double days</label><div class="v">' + dbl + '</div><div class="s">Wake win and Bible, same day</div></div></div>';
+  }
+  function nfmt(n) { return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+
+  /* ---------- books ---------- */
+  function newId(p) { return p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+  function streakMult(run) { return 1 + Math.min(0.5, 0.05 * (run - 1)); }
+  function multTxt(m) { return 'x' + (Math.round(m * 100) / 100); }
+  function cleanBook(id, o) {
+    if (!/^[A-Za-z0-9_-]{1,40}$/.test(id) || !o || typeof o !== 'object') return null;
+    var title = typeof o.title === 'string' ? o.title.trim().slice(0, 120) : '', pages = parseInt(o.pages, 10);
+    if (!title || !(pages >= 1 && pages <= 5000)) return null;
+    var done = !!o.done, prior = done && !!o.prior, dd = typeof o.doneDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(o.doneDate) ? o.doneDate : '';
+    if (done && !dd && !prior) dd = dkey(new Date());
+    if (prior) dd = '';
+    return { id: id, title: title, author: typeof o.author === 'string' ? o.author.trim().slice(0, 80) : '', pages: pages, base: Math.min(pages, Math.max(0, parseInt(o.base, 10) || 0)), done: done, prior: prior, queued: !!o.queued && !done, doneDate: done ? dd : '', added: typeof o.added === 'string' ? o.added : '' };
+  }
+  function cleanRead(id, o) {
+    if (!/^[A-Za-z0-9_-]{1,40}$/.test(id) || !o || typeof o !== 'object') return null;
+    var min = parseInt(o.minutes, 10), pg = parseInt(o.pages, 10);
+    if (!(min >= 1 && min <= 720) || !(pg >= 0 && pg <= 2000) || typeof o.date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(o.date)) return null;
+    return {
+      id: id, bookId: typeof o.bookId === 'string' ? o.bookId.slice(0, 40) : '', title: typeof o.title === 'string' ? o.title.slice(0, 120) : '',
+      date: o.date, minutes: min, pages: pg, fmt: FMT[o.fmt] ? o.fmt : 'P', lucky: o.lucky === 2 || o.lucky === 1.5 ? o.lucky : 1,
+      at: typeof o.at === 'string' ? o.at : ''
+    };
+  }
+  function sessPages(id) {
+    var n = 0;
+    Object.keys(reads).forEach(function (k) { if (reads[k].bookId === id) n += reads[k].pages; });
+    return n;
+  }
+  function bookPages(id) { return (books[id] ? books[id].base || 0 : 0) + sessPages(id); }
+  function readModel() {
+    var now = new Date(), tk = dkey(now), yest = dkey(addDays(now, -1)), curWk = dkey(weekStart(now));
+    var list = Object.keys(reads).map(function (k) { return reads[k]; }).sort(function (a, b) {
+      return a.date < b.date ? -1 : a.date > b.date ? 1 : (a.at < b.at ? -1 : a.at > b.at ? 1 : 0);
+    });
+    var dates = {};
+    list.forEach(function (r) { dates[r.date] = true; });
+    var runAt = {}, run = 0, prev = null, best = 0, bestEnd = null;
+    Object.keys(dates).sort().forEach(function (d) {
+      run = prev && dkey(addDays(fromKey(prev), 1)) === d ? run + 1 : 1;
+      runAt[d] = run; prev = d;
+      if (run > best) { best = run; bestEnd = d; }
+    });
+    var ptsOf = {}, seen = {}, firstOf = {}, total = 0, wPts = {}, wMin = {};
+    var fmtMin = { P: 0, E: 0, A: 0 }, fmtN = { P: 0, E: 0, A: 0 }, totMin = 0, totPg = 0, longest = 0, lucky = 0;
+    list.forEach(function (r) {
+      var first = !seen[r.date]; seen[r.date] = true; firstOf[r.id] = first;
+      var p = Math.round((r.minutes + r.pages) * streakMult(runAt[r.date]) * r.lucky) + (first ? SHOWUP : 0);
+      ptsOf[r.id] = p; total += p;
+      var w = dkey(weekStart(fromKey(r.date)));
+      wPts[w] = (wPts[w] || 0) + p; wMin[w] = (wMin[w] || 0) + r.minutes;
+      fmtMin[r.fmt] += r.minutes; fmtN[r.fmt]++; totMin += r.minutes; totPg += r.pages;
+      if (r.minutes > longest) longest = r.minutes;
+      if (r.lucky > 1) lucky++;
+    });
+    var finished = 0, finYear = 0;
+    Object.keys(books).forEach(function (k) {
+      var b = books[k];
+      if (!b.done) return;
+      finished++;
+      if (b.prior) return;
+      total += FINISH;
+      var w = dkey(weekStart(fromKey(b.doneDate)));
+      wPts[w] = (wPts[w] || 0) + FINISH;
+      if (b.doneDate.slice(0, 4) === tk.slice(0, 4)) finYear++;
+    });
+    var cur = dates[tk] ? runAt[tk] : (dates[yest] ? runAt[yest] : 0);
+    var nextRun = dates[tk] ? runAt[tk] : (dates[yest] ? runAt[yest] + 1 : 1);
+    var bestWMin = 0, bestWPts = 0;
+    Object.keys(wMin).forEach(function (w) { if (wMin[w] > bestWMin) bestWMin = wMin[w]; });
+    Object.keys(wPts).forEach(function (w) { if (wPts[w] > bestWPts) bestWPts = wPts[w]; });
+    var ri = 0;
+    RANKS.forEach(function (r, i) { if (total >= r[0]) ri = i; });
+    return {
+      tk: tk, list: list, dates: dates, runAt: runAt, ptsOf: ptsOf, firstOf: firstOf, total: total, cur: cur, nextRun: nextRun, best: best, bestEnd: bestEnd,
+      weekMin: wMin[curWk] || 0, weekPts: wPts[curWk] || 0, bestWMin: bestWMin, bestWPts: bestWPts, fmtMin: fmtMin, fmtN: fmtN,
+      totMin: totMin, totPg: totPg, longest: longest, lucky: lucky, finished: finished, finYear: finYear, rank: ri,
+      todays: list.filter(function (r) { return r.date === tk; })
+    };
+  }
+  function bookRowsSorted(kind) {
+    var last = {};
+    Object.keys(reads).forEach(function (k) { var r = reads[k]; if (r.bookId && (!last[r.bookId] || r.date > last[r.bookId])) last[r.bookId] = r.date; });
+    return Object.keys(books).map(function (k) { return books[k]; }).filter(function (b) { return (b.done ? 'done' : b.queued ? 'queued' : 'reading') === kind; }).sort(function (a, b) {
+      var done = kind === 'done';
+      if (kind === 'queued') return a.title < b.title ? -1 : a.title > b.title ? 1 : 0;
+      if (done) return a.doneDate < b.doneDate ? 1 : a.doneDate > b.doneDate ? -1 : 0;
+      var la = last[a.id] || '', lb = last[b.id] || '';
+      return la < lb ? 1 : la > lb ? -1 : (a.added < b.added ? 1 : -1);
+    });
+  }
+
+  function readHero(m) {
+    var dl = DOW[new Date().getDay()] + ', ' + MON[new Date().getMonth()] + ' ' + new Date().getDate(), pop = readPop ? ' pop' : '';
+    var top = '<div class="bar-top"><span>Reading today</span><span>' + dl + '</span></div><div class="pad center' + pop + '">';
+    if (m.todays.length) {
+      var mins = 0, pgs = 0, pts = 0;
+      m.todays.forEach(function (r) { mins += r.minutes; pgs += r.pages; pts += m.ptsOf[r.id]; });
+      return top + '<div class="clock xs ok">READ</div><p class="lead" style="margin:0"><b>' + mins + '</b> min, <b>' + pgs + '</b> pages, <b>+' + pts + '</b> pts. Streak at <b>' + m.cur + '</b> (' + multTxt(streakMult(m.cur)) + ' points).</p>' +
+        '<button class="btn" data-action="read-log">Log another session</button></div>';
+    }
+    var line = m.cur > 0
+      ? 'Your <b>' + m.cur + '-day</b> streak is on the line. Read today for <b>' + multTxt(streakMult(m.nextRun)) + '</b> points, plus ' + SHOWUP + ' for the first read of the day.'
+      : 'Any reading starts a streak. The first read of each day pays a ' + SHOWUP + ' point bonus.';
+    if (!Object.keys(books).length && !m.list.length) {
+      return top + '<div class="clock xs idle">NOT YET</div><p class="lead" style="margin:0">Add the book you are reading, then log your first session.</p>' +
+        '<button class="cta" data-action="book-add">ADD A BOOK</button></div>';
+    }
+    return top + '<div class="clock xs idle">NOT YET</div><p class="lead" style="margin:0">' + line + '</p>' +
+      '<button class="cta" data-action="read-log">LOG READING</button></div>';
+  }
+  function readRank(m) {
+    var cur = RANKS[m.rank], nxt = RANKS[m.rank + 1], pct = nxt ? Math.round(100 * (m.total - cur[0]) / (nxt[0] - cur[0])) : 100;
+    var goal = goals.read, wp = Math.min(100, Math.round(100 * m.weekMin / goal));
+    return '<h2>RANK</h2><div class="phead"><span class="big">' + nfmt(m.total) + '</span><span class="what">PTS</span></div>' +
+      '<p class="lead" style="margin:0"><b>' + esc(cur[1]) + '</b>' + (nxt ? '. ' + nfmt(nxt[0] - m.total) + ' to ' + esc(nxt[1]) + '.' : '. Top rank reached.') + '</p>' +
+      '<div class="ptrack" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + pct + '"><i style="width:' + pct + '%"></i></div>' +
+      '<h2 style="margin-top:18px">THIS WEEK<small>' + nfmt(m.weekPts) + ' pts</small></h2>' +
+      '<p class="lead" style="margin:0"><b>' + m.weekMin + '</b> of ' + goal + ' minutes' + (m.weekMin >= goal ? '. Goal hit.' : '. ' + (goal - m.weekMin) + ' to go.') + '</p>' +
+      '<div class="ptrack"><i style="width:' + wp + '%"></i></div>';
+  }
+  function bookRow(b) {
+    var pg = bookPages(b.id), pct = Math.min(100, Math.round(100 * pg / b.pages));
+    return '<div class="brow"><button class="open" data-action="book-open" data-id="' + b.id + '"><div class="t">' + esc(b.title) + '</div>' +
+      (b.author ? '<div class="a">' + esc(b.author) + '</div>' : '') +
+      '<div class="bar"><i style="width:' + pct + '%"></i></div><div class="a">' + pg + ' of ' + b.pages + ' pages &middot; ' + pct + '%</div></button>' +
+      '<button class="btn" data-action="read-log" data-book="' + b.id + '">Log</button></div>';
+  }
+  function bookRowLite(b) {
+    return '<div class="brow"><button class="open" data-action="book-open" data-id="' + b.id + '"><div class="t">' + esc(b.title) + '</div><div class="a">' + (b.author ? esc(b.author) + ' &middot; ' : '') + b.pages + ' pages</div></button>' +
+      '<button class="btn" data-action="book-prior" data-id="' + b.id + '" aria-label="Already read ' + esc(b.title) + '">Read</button>' +
+      '<button class="btn" data-action="read-log" data-book="' + b.id + '">Start</button></div>';
+  }
+  function readShelf() {
+    var cur = bookRowsSorted('reading'), que = bookRowsSorted('queued'), fin = bookRowsSorted('done');
+    var h = '<h2>SHELF<small>' + cur.length + ' reading &middot; ' + que.length + ' up next &middot; ' + fin.length + ' finished</small></h2>';
+    if (!cur.length) h += '<p class="lead" style="margin:0 0 10px">' + (que.length ? 'Nothing in progress. Start one from your library below.' : 'Nothing on the shelf yet.') + '</p>';
+    else h += '<div class="blist">' + cur.map(bookRow).join('') + '</div>';
+    h += '<button class="btn primary" data-action="book-add" style="width:100%;margin-top:10px">Add a book</button>';
+    if (que.length) {
+      h += '<div class="plist"><h3>Library, not started</h3>' +
+        '<button class="link" data-action="lib-toggle" style="margin:0 0 4px">' + (libOpen ? 'Hide' : 'Show all ' + que.length) + '</button>' +
+        (libOpen ? '<div class="blist">' + que.map(bookRowLite).join('') + '</div>' : '') + '</div>';
+    }
+    if (fin.length) {
+      h += '<div class="plist"><h3>Finished</h3>' + (finOpen ? fin : fin.slice(0, 8)).map(function (b) {
+        return '<button class="prow srow" data-action="book-open" data-id="' + b.id + '"><span><div class="ref">' + esc(b.title) + '</div><div class="meta">' + (b.author ? esc(b.author) + ' &middot; ' : '') + b.pages + ' pages</div></span><span class="late ok">' + (b.prior ? 'Before tracking' : dateLabel(b.doneDate)) + '</span></button>';
+      }).join('') + (fin.length > 8 ? '<button class="link" data-action="fin-toggle" style="margin-top:6px">' + (finOpen ? 'Show fewer' : 'Show all ' + fin.length + ' finished') + '</button>' : '') + '</div>';
+    }
+    return h;
+  }
+  function readStats(m) {
+    var t = [
+      ['Streak', m.cur, 'Best ' + m.best + (m.best === 1 ? ' day' : ' days')],
+      ['Books done', m.finYear, m.finished + ' all time'],
+      ['Hours read', (Math.round(m.totMin / 6) / 10), m.totMin + ' minutes'],
+      ['Pages', nfmt(m.totPg), 'Longest session ' + m.longest + ' min']
+    ];
+    var h = '<h2>STATS</h2><div class="tiles">' + t.map(function (x) { return '<div class="tile"><label>' + x[0] + '</label><div class="v">' + x[1] + '</div><div class="s">' + x[2] + '</div></div>'; }).join('') + '</div>';
+    var n = m.list.length;
+    h += '<h2 style="margin-top:18px">HOW YOU READ</h2><dl class="rows">' + ['P', 'E', 'A'].map(function (k) {
+      return '<div><dt>' + FMT[k] + '<small>' + m.fmtN[k] + (m.fmtN[k] === 1 ? ' session' : ' sessions') + ' &middot; ' + m.fmtMin[k] + ' min</small></dt><dd>' + (n ? Math.round(100 * m.fmtN[k] / n) + '%' : '0%') + '</dd></div>';
+    }).join('') + '</dl>';
+    h += '<h2 style="margin-top:18px">RECORDS</h2><dl class="rows">' +
+      '<div><dt>Best week, minutes<small>Mon to Sun</small></dt><dd>' + m.bestWMin + '</dd></div>' +
+      '<div><dt>Best week, points</dt><dd>' + nfmt(m.bestWPts) + '</dd></div>' +
+      '<div><dt>Lucky reads<small>Bonus rolls that paid</small></dt><dd>' + m.lucky + '</dd></div></dl>';
+    return h;
+  }
+  function readLog(m) {
+    var h = '<h2>RECENT SESSIONS</h2>';
+    if (!m.list.length) return h + '<p class="lead" style="margin:0">Nothing logged yet.</p>';
+    return h + '<div class="plist">' + m.list.slice().reverse().slice(0, 12).map(function (r) {
+      var tag = (r.lucky > 1 ? (r.lucky === 2 ? ' &middot; jackpot x2' : ' &middot; lucky +50%') : '');
+      return '<button class="prow srow" data-action="read-edit" data-id="' + r.id + '"><span><div class="ref">' + (r.title ? esc(r.title) : 'Other reading') + '</div><div class="meta">' + dateLabel(r.date) + ' &middot; ' + r.minutes + ' min, ' + r.pages + ' pp &middot; ' + FMT[r.fmt] + tag + '</div></span><span class="pm">+' + m.ptsOf[r.id] + '</span></button>';
+    }).join('') + '</div>';
+  }
+  function readGoalHTML() {
+    return '<div class="stepper"><span class="lbl">WEEKLY GOAL</span>' +
+      '<button class="btn" data-action="read-goal" data-n="-30" aria-label="Lower the weekly goal">&minus;</button>' +
+      '<b>' + goals.read + '<small>min</small></b>' +
+      '<button class="btn" data-action="read-goal" data-n="30" aria-label="Raise the weekly goal">+</button></div>' +
+      '<p class="note">Minutes of reading you want each week. It fills the bar in Rank. Points: 1 per minute and 1 per page, times a streak bonus that grows 5% a day up to 50%, plus ' + SHOWUP + ' for the first read each day and ' + FINISH + ' for finishing a book. About one read in four pays a lucky bonus.</p>';
+  }
+  function renderBooks() {
+    var m = readModel();
+    $('#books-hero').innerHTML = readHero(m);
+    $('#books-rank').innerHTML = readRank(m);
+    $('#books-shelf').innerHTML = readShelf();
+    $('#books-stats').innerHTML = readStats(m);
+    $('#books-log').innerHTML = readLog(m);
+    $('#books-goal').innerHTML = readGoalHTML();
+  }
+  async function setReadGoal(n) {
+    goals.read = Math.min(1200, Math.max(30, n));
+    renderAll();
+    await persist(function (d) { return d.doc('app/habits').set({ bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read }); });
+  }
+
+  /* sheets */
+  function bookSheetHTML(id) {
+    var b = id ? books[id] : null;
+    return '<h3>' + (b ? 'EDIT BOOK' : 'ADD A BOOK') + '</h3>' +
+      '<label class="fld"><span>TITLE</span><input type="text" id="b-title" maxlength="120" autocomplete="off" value="' + (b ? esc(b.title) : '') + '"></label>' +
+      '<label class="fld"><span>AUTHOR (OPTIONAL)</span><input type="text" id="b-author" maxlength="80" autocomplete="off" value="' + (b ? esc(b.author) : '') + '"></label>' +
+      '<label class="fld"><span>TOTAL PAGES</span><input type="number" id="b-pages" inputmode="numeric" min="1" max="5000" value="' + (b ? b.pages : '') + '"></label>' +
+      (b && b.done ? '' : '<label class="fld"><span>CURRENT PAGE</span><input type="number" id="b-cur" inputmode="numeric" min="0" max="5000" value="' + (b ? bookPages(b.id) : 0) + '"></label>' +
+        '<p class="note" style="margin:-6px 0 0">Where you are now. Setting this does not count as reading today and earns no points.</p>' +
+        '<label class="fld"><span>STATUS</span><select id="b-status"><option value="reading"' + (!b || !b.queued ? ' selected' : '') + '>Reading now</option><option value="queued"' + (b && b.queued ? ' selected' : '') + '>Up next, not started</option></select></label>') +
+      '<div class="row"><button class="btn primary" data-action="book-save"' + (b ? ' data-id="' + b.id + '"' : '') + '>Save</button><button class="btn" data-action="close-modal">Cancel</button></div>';
+  }
+  async function saveBook(id) {
+    var title = $('#b-title').value.trim(), author = $('#b-author').value.trim(), pages = parseInt($('#b-pages').value, 10);
+    if (!title) { toast('Add a title.'); return; }
+    if (!(pages >= 1 && pages <= 5000)) { toast('Enter the total pages, 1 to 5000.'); return; }
+    var old = id ? books[id] : null, curEl = $('#b-cur'), cur = curEl ? parseInt(curEl.value, 10) : null, base = old ? (old.base || 0) : 0;
+    if (curEl) {
+      if (isNaN(cur)) cur = 0;
+      if (cur < 0 || cur > pages) { toast('Current page must be between 0 and ' + pages + '.'); return; }
+      base = Math.max(0, cur - (old ? sessPages(old.id) : 0));
+    }
+    var b = { id: old ? old.id : newId('b'), base: Math.min(pages, base), title: title.slice(0, 120), author: author.slice(0, 80), pages: pages, done: old ? old.done : false, prior: old ? !!old.prior : false, queued: old && old.done ? false : ($('#b-status') ? $('#b-status').value === 'queued' && !(cur > 0) : false), doneDate: old ? old.doneDate : '', added: old ? old.added : new Date().toISOString() };
+    books[b.id] = b;
+    closeModal();
+    renderAll();
+    toast(old ? 'Saved.' : 'Added to your shelf.');
+    await persist(function (d) { return d.doc('books/' + b.id).set(b); });
+  }
+  function bookDetailHTML(id) {
+    var b = books[id];
+    if (!b) return '';
+    var pg = bookPages(id), pct = Math.min(100, Math.round(100 * pg / b.pages)), n = 0, mins = 0;
+    Object.keys(reads).forEach(function (k) { if (reads[k].bookId === id) { n++; mins += reads[k].minutes; } });
+    return '<h3>' + esc(b.title) + '</h3>' + (b.author ? '<p class="note" style="margin:-6px 0 0">' + esc(b.author) + '</p>' : '') +
+      '<div><div class="bar"><i style="width:' + pct + '%"></i></div><p class="note" style="margin:4px 0 0">' + pg + ' of ' + b.pages + ' pages &middot; ' + plural(n, 'session', 'sessions') + ', ' + mins + ' min' + (b.done ? (b.prior ? ' &middot; read before tracking' : ' &middot; finished ' + dateLabel(b.doneDate)) : b.queued ? ' &middot; not started' : '') + '</p></div>' +
+      '<div class="row"><button class="btn primary" data-action="read-log" data-book="' + id + '">Log reading</button>' +
+      '<button class="btn" data-action="' + (b.done ? 'book-reopen' : 'book-finish') + '" data-id="' + id + '">' + (b.done ? 'Back on the shelf' : 'Mark finished') + '</button>' +
+      (b.done ? '' : '<button class="btn" data-action="book-prior" data-id="' + id + '">Already read</button>') + '</div>' +
+      '<div class="row"><button class="btn" data-action="book-edit" data-id="' + id + '">Edit</button><button class="btn danger" data-action="book-remove" data-id="' + id + '">Remove</button><button class="btn" data-action="close-modal">Close</button></div>';
+  }
+  async function setBookDone(id, done, prior) {
+    var b = books[id];
+    if (!b) return;
+    var wasPrior = !!b.prior;
+    b.done = done; b.prior = done && !!prior; b.doneDate = done && !prior ? dkey(new Date()) : '';
+    if (!done && wasPrior) b.queued = true;
+    if (done) b.queued = false;
+    closeModal();
+    readPop = done && !prior;
+    renderAll();
+    toast(done ? (prior ? 'Marked as read. No points, since it was before tracking.' : 'Finished! +' + FINISH + ' pts') : 'Back on the shelf.');
+    await persist(function (d) { return d.doc('books/' + id).set(b); });
+  }
+  async function removeBook(id) {
+    delete books[id];
+    closeModal();
+    renderAll();
+    toast('Removed. Your logged sessions stay in your stats.');
+    await persist(function (d) { return d.doc('books/' + id).delete(); });
+  }
+  function logSheetHTML(editId, bookId) {
+    var r = editId ? reads[editId] : null, tk = dkey(new Date()), bid = r ? r.bookId : (bookId || lastBook || '');
+    sheetFmt = r ? r.fmt : fmtSel;
+    var opts = bookRowsSorted('reading').concat(bookRowsSorted('queued'), bid && books[bid] && books[bid].done ? [books[bid]] : []);
+    var sel = bid && books[bid] ? bid : '';
+    var h = '<h3>' + (r ? 'EDIT SESSION' : 'LOG READING') + '</h3>' +
+      '<label class="fld"><span>BOOK</span><select id="r-book">' + opts.map(function (b) { return '<option value="' + b.id + '"' + (b.id === sel ? ' selected' : '') + '>' + esc(b.title) + '</option>'; }).join('') +
+      '<option value=""' + (sel === '' ? ' selected' : '') + '>Something else</option></select></label>' +
+      '<div class="two"><label class="fld"><span>MINUTES</span><input type="number" id="r-min" inputmode="numeric" min="1" max="720" value="' + (r ? r.minutes : '') + '"></label>' +
+      '<label class="fld"><span>PAGES</span><input type="number" id="r-pg" inputmode="numeric" min="1" max="2000" value="' + (r ? r.pages : '') + '"></label></div>' +
+      '<p class="note" style="margin:-4px 0 0">For an audiobook, estimate the pages you covered.</p>' +
+      '<div class="fld"><span>HOW</span><div class="chips">' + ['P', 'E', 'A'].map(function (k) {
+        return '<button type="button" class="chip" data-action="r-fmt" data-f="' + k + '" aria-pressed="' + (k === sheetFmt) + '">' + FMT[k] + '</button>';
+      }).join('') + '</div></div>' +
+      '<label class="fld"><span>DATE</span><input type="date" id="r-date" max="' + tk + '" value="' + (r ? r.date : tk) + '"></label>' +
+      '<div class="prev" id="r-prev"></div>' +
+      '<div class="row"><button class="btn primary" data-action="read-save">Save</button>' + (r ? '<button class="btn danger" data-action="read-delete" data-id="' + r.id + '">Delete</button>' : '') + '<button class="btn" data-action="close-modal">Cancel</button></div>';
+    return h;
+  }
+  function openLog(editId, bookId) {
+    readEdit = editId || null;
+    openModal(logSheetHTML(editId, bookId), editId ? null : '#r-min');
+    updateReadPrev();
+  }
+  function updateReadPrev() {
+    var el = $('#r-prev');
+    if (!el || !$('#r-min')) return;
+    var min = parseInt($('#r-min').value, 10), pg = parseInt($('#r-pg').value, 10), date = $('#r-date').value;
+    if (!(min > 0 && pg > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) { el.textContent = ''; return; }
+    var m = readModel(), old = readEdit ? reads[readEdit] : null;
+    var run = m.dates[date] ? m.runAt[date] : (m.dates[dkey(addDays(fromKey(date), -1))] ? m.runAt[dkey(addDays(fromKey(date), -1))] + 1 : 1);
+    var others = m.list.filter(function (r) { return r.date === date && (!old || r.id !== old.id); }).length;
+    var mult = streakMult(run), pts = Math.round((min + pg) * mult * (old ? old.lucky : 1)) + (others === 0 ? SHOWUP : 0);
+    el.textContent = 'About +' + pts + ' pts (' + multTxt(mult) + ' streak' + (others === 0 ? ', +' + SHOWUP + ' first read' : '') + ')';
+  }
+  async function saveRead() {
+    var min = parseInt($('#r-min').value, 10), pg = parseInt($('#r-pg').value, 10), date = $('#r-date').value, bid = $('#r-book').value, tk = dkey(new Date());
+    if (!(min >= 1 && min <= 720)) { toast('Enter minutes, 1 to 720.'); return; }
+    if (!(pg >= 1 && pg <= 2000)) { toast('Enter pages, 1 to 2000.'); return; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > tk) { toast('Pick today or an earlier date.'); return; }
+    var old = readEdit ? reads[readEdit] : null, roll = 1;
+    if (!old && date === tk) { var x = Math.random(); roll = x < 0.08 ? 2 : x < 0.3 ? 1.5 : 1; }
+    var rec = {
+      id: old ? old.id : newId('s'), bookId: bid, title: bid && books[bid] ? books[bid].title : (old && old.bookId === bid ? old.title : ''),
+      date: date, minutes: min, pages: pg, fmt: sheetFmt, lucky: old ? old.lucky : roll, at: old ? old.at : new Date().toISOString()
+    };
+    reads[rec.id] = rec;
+    fmtSel = sheetFmt; lastBook = bid;
+    try { localStorage.setItem(LS + '.fmt', fmtSel); localStorage.setItem(LS + '.book', lastBook); } catch (e) {}
+    var fin = null, b = bid ? books[bid] : null, started = null;
+    if (b && b.queued) { b.queued = false; started = b; }
+    if (b && !b.done && bookPages(bid) >= b.pages) { b.done = true; b.doneDate = date; fin = b; }
+    closeModal();
+    readPop = !old && date === tk;
+    renderAll();
+    var pts = readModel().ptsOf[rec.id];
+    toast(fin ? 'Finished ' + fin.title + '! +' + (pts + FINISH) + ' pts' : '+' + pts + ' pts' + (rec.lucky === 2 ? ' (jackpot, double!)' : rec.lucky > 1 ? ' (lucky +50%)' : ''));
+    await persist(async function (d) {
+      await d.doc('reads/' + rec.id).set(rec);
+      if (fin) await d.doc('books/' + fin.id).set(fin);
+      else if (started) await d.doc('books/' + started.id).set(started);
+    });
+  }
+  async function deleteRead(id) {
+    delete reads[id];
+    closeModal();
+    renderAll();
+    toast('Session deleted.');
+    await persist(function (d) { return d.doc('reads/' + id).delete(); });
+  }
+
+  /* ---------- live ticking ---------- */
+  function tick() {
+    if (!settings && sig === '') { renderAll(); return; }
+    var ph = phase();
+    var s = ph.p + '|' + dkey(new Date());
+    if (s !== sig) { renderAll(); if (ph.p === 'live') autoWake(); return; }
+    if (ph.p === 'live') {
+      var sc = scored(ph.diff), str = fmt(sc), clk = $('#clk');
+      if (clk && str !== lastClk) {
+        lastClk = str;
+        clk.innerHTML = digits(str);
+        clk.className = clkClass(str);
+        $('#drain').style.width = drainW(sc) + '%';
+        $('#onLine').innerHTML = lineText(sc);
+        $('#liveBox').setAttribute('data-zone', zoneOf(sc));
+      }
+    } else if (ph.p === 'wait') {
+      var cd = $('#cd');
+      if (cd) cd.textContent = cdText(ph.diff);
+    }
+  }
+
+  /* ---------- modal ---------- */
+  function openModal(html, focusSel) {
+    $('#sheet').innerHTML = html;
+    $('#modal').hidden = false;
+    var f = focusSel && $(focusSel);
+    if (f) f.focus();
+  }
+  function closeModal() {
+    if (planSheet !== null) { saveNotes(); planSheet = null; }
+    readEdit = null;
+    $('#modal').hidden = true; $('#sheet').innerHTML = '';
+  }
+  function editHTML(k) {
+    var e = checkins[k], d = fromKey(k), title = DOW[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate();
+    var mm = e ? Math.floor(e.seconds / 60) : '', ss = e ? e.seconds % 60 : '';
+    return '<h3>' + title + '</h3><p class="dim">' + (e ? 'Edit this morning.' : 'Log this morning.') + ' Enter how long after your alarm your feet hit the floor.</p>' +
+      '<div class="two"><label class="fld"><span>MINUTES</span><input id="e-min" type="number" inputmode="numeric" min="0" max="180" value="' + mm + '"></label>' +
+      '<label class="fld"><span>SECONDS</span><input id="e-sec" type="number" inputmode="numeric" min="0" max="59" value="' + ss + '"></label></div>' +
+      '<div class="prev" id="e-prev"></div>' +
+      '<div class="row"><button class="btn primary" data-action="save-entry" data-key="' + k + '">Save</button>' +
+      (e ? '<button class="btn danger" data-action="clear-entry" data-key="' + k + '">Clear</button>' : '') +
+      '<button class="btn" data-action="close-modal">Cancel</button></div>';
+  }
+  function entrySeconds() {
+    var mi = $('#e-min').value, se = $('#e-sec').value;
+    if (mi === '' && se === '') return null;
+    var t = (parseInt(mi || '0', 10) || 0) * 60 + (parseInt(se || '0', 10) || 0);
+    return t >= 0 && t <= END ? t : null;
+  }
+  function updatePrev() {
+    var p = $('#e-prev');
+    if (!p) return;
+    var t = entrySeconds();
+    if (t === null) { p.textContent = 'Enter a time between 0:00 and 3:00:00.'; return; }
+    var ti = tierOf(t);
+    p.textContent = fmt(t) + '  ·  ' + ti.label + '  ·  ' + pts(t) + ' pts  ·  ' + (t <= WIN ? 'Win' : 'Loss');
+  }
+
+  document.addEventListener('click', function (ev) {
+    if (ev.target.id === 'modal') { closeModal(); return; }
+    var b = ev.target.closest('[data-action]');
+    if (!b) return;
+    var a = b.dataset.action;
+    if (a === 'wake-up') {
+      if (writing) return;
+      var ph = phase();
+      if (ph.p !== 'live') return;
+      writing = true;
+      var secs = Math.max(1, Math.round(scored((new Date() - ph.aT) / 1000)));
+      justSaved = true;
+      saveEntry(ph.k, secs, false).finally(function () { writing = false; });
+    } else if (a === 'toggle-day') {
+      var n = parseInt(b.dataset.d, 10);
+      if (formDays.has(n)) formDays.delete(n); else formDays.add(n);
+      b.setAttribute('aria-pressed', formDays.has(n));
+      $('#f-t-' + n).disabled = !formDays.has(n);
+    } else if (a === 'tab') {
+      setTab(b.dataset.tab);
+    } else if (a === 'hab-toggle') {
+      var hk = b.dataset.kind, hkey = b.dataset.key;
+      if (!habits[hk][hkey] && hkey === dkey(new Date())) habPop = hk;
+      toggleHabit(hk, hkey);
+    } else if (a === 'fb-open') {
+      fbPromptSignIn();
+    } else if (a === 'fb-signin') {
+      fbAuth(false);
+    } else if (a === 'fb-create') {
+      fbAuth(true);
+    } else if (a === 'fb-signout') {
+      if (fb) fb.A.signOut(fb.auth).then(function () { try { localStorage.removeItem(LS); } catch (e) {} location.reload(); });
+    } else if (a === 'export') {
+      exportBackup();
+    } else if (a === 'import') {
+      $('#imp-file').click();
+    } else if (a === 'import-yes') {
+      importApply();
+    } else if (a === 'nv-open') {
+      nv = true; renderAll(); try { window.scrollTo(0, 0); } catch (e) {}
+    } else if (a === 'nv-close') {
+      nv = false; nvQuery = ''; renderAll(); try { window.scrollTo(0, 0); } catch (e) {}
+    } else if (a === 'nv-sort') {
+      nvSort = b.dataset.s; renderAll();
+    } else if (a === 'book-add') {
+      openModal(bookSheetHTML(null), '#b-title');
+    } else if (a === 'book-edit') {
+      openModal(bookSheetHTML(b.dataset.id), '#b-title');
+    } else if (a === 'book-save') {
+      saveBook(b.dataset.id || null);
+    } else if (a === 'book-open') {
+      if (books[b.dataset.id]) openModal(bookDetailHTML(b.dataset.id));
+    } else if (a === 'book-finish') {
+      setBookDone(b.dataset.id, true);
+    } else if (a === 'book-prior') {
+      setBookDone(b.dataset.id, true, true);
+    } else if (a === 'book-reopen') {
+      setBookDone(b.dataset.id, false);
+    } else if (a === 'book-remove') {
+      var rb = books[b.dataset.id];
+      if (rb) openModal('<h3>REMOVE BOOK?</h3><p>' + esc(rb.title) + ' comes off your shelf. Sessions you logged for it stay in your stats.</p><div class="row"><button class="btn danger" data-action="book-remove-yes" data-id="' + rb.id + '">Remove</button><button class="btn" data-action="close-modal">Cancel</button></div>');
+    } else if (a === 'book-remove-yes') {
+      removeBook(b.dataset.id);
+    } else if (a === 'fin-toggle') {
+      finOpen = !finOpen; renderAll();
+    } else if (a === 'lib-toggle') {
+      libOpen = !libOpen; renderAll();
+    } else if (a === 'read-log') {
+      openLog(null, b.dataset.book || '');
+    } else if (a === 'read-edit') {
+      if (reads[b.dataset.id]) openLog(b.dataset.id, '');
+    } else if (a === 'read-save') {
+      saveRead();
+    } else if (a === 'read-delete') {
+      deleteRead(b.dataset.id);
+    } else if (a === 'r-fmt') {
+      sheetFmt = b.dataset.f;
+      Array.prototype.forEach.call(b.parentNode.querySelectorAll('.chip'), function (c) { c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); });
+    } else if (a === 'read-goal') {
+      setReadGoal(goals.read + parseInt(b.dataset.n, 10));
+    } else if (a === 'plan-open') {
+      planOpen(parseInt(b.dataset.i, 10));
+    } else if (a === 'plan-mode') {
+      setPlanMode(parseInt(b.dataset.i, 10), b.dataset.mode);
+    } else if (a === 'plan-clear') {
+      clearPlan(parseInt(b.dataset.i, 10));
+    } else if (a === 'plan-caught-up') {
+      var pc = planModel().overdue.length;
+      openModal('<h3>CAUGHT UP?</h3><p>This checks off all ' + pc + ' readings due through today. Only do this if you really have read them.</p>' +
+        '<div class="row"><button class="btn primary" data-action="plan-caught-up-yes">Mark ' + pc + ' done</button><button class="btn" data-action="close-modal">Cancel</button></div>');
+    } else if (a === 'plan-caught-up-yes') {
+      planCaughtUp();
+    } else if (a === 'goal') {
+      var gk = b.dataset.kind;
+      setGoal(gk, goals[gk] + parseInt(b.dataset.n, 10));
+    } else if (a === 'keep-awake') {
+      keepAwake(false);
+    } else if (a === 'copy-time') {
+      var src = ORDER.filter(function (x) { return formDays.has(x); })[0];
+      if (src === undefined) { toast('Turn on at least one day first.'); return; }
+      var tv = $('#f-t-' + src).value;
+      ORDER.forEach(function (x) { $('#f-t-' + x).value = tv; });
+    } else if (a === 'save-settings') {
+      if (!formDays.size) { toast('Pick at least one game day.'); return; }
+      var alarms = {}, bad = false;
+      formDays.forEach(function (x) {
+        var v = $('#f-t-' + x).value;
+        if (!/^\d{2}:\d{2}$/.test(v)) bad = true; else alarms[x] = v;
+      });
+      if (bad) { toast('Set an alarm time for every active day.'); return; }
+      var s = { alarms: alarms, days: Object.keys(alarms).map(Number), weeklyTarget: parseInt($('#f-target').value, 10) || 5, walk: parseInt($('#f-walk').value, 10) || 0, startDate: settings ? settings.startDate : dkey(new Date()) };
+      closeModal();
+      saveSettings(s);
+    } else if (a === 'open-settings') {
+      if (!settings) return;
+      openModal('<h3>BOARD SETTINGS</h3>' + formHTML(settings) +
+        '<div class="row"><button class="btn primary" data-action="save-settings">Save</button><button class="btn" data-action="close-modal">Cancel</button></div>', '#f-t-1');
+    } else if (a === 'edit') {
+      openModal(editHTML(b.dataset.key), '#e-min');
+      updatePrev();
+    } else if (a === 'save-entry') {
+      var t = entrySeconds();
+      if (t === null) { toast('Enter a time between 0:00 and 3:00:00.'); return; }
+      closeModal();
+      saveEntry(b.dataset.key, t, true);
+    } else if (a === 'clear-entry') {
+      closeModal();
+      removeEntry(b.dataset.key);
+    } else if (a === 'close-modal') {
+      closeModal();
+    }
+  });
+  document.addEventListener('input', function (ev) {
+    if (ev.target.id === 'e-min' || ev.target.id === 'e-sec') updatePrev();
+    if (ev.target.id === 'n-search') { nvQuery = ev.target.value; renderNotesView(); }
+    if (ev.target.id === 'r-min' || ev.target.id === 'r-pg' || ev.target.id === 'r-date') updateReadPrev();
+  });
+  document.addEventListener('change', function (ev) {
+    if (ev.target.id !== 'imp-file') return;
+    var f = ev.target.files && ev.target.files[0];
+    if (!f) return;
+    f.text().then(importChosen, function () { toast('Could not read that file.'); });
+    ev.target.value = '';
+  });
+  document.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Escape' && !$('#modal').hidden) closeModal();
+  });
+  var wl = null, wantAwake = false, awake = false;
+  async function keepAwake(silent) {
+    wantAwake = true;
+    try {
+      if (!navigator.wakeLock) throw new Error('unsupported');
+      wl = await navigator.wakeLock.request('screen');
+      awake = true;
+      wl.addEventListener('release', function () { awake = false; renderAll(); });
+      renderAll();
+    } catch (e) {
+      awake = false;
+      if (!silent) toast('This phone would not keep the screen on. Set auto-lock to Never while it charges, or the page may not be ready in the morning.');
+    }
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) return;
+    tick();
+    if (wantAwake && !awake) keepAwake(true);
+  });
+  if (window.ResizeObserver) new ResizeObserver(function () { drawChart(); }).observe($('#chart'));
+
+  try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
+  loadLocal();
+  try { var f0 = localStorage.getItem(LS + '.fmt'); if (FMT[f0]) fmtSel = f0; lastBook = localStorage.getItem(LS + '.book') || ''; } catch (e) {}
+  try { var st0 = localStorage.getItem(LS + '.tab'); if (['home', 'wake', 'bible', 'books', 'gym'].indexOf(st0) >= 0) tab = st0; } catch (e) {}
+  renderAll();
+  setTab(tab);
+  autoWake();
+  setInterval(tick, 250);
+  connect();
+})();
+</script>
+
+<script>
+if ('serviceWorker' in navigator && location.protocol.indexOf('http') === 0) {
+  window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+}
+</script>
+</body>
+</html>
