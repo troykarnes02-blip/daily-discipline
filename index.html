@@ -85,6 +85,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .gmsg.on, .gmsg.err { padding: 10px 12px; font-size: 15px; font-weight: 600; background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); }
 .gmsg.err { color: var(--bad-t); border-color: var(--bad-t); }
 .gform .btn:disabled { opacity: .6; cursor: default; }
+.gsub { margin: 0; color: var(--dim); font-size: 14px; }
 .gor { text-align: center; color: var(--dim); font-size: 13px; }
 .gload { color: var(--dim); margin: 0; }
 /* lifting */
@@ -200,6 +201,28 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .rrow .rd { font-weight: 600; grid-row: 1; grid-column: 1; }
 .rrow .rp { color: var(--dim); font-size: 13px; grid-row: 2; grid-column: 1 / 3; }
 .rrow .rn { color: var(--dim); font-size: 13px; grid-row: 3; grid-column: 1 / 3; }
+.trow .lbl.long { font-size: 15px; letter-spacing: .06em; }
+.stweek { display: flex; gap: 8px; }
+.stweek span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); font-size: 12px; font-weight: 600; color: var(--dim); }
+.stweek span.on { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.stweek span.td { outline: 2px solid var(--dim); outline-offset: 2px; }
+.strow { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; align-items: start; border-top: 1px solid var(--line); padding: 12px 0; }
+.stck { width: 44px; height: 44px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--accent-ink); display: grid; place-items: center; }
+.stck::after { content: ''; width: 9px; height: 17px; border: solid currentColor; border-width: 0 4px 4px 0; transform: rotate(45deg) translate(-2px, -2px); opacity: 0; }
+.stck[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); }
+.stck[aria-pressed="true"]::after { opacity: 1; }
+.stgo { text-align: left; background: none; border: 0; color: var(--ink); padding: 2px 0; min-height: 44px; }
+.stgo b { display: block; font-weight: 700; }
+.stgo span { display: block; color: var(--dim); font-size: 13px; line-height: 1.4; margin-top: 2px; }
+.stgo .sth { color: var(--ink); font-weight: 600; }
+.st-lbl { font-size: 13px; letter-spacing: .12em; font-weight: 700; color: var(--dim); }
+.st-t { font-family: var(--font-display); font-weight: 800; font-size: 96px; line-height: 1; text-align: center; font-variant-numeric: tabular-nums; padding: 8px 0; }
+.st-t.hold { color: var(--accent); }
+.st-prog { height: 6px; border-radius: 3px; background: var(--panel-2); overflow: hidden; }
+.st-prog span { display: block; height: 100%; background: var(--accent); width: 100%; }
+.st-cue { margin: 0; color: var(--dim); line-height: 1.45; }
+.st-btns { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.st-btns .btn { padding-left: 4px; padding-right: 4px; }
 .ltips { margin: 6px 0 0; padding-left: 18px; color: var(--dim); font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
 
 /* header */
@@ -346,6 +369,22 @@ input[type="time"], input[type="number"], input[type="text"], input[type="date"]
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn.danger { color: var(--bad-t); }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(20px, env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-weight: 500; z-index: 30; max-width: calc(100% - 32px); }
+.rest { position: fixed; left: 50%; transform: translateX(-50%); bottom: 0; width: 100%; max-width: 720px; z-index: 15; display: flex; align-items: center; gap: 10px; background: var(--panel-2); border-top: 1px solid var(--line); box-shadow: 0 -6px 18px rgba(0, 0, 0, .35); padding: 12px 14px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px)); }
+.rest[hidden] { display: none; }
+.rest-bar { position: absolute; left: 0; top: 0; height: 3px; width: 0; background: var(--accent); transition: width .25s linear; }
+.rest-t { font-family: var(--font-display); font-weight: 800; font-size: 40px; line-height: 1; min-width: 2.6ch; font-variant-numeric: tabular-nums; }
+.rest-what { flex: 1; min-width: 0; font-size: 13px; color: var(--dim); }
+.rest-what b { display: block; color: var(--ink); font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rest .btn { min-height: 44px; min-width: 52px; padding: 0 12px; }
+.rest.done { background: var(--elite); border-top-color: var(--elite); color: var(--on-fill); }
+.rest.done .rest-what, .rest.done .rest-what b { color: var(--on-fill); }
+.rest.done .rest-bar { background: var(--on-fill); }
+.rest.done .btn { background: transparent; border-color: var(--on-fill); color: var(--on-fill); }
+body.rest-on .wrap { padding-bottom: 100px; }
+body.rest-on .toast { bottom: calc(96px + env(safe-area-inset-bottom, 0px)); }
+.bwdays { display: flex; gap: 6px; }
+.bwdays .chip { flex: 1 1 0; min-width: 0; padding: 0; font-size: 14px; }
+@media (prefers-reduced-motion: reduce) { .rest-bar { transition: none; } }
 .foot { text-align: center; color: var(--dim); font-size: 12px; letter-spacing: .04em; padding-top: 4px; }
 /* tabs, home and habit boards */
 .tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(0, .8fr); gap: 4px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 6px; }
@@ -358,9 +397,9 @@ input[type="time"], input[type="number"], input[type="text"], input[type="date"]
 .clock.ok { color: var(--good-t); }
 .clock.idle { color: var(--dim); }
 .rows2 { display: flex; flex-direction: column; }
-.trow { display: grid; grid-template-columns: 72px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
+.trow { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 12px 0; border-top: 1px solid var(--line); }
 .trow:first-child { border-top: 0; padding-top: 0; }
-.trow .lbl { font-family: var(--font-display); font-weight: 800; font-size: 22px; letter-spacing: .1em; }
+.trow .lbl { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: .08em; }
 .trow .main { font-weight: 600; min-width: 0; font-variant-numeric: tabular-nums; }
 .trow .sub { color: var(--dim); font-size: 13px; font-weight: 400; }
 .trow .btn { min-height: 44px; }
@@ -503,6 +542,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       <section id="gym-log" class="card" aria-label="Gym log"></section>
       <section id="gym-goal" class="card" aria-label="Gym weekly goal"></section>
       <section id="gym-plan" class="card" aria-label="Lifting plan" hidden></section>
+      <section id="gym-body" class="card" aria-label="Bodyweight"></section>
       <input type="file" id="lp-file" accept="application/json,.json" hidden>
     </div>
     <div class="tab" id="tab-run" role="tabpanel" hidden>
@@ -520,6 +560,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   <div class="sheet" role="dialog" aria-modal="true" id="sheet"></div>
 </div>
 <div id="toast" class="toast" role="status" hidden></div>
+<div id="rest" class="rest" hidden role="timer" aria-label="Rest timer"><span class="rest-bar" id="rest-bar"></span><div class="rest-t" id="rest-t">0:00</div><div class="rest-what"><b id="rest-name">Rest</b><span id="rest-sub"></span></div><button class="btn" data-action="rest-add" data-s="-30" aria-label="Take off 30 seconds">-30</button><button class="btn" data-action="rest-add" data-s="30" aria-label="Add 30 seconds">+30</button><button class="btn" data-action="rest-skip">Skip</button></div>
 
 <script>
 (function () {
@@ -552,7 +593,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   var settings = null;
   var checkins = {};
   var habits = { bible: {}, gym: {} };
-  var goals = { bible: 6, gym: 4, read: 120, runGoal: 0 };
+  var goals = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1 };
   var tab = 'home';
   var habPop = null;
   var db = null;
@@ -636,7 +677,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
 
   /* ---------- storage ---------- */
   function writeLocal() {
-    try { localStorage.setItem(LS, JSON.stringify({ settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym, goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs })); } catch (e) {}
+    try { localStorage.setItem(LS, JSON.stringify({ settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym, goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs, weights: weights, stretches: stretches })); } catch (e) {}
   }
   function loadLocal() {
     try {
@@ -654,7 +695,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         habits[kd] = {};
         Object.keys(o[kd] || {}).forEach(function (k) { var e = cleanHabit(k, o[kd][k]); if (e) habits[kd][k] = e; });
       });
-      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read, runGoal: o.goals && o.goals.runGoal });
+      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read, runGoal: o.goals && o.goals.runGoal, weighDay: o.goals && o.goals.weighDay });
       planDone = cleanPlan({ done: o.plan });
       planlog = {}; Object.keys(o.planlog || {}).forEach(function (k) { var r = cleanPlanLog('r' + k, o.planlog[k]); if (r) planlog[r.i] = r; });
       notes = {}; Object.keys(o.notes || {}).forEach(function (k) { var n = cleanNote(k, o.notes[k]); if (n) notes[k] = n; });
@@ -663,6 +704,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       lp = lpClean(o.lp, true);
       lifts = {}; Object.keys(o.lifts || {}).forEach(function (k) { var l = cleanLift(k, o.lifts[k]); if (l) lifts[k] = l; });
       runs = {}; Object.keys(o.runs || {}).forEach(function (k) { var r = cleanRun(k, o.runs[k]); if (r) runs[k] = r; });
+      weights = {}; Object.keys(o.weights || {}).forEach(function (k) { var r = cleanWeight(k, o.weights[k]); if (r) weights[k] = r; });
+      stretches = {}; Object.keys(o.stretches || {}).forEach(function (k) { var r = cleanStretch(k, o.stretches[k]); if (r) stretches[k] = r; });
     }
   }
   function cleanHabit(id, o) {
@@ -683,9 +726,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var at = typeof o.at === 'string' ? o.at : '';
     return { id: id, ref: typeof o.ref === 'string' ? o.ref.slice(0, 60) : id, text: o.text.slice(0, 4000), at: at, born: typeof o.born === 'string' && o.born ? o.born : at };
   }
-  function goalsOut() { return { bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read, runGoal: goals.runGoal || 0 }; }
+  function goalsOut() { return { bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read, runGoal: goals.runGoal || 0, weighDay: goals.weighDay }; }
   function cleanGoals(o) {
-    var g = { bible: 6, gym: 4, read: 120, runGoal: 0 };
+    var g = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1 };
     if (o && typeof o === 'object') {
       var b = parseInt(o.bibleTarget, 10), y = parseInt(o.gymTarget, 10);
       if (b >= 1 && b <= 7) g.bible = b;
@@ -694,6 +737,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       if (rm >= 30 && rm <= 1200) g.read = rm;
       var rgl = parseInt(o.runGoal, 10);
       if (rgl >= 600 && rgl <= 10800) g.runGoal = rgl;
+      var wdy = parseInt(o.weighDay, 10);
+      if (wdy >= 0 && wdy <= 6) g.weighDay = wdy;
     }
     return g;
   }
@@ -738,6 +783,12 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       var ruq = await db.collection('runs').get();
       runs = {};
       ruq.docs.forEach(function (d) { var r = cleanRun(d.id, d.data()); if (r) runs[d.id] = r; });
+      var wtq = await db.collection('weights').get();
+      weights = {};
+      wtq.docs.forEach(function (d) { var r = cleanWeight(d.id, d.data()); if (r) weights[d.id] = r; });
+      var stq = await db.collection('stretches').get();
+      stretches = {};
+      stq.docs.forEach(function (d) { var r = cleanStretch(d.id, d.data()); if (r) stretches[d.id] = r; });
       for (var kd of ['bible', 'gym']) {
         var hq = await db.collection(kd).get();
         habits[kd] = {};
@@ -787,6 +838,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     db = d;
     dbChecked = true;
     setSync('synced');
+    renderData();
     if (fbOn()) await fbFirstRun();
     function fail() { setSync('error'); }
     db.doc('app/settings').onSnapshot(function (snap) {
@@ -839,6 +891,18 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     db.collection('runs').onSnapshot(function (snap) {
       runs = {};
       snap.docs.forEach(function (x) { var r = cleanRun(x.id, x.data()); if (r) runs[x.id] = r; });
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('weights').onSnapshot(function (snap) {
+      weights = {};
+      snap.docs.forEach(function (x) { var r = cleanWeight(x.id, x.data()); if (r) weights[x.id] = r; });
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('stretches').onSnapshot(function (snap) {
+      stretches = {};
+      snap.docs.forEach(function (x) { var r = cleanStretch(x.id, x.data()); if (r) stretches[x.id] = r; });
       writeLocal();
       renderAll();
     }, fail);
@@ -1211,6 +1275,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     renderNotesView();
     renderBooks();
     renderRun();
+    renderBody();
     renderFoot();
     habPop = null;
     readPop = false;
@@ -1670,6 +1735,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
+  var APP_BUILD = 'Oct 16 #b48673', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -1687,6 +1753,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       fbPromptSignIn();
       user = await new Promise(function (res) { fbResolve = res; });
     }
+    fbEmail = user.email || '';
     return fbAdapter(user.uid);
   }
   function fbAdapter(uid) {
@@ -1732,18 +1799,29 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
   function gateHide() { $('#gate').hidden = true; $('#gate-in').innerHTML = ''; }
   function gateBrand() { return '<div class="gbrand"><h1>DAILY DISCIPLINE</h1><div class="tag">Build the good. Kill the bad.</div></div>'; }
+  var gateMode = 'in';
   function fbSignInHTML() {
+    var c = gateMode === 'create';
     return gateBrand() + '<form id="gate-form" class="gform" method="post" action="#">' +
-      '<h2 class="gh">SIGN IN</h2>' +
+      '<h2 class="gh">' + (c ? 'CREATE ACCOUNT' : 'SIGN IN') + '</h2>' +
+      (c ? '<p class="gsub">Pick the email and password you will use on every device. You only do this once.</p>' : '') +
       '<label class="fld"><span>EMAIL</span><input type="email" id="fb-email" name="email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" required></label>' +
-      '<label class="fld"><span>PASSWORD</span><input type="password" id="fb-pass" name="password" autocomplete="current-password" required></label>' +
-      '<button class="btn primary gwide" type="submit">Sign in</button>' +
-      '<div class="grow"><button class="link" type="button" data-action="fb-show">Show password</button><button class="link" type="button" data-action="fb-reset">Forgot password?</button></div>' +
+      '<label class="fld"><span>' + (c ? 'CHOOSE A PASSWORD' : 'PASSWORD') + '</span><input type="password" id="fb-pass" name="password" autocomplete="' + (c ? 'new-password' : 'current-password') + '" required></label>' +
+      (c ? '<label class="fld"><span>TYPE IT AGAIN</span><input type="password" id="fb-pass2" name="password2" autocomplete="new-password" required></label>' : '') +
+      '<button class="btn primary gwide" type="submit">' + (c ? 'Create account' : 'Sign in') + '</button>' +
+      '<div class="grow"><button class="link" type="button" data-action="fb-show">Show password</button>' + (c ? '' : '<button class="link" type="button" data-action="fb-reset">Forgot password?</button>') + '</div>' +
       '<p class="gmsg" id="fb-msg" role="status">&nbsp;</p>' +
-      '<div class="gor">First time here?</div>' +
-      '<button class="btn gwide" type="button" data-action="fb-create">Create account</button></form>';
+      '<div class="gor">' + (c ? 'Already have an account?' : 'First time here?') + '</div>' +
+      '<button class="btn gwide" type="button" data-action="' + (c ? 'fb-mode-in' : 'fb-create') + '">' + (c ? 'Sign in instead' : 'Create account') + '</button></form>';
   }
-  function fbPromptSignIn() { if (fb) gateShow(fbSignInHTML(), '#fb-email'); }
+  function fbMode(m) {
+    var e = $('#fb-email') ? $('#fb-email').value : '';
+    gateMode = m;
+    gateShow(fbSignInHTML(), '#fb-email');
+    $('#fb-email').value = e;
+    if (e) { try { $('#fb-pass').focus(); } catch (x) {} }
+  }
+  function fbPromptSignIn() { if (fb) { gateMode = 'in'; gateShow(fbSignInHTML(), '#fb-email'); } }
   function gMsg(text, kind) {
     var m = $('#fb-msg');
     if (!m) return;
@@ -1761,8 +1839,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     } catch (e) { gMsg(fbErr(e), 'err'); }
   }
   function fbShowPass(b) {
-    var i = $('#fb-pass'), show = i.type === 'password';
+    var i = $('#fb-pass'), i2 = $('#fb-pass2'), show = i.type === 'password';
     i.type = show ? 'text' : 'password';
+    if (i2) i2.type = i.type;
     b.textContent = show ? 'Hide password' : 'Show password';
   }
   function fbErr(e) {
@@ -1783,10 +1862,10 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var email = ($('#fb-email').value || '').trim(), pass = $('#fb-pass').value || '';
     if (!email || !pass) { gMsg('Enter your email and password.', 'err'); return; }
     if (create && pass.length < 6) { gMsg('Use at least 6 characters.', 'err'); return; }
+    if (create && $('#fb-pass2') && $('#fb-pass2').value !== pass) { gMsg('The two passwords do not match.', 'err'); return; }
     var btns = $('#gate-form').querySelectorAll('button.btn'), labels = [];
     btns.forEach(function (b, i) { labels[i] = b.textContent; b.disabled = true; });
-    var mine = create ? 1 : 0;
-    btns[mine].textContent = create ? 'Creating account...' : 'Signing in...';
+    btns[0].textContent = create ? 'Creating account...' : 'Signing in...';
     gMsg(create ? 'Creating your account...' : 'Signing in...', 'on');
     function restore() { btns.forEach(function (b, i) { b.disabled = false; b.textContent = labels[i]; }); }
     var timedOut = false, timer;
@@ -1808,7 +1887,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
   }
   async function pushAll(replace) {
-    var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, lifts: lifts, runs: runs, planlog: {} };
+    var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, lifts: lifts, runs: runs, weights: weights, stretches: stretches, planlog: {} };
     Object.keys(planlog).forEach(function (k) { sets.planlog['r' + k] = planlog[k]; });
     if (settings) {
       var out = { alarms: {}, weeklyTarget: settings.weeklyTarget, startDate: settings.startDate, walk: settings.walk || 0 };
@@ -1842,7 +1921,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   /* ---------- backup (standalone app only) ---------- */
   function backupObj() {
     return { app: 'dailydiscipline', v: 1, exportedAt: new Date().toISOString(), settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym,
-      goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs };
+      goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs, weights: weights, stretches: stretches };
   }
   function markBackup() { try { localStorage.setItem(LS + '.backup', new Date().toISOString()); } catch (e) {} renderAll(); }
   async function exportBackup() {
@@ -1895,7 +1974,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       h = '<h2>SYNC</h2><p class="lead" style="margin:0 0 10px"><b>Not signed in.</b> Changes are saved on this phone only until you sign in.</p>' +
         '<div class="row"><button class="btn primary" data-action="fb-open">Sign in</button></div>';
     } else if (cfg) {
-      h = '<h2>SYNC</h2><p class="lead" style="margin:0 0 10px">Your data syncs to your account. ' + bk + '</p>' +
+      h = '<h2>SYNC</h2><p class="lead" style="margin:0 0 10px">Your data syncs to your account. ' + bk + '</p>' + (fbEmail ? '<p class="note" style="margin:0 0 10px">Signed in as <b>' + esc(fbEmail) + '</b></p>' : '') +
         '<div class="row"><button class="btn primary" data-action="export">Export backup</button><button class="btn" data-action="import">Restore from backup</button><button class="btn" data-action="fb-signout">Sign out</button></div>' +
         '<p class="note">A backup file is an extra safety copy. Restoring replaces everything in your account with the file.</p>';
     } else {
@@ -1903,7 +1982,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         '<div class="row"><button class="btn primary" data-action="export">Export backup</button><button class="btn" data-action="import">Restore from backup</button></div>' +
         '<p class="note">Export opens the share sheet. Save the file to Files or send it to yourself.</p>';
     }
-    el.innerHTML = h;
+    el.innerHTML = h + '<p class="note" style="margin:10px 0 0">App version ' + esc(APP_BUILD) + '</p>';
   }
   function renderHome() {
     var tk = dkey(new Date()), ph = phase(), mb = hModel('bible'), mg = hModel('gym'), m = curModel;
@@ -1956,8 +2035,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       rh += '</div>';
     }
     $('#home-read').innerHTML = rh;
-    $('#home-today').innerHTML = '<h2>TODAY<small>' + todayTally() + ' of 4 done</small></h2><div class="rows2">' +
-      row('WAKE', wMain, wSub, wAct) + row('BIBLE', bMain, bSub, bAct) + row('GYM', gMain, gSub, gAct) + row('BOOKS', kMain, kSub, kAct) + row('5K', rMain, rSub, rAct) + '</div>';
+    $('#home-today').innerHTML = '<h2>TODAY<small>' + todayTally() + ' of 4 done</small></h2><div class="rows2">' + bwHomeRow(row) +
+      row('WAKE', wMain, wSub, wAct) + row('BIBLE', bMain, bSub, bAct) + row('GYM', gMain, gSub, gAct) + row('BOOKS', kMain, kSub, kAct) + row('5K', rMain, rSub, rAct) + stHomeRow(row) + '</div>';
     function card(tabName, label, num, sub) {
       return '<button class="tabstat" data-action="tab" data-tab="' + tabName + '"><label>' + label + '</label><div class="num">' + num + '</div><div class="sub">' + sub + '</div></button>';
     }
@@ -2957,7 +3036,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       h += liftItemHTML(w, day, x, s, exId);
     });
     if (s) s.items.forEach(function (it) { if (it.custom) h += liftCustomHTML(w, day, it, exId); });
-    h += '<div class="row" style="margin-top:8px"><button class="btn" data-action="lift-add" data-w="' + w + '" data-d="' + esc(day.id) + '">+ Add an exercise</button></div>';
+    h += '<div class="row" style="margin-top:8px"><button class="btn" data-action="lift-add" data-w="' + w + '" data-d="' + esc(day.id) + '">+ Add an exercise</button><button class="btn" data-action="rest-toggle">Rest timer: ' + (restOn ? 'on' : 'off') + '</button></div>';
     h += '<label class="fld lfld"><span>WORKOUT NOTES</span><textarea rows="2" data-lnote="1" data-w="' + w + '" data-d="' + esc(day.id) + '" placeholder="How did it feel?">' + esc(s ? s.note : '') + '</textarea></label>';
     h += '<label class="fld lfld"><span>DONE ON</span><input type="date" data-ldate="1" data-w="' + w + '" data-d="' + esc(day.id) + '" value="' + esc(s && s.date ? s.date : today) + '"></label>';
     if (s && s.done) {
@@ -3201,7 +3280,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   document.addEventListener('change', function (ev) {
     var t = ev.target;
     if (!t || !t.classList) return;
-    if (t.classList.contains('li')) liftInput(t, true);
+    if (t.classList.contains('li')) { liftInput(t, true); restFromInput(t); }
     else if (t.dataset.lnote) liftNote(t, true);
     else if (t.dataset.ldate) liftDateSet(t);
     else if (t.id === 'lp-file') {
@@ -3283,8 +3362,10 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     box.classList.add('on');
     box.dataset.i = i;
     var rect = box.getBoundingClientRect(), px = x / cfg.W * rect.width;
-    if (px > rect.width / 2) { tip.style.left = 'auto'; tip.style.right = Math.max(0, rect.width - px + 10) + 'px'; }
-    else { tip.style.right = 'auto'; tip.style.left = (px + 10) + 'px'; }
+    var tw = tip.offsetWidth, tl = px + 10;
+    if (tl + tw > rect.width) tl = px - 10 - tw;
+    tl = Math.max(0, Math.min(tl, rect.width - tw));
+    tip.style.right = 'auto'; tip.style.left = tl + 'px';
     if (pcOpen && pcOpen !== box) pcOpen.classList.remove('on');
     pcOpen = box;
   }
@@ -3506,6 +3587,460 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (t && (t.id === 'q-min' || t.id === 'q-sec')) runPrev();
   });
 
+  /* ---------- rest timer ---------- */
+  var restT = null, restTick = null, restOn = true, audioCtx = null;
+  try { restOn = localStorage.getItem(LS + '.rest') !== '0'; } catch (e) {}
+  function parseRest(str) {
+    var m = String(str || '').match(/(\d+(?:\.\d+)?)(?:\s*(?:-|to)\s*(\d+(?:\.\d+)?))?\s*(sec|secs|seconds|s|min|mins|minutes|m)\b/i);
+    if (!m) return 0;
+    var a = parseFloat(m[1]), b = m[2] ? parseFloat(m[2]) : a, mult = /^m/i.test(m[3]) ? 60 : 1;
+    return Math.max(15, Math.round((a + b) / 2 * mult / 15) * 15);
+  }
+  function restFmt(s) { s = Math.max(0, Math.ceil(s)); return Math.floor(s / 60) + ':' + ('0' + (s % 60)).slice(-2); }
+  function unlockAudio() {
+    try {
+      if (!audioCtx) { var AC = window.AudioContext || window.webkitAudioContext; if (AC) audioCtx = new AC(); }
+      if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume();
+    } catch (e) {}
+  }
+  document.addEventListener('touchstart', unlockAudio, { passive: true });
+  document.addEventListener('click', unlockAudio);
+  function restAlert() {
+    try {
+      if (audioCtx) [0, 0.22, 0.44].forEach(function (d) {
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime + d;
+        o.frequency.value = 880; g.gain.value = 0.15; o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + 0.14);
+      });
+    } catch (e) {}
+    try { if (navigator.vibrate) navigator.vibrate([200, 100, 200]); } catch (e) {}
+  }
+  function restStart(secs, name, sub) {
+    unlockAudio();
+    restT = { end: Date.now() + secs * 1000, total: secs, name: name, sub: sub, done: false, doneAt: 0 };
+    document.body.classList.add('rest-on');
+    $('#rest').hidden = false;
+    restPaint();
+    if (!restTick) restTick = setInterval(restPaint, 250);
+  }
+  function restStop() {
+    restT = null; clearInterval(restTick); restTick = null;
+    $('#rest').hidden = true; $('#rest').classList.remove('done');
+    document.body.classList.remove('rest-on');
+  }
+  function restAdd(s) {
+    if (!restT) return;
+    var now = Date.now();
+    restT.end = (s > 0 ? Math.max(restT.end, now) : restT.end) + s * 1000;
+    restT.total = Math.max(restT.total, (restT.end - now) / 1000);
+    if (restT.end > now) restT.done = false;
+    restPaint();
+  }
+  function restPaint() {
+    if (!restT) return;
+    var now = Date.now(), left = (restT.end - now) / 1000, el = $('#rest');
+    $('#rest-name').textContent = restT.name;
+    if (left <= 0) {
+      if (!restT.done) { restT.done = true; restT.doneAt = now; if (now - restT.end < 5000) restAlert(); }
+      if (now - restT.doneAt > 45000) { restStop(); return; }
+      el.classList.add('done');
+      $('#rest-t').textContent = 'Go';
+      $('#rest-sub').textContent = 'Rest is over. Start your next set.';
+      $('#rest-bar').style.width = '100%';
+      return;
+    }
+    el.classList.remove('done');
+    $('#rest-t').textContent = restFmt(left);
+    $('#rest-sub').textContent = restT.sub;
+    $('#rest-bar').style.width = Math.max(0, Math.min(100, left / restT.total * 100)) + '%';
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden) restPaint(); });
+  function restFromInput(el) {
+    if (!restOn || !lp || el.dataset.f !== 'n') return;
+    var v = parseFloat(el.value);
+    if (!(v > 0)) return;
+    var w = parseInt(el.dataset.w, 10), day = lpDay(el.dataset.d);
+    if (!day) return;
+    var s = sessOf(w, day.id);
+    if (s && s.done) return;
+    var dd = lpDaysIn(), nowW = (dd >= 0 && dd < lp.weeks * 7) ? lpWeekNow() : 0;
+    if (nowW !== w) return;
+    var it = s ? sessItem(s, el.dataset.i) : null, type = it ? it.type : '';
+    if (type === 'cardio') return;
+    var base = null;
+    day.items.forEach(function (x) { if (x.id === el.dataset.i) base = lpItemFor(x, w); });
+    if (base && /pair/i.test(base.rest || '') && /a$/i.test(String(base.tag || ''))) return;   // first exercise of a superset: rest comes after its partner
+    var secs = base && base.rest ? parseRest(base.rest) : 0;
+    if (!secs) secs = type === 'lift' ? 90 : 60;
+    var nm = (it && it.name) || (base && base.name) || 'Rest', n = parseInt(el.dataset.s, 10) + 1;
+    restStart(secs, nm, (type === 'lift' ? 'Set ' : 'Round ') + n + ' done. Rest.');
+  }
+
+  /* ---------- weekly bodyweight ---------- */
+  var weights = {};       // week-start date -> { wk, date, lb, at }
+  function cleanWeight(id, o) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(id) || !o || typeof o !== 'object') return null;
+    var lb = Math.round(Number(o.lb) * 10) / 10;
+    if (!isFinite(lb) || lb < 60 || lb > 700) return null;
+    return { wk: id, date: typeof o.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(o.date) ? o.date : id, lb: lb, at: typeof o.at === 'string' ? o.at : '' };
+  }
+  function bwWeekKey(k) { return dkey(weekStart(fromKey(k))); }
+  function bwDayIdx(dow) { return (dow + 6) % 7; }
+  function bwSgn(d) { d = Math.round(d * 10) / 10; return (d > 0 ? '+' : d < 0 ? '-' : '') + numTxt(Math.abs(d)); }
+  function bwModel() {
+    var list = Object.keys(weights).sort().map(function (k) { return weights[k]; }), now = new Date(), tkW = dkey(weekStart(now));
+    var m = { list: list, n: list.length, first: list[0] || null, last: list.length ? list[list.length - 1] : null, tkW: tkW, thisWk: weights[tkW] || null };
+    m.prev = m.thisWk ? (list.length > 1 ? list[list.length - 2] : null) : m.last;
+    m.due = !m.thisWk && bwDayIdx(now.getDay()) >= bwDayIdx(goals.weighDay);
+    m.today = !!(m.thisWk && m.thisWk.date === dkey(now));
+    return m;
+  }
+  function bwVs(lb, other) {
+    if (!other) return 'First weigh-in';
+    var d = Math.round((lb - other.lb) * 10) / 10;
+    return d === 0 ? 'Same as last time' : numTxt(Math.abs(d)) + ' lb ' + (d < 0 ? 'down' : 'up') + ' from last time';
+  }
+  function bwHomeRow(row) {
+    var m = bwModel();
+    if (m.today) return row('WEIGH', numTxt(m.thisWk.lb) + ' lb', bwVs(m.thisWk.lb, m.prev), '<span class="pill bg-ontime">Done</span>');
+    if (m.due) return row('WEIGH', 'Weigh in', 'Once a week' + (m.last ? ' &middot; last ' + numTxt(m.last.lb) + ' lb, ' + dateLabel(m.last.date) : ''), '<button class="btn primary" data-action="bw-log">Log</button>');
+    return '';
+  }
+  function renderBody() {
+    var el = $('#gym-body');
+    if (!el) return;
+    var m = bwModel(), h = '<h2>BODYWEIGHT<small>once a week</small></h2>';
+    if (!m.n) h += '<p class="lead" style="margin:0 0 12px">No weigh-ins yet. Weigh in once a week, same day and same time if you can, and your trend shows up here.</p>';
+    else {
+      var ref4 = m.list[Math.max(0, m.n - 5)];
+      h += '<div class="tiles">' +
+        '<div class="tile"><label>Latest</label><div class="v">' + numTxt(m.last.lb) + '</div><div class="s">lb &middot; ' + dateLabel(m.last.date) + '</div></div>' +
+        '<div class="tile"><label>Since start</label><div class="v">' + (m.n > 1 ? bwSgn(m.last.lb - m.first.lb) : 'n/a') + '</div><div class="s">' + (m.n > 1 ? 'lb since ' + dateLabel(m.first.date) : 'needs two weigh-ins') + '</div></div>' +
+        '<div class="tile"><label>Last 4 weeks</label><div class="v">' + (m.n > 1 ? bwSgn(m.last.lb - ref4.lb) : 'n/a') + '</div><div class="s">' + (m.n > 1 ? 'lb vs ' + dateLabel(ref4.date) : 'needs two weigh-ins') + '</div></div>' +
+        '<div class="tile"><label>Weigh-ins</label><div class="v">' + m.n + '</div><div class="s">one a week</div></div></div>';
+    }
+    h += '<div class="row" style="margin-top:12px"><button class="btn ' + (m.thisWk ? '' : 'primary') + '" data-action="bw-log">' + (m.thisWk ? 'Edit this week\'s weight' : 'Log this week\'s weight') + '</button></div>';
+    h += '<p class="note" style="margin:12px 0 4px">Weigh-in day</p><div class="bwdays">' + [1, 2, 3, 4, 5, 6, 0].map(function (d) {
+      return '<button class="chip" data-action="bw-day" data-d="' + d + '" aria-pressed="' + (goals.weighDay === d) + '">' + DOW[d] + '</button>';
+    }).join('') + '</div><p class="note" style="margin:4px 0 0">Home shows a weigh-in to-do from this day each week until you log it.</p>';
+    if (m.n >= 2) {
+      var L = m.list.slice(-26), vals = L.map(function (r) { return r.lb; }), lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+      var span = hi - lo, step = span <= 6 ? 1 : span <= 14 ? 2 : span <= 30 ? 5 : 10;
+      var yMin = Math.floor((lo - step * 0.5) / step) * step, yMax = Math.ceil((hi + step * 0.5) / step) * step;
+      var tk = [0]; if (L.length > 2) tk.push(Math.floor((L.length - 1) / 2)); tk.push(L.length - 1);
+      h += '<h3 class="lh3" style="margin-top:16px">WEIGHT BY WEEK<small>pounds</small></h3>' + pcChart({
+        id: 'bw', n: L.length, yMin: yMin, yMax: yMax, yStep: step, yFmt: function (v) { return String(v); },
+        label: 'Your weight in pounds for each of your last ' + L.length + ' weekly weigh-ins. The weigh-in list below has the numbers.',
+        xTicks: tk, xAt: function (i) { return dateLabel(L[i].date); }, nowI: -1, start: L.length - 1, hlines: [], rings: [],
+        series: [{ cls: 'log', vals: vals, marker: true }],
+        tip: function (i) { var r = L[i], p = i > 0 ? L[i - 1] : null; return '<b>' + numTxt(r.lb) + ' lb</b> <span>' + DOW[fromKey(r.date).getDay()] + ', ' + dateLabel(r.date) + '</span>' + (p ? '<br>' + bwSgn(r.lb - p.lb) + ' lb from the week before' : ''); }
+      }) + '<p class="note" style="margin:6px 0 0">Tap or drag on the chart to read a week. Each dot is one weigh-in, oldest on the left.</p>';
+    }
+    if (m.n) h += '<h3 class="lh3" style="margin-top:16px">WEIGH-INS</h3><div class="rlist">' + m.list.slice().reverse().slice(0, 8).map(function (r, i, a) {
+      var p = m.list[m.list.indexOf(r) - 1];
+      return '<button class="rrow" data-action="bw-edit" data-key="' + r.wk + '"><span class="rd">' + DOW[fromKey(r.date).getDay()] + ' ' + dateLabel(r.date) + '</span><b>' + numTxt(r.lb) + ' lb</b><span class="rp">' + (p ? bwSgn(r.lb - p.lb) + ' lb from the week before' : 'First weigh-in') + '</span></button>';
+    }).join('') + '</div>';
+    el.innerHTML = h;
+  }
+  function bwSheetHTML(k) {
+    var e = k ? weights[k] : null, dv = e ? e.date : dkey(new Date());
+    return '<h3>WEIGH-IN</h3><p class="note" style="margin:0">Once a week, same day and same time if you can. First thing in the morning keeps it comparable.</p>' +
+      '<label class="fld"><span>WEIGHT (LB)</span><input id="bw-lb" type="number" inputmode="decimal" step="0.1" min="60" max="700" placeholder="e.g. 172.4" value="' + (e ? e.lb : '') + '"></label>' +
+      '<label class="fld"><span>DATE</span><input type="date" id="bw-date" value="' + dv + '" max="' + dkey(new Date()) + '"></label>' +
+      '<div class="prev" id="bw-prev" style="white-space:pre-line"></div>' +
+      '<div class="row"><button class="btn primary" data-action="bw-save" data-key="' + (k || '') + '">Save</button>' +
+      (e ? '<button class="btn danger" data-action="bw-del" data-key="' + k + '">Delete</button>' : '') +
+      '<button class="btn" data-action="close-modal">Cancel</button></div>';
+  }
+  function bwPrev() {
+    var p = $('#bw-prev');
+    if (!p || !$('#bw-lb')) return;
+    var lb = parseFloat($('#bw-lb').value), d = $('#bw-date').value;
+    if (!(lb >= 60 && lb <= 700)) { p.textContent = 'Enter your weight in pounds.'; return; }
+    var k = /^\d{4}-\d{2}-\d{2}$/.test(d) ? bwWeekKey(d) : '', before = null;
+    Object.keys(weights).sort().forEach(function (x) { if (k && x < k) before = weights[x]; });
+    var txt = numTxt(lb) + ' lb';
+    if (before) { var df = Math.round((lb - before.lb) * 10) / 10; txt += '  ·  ' + (df === 0 ? 'same as ' : numTxt(Math.abs(df)) + ' lb ' + (df < 0 ? 'down from ' : 'up from ')) + dateLabel(before.date); }
+    var editing = $('[data-action="bw-save"]') ? $('[data-action="bw-save"]').dataset.key : '';
+    if (k && weights[k] && k !== editing) txt += '\nThat week already has a weigh-in. Saving replaces it.';
+    p.textContent = txt;
+  }
+  async function bwSave(old) {
+    var lb = parseFloat($('#bw-lb').value), d = $('#bw-date').value;
+    if (!(lb >= 60 && lb <= 700)) { toast('Enter your weight in pounds, between 60 and 700.'); return; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(d)) { toast('Pick the day you weighed in.'); return; }
+    if (d > dkey(new Date())) { toast('That date is in the future.'); return; }
+    var k = bwWeekKey(d), e = cleanWeight(k, { lb: lb, date: d, at: new Date().toISOString() });
+    var drop = old && old !== k && weights[old] ? old : '';
+    if (drop) delete weights[drop];
+    weights[k] = e;
+    closeModal();
+    renderAll();
+    toast('Weigh-in saved.');
+    await persist(async function (x) {
+      await x.doc('weights/' + k).set(e);
+      if (drop) await x.doc('weights/' + drop).delete();
+    });
+  }
+  async function bwRemove(k) {
+    if (!weights[k]) return;
+    delete weights[k];
+    closeModal();
+    renderAll();
+    await persist(function (x) { return x.doc('weights/' + k).delete(); });
+  }
+  function bwAction(a, b) {
+    if (a === 'bw-log') { var m = bwModel(); openModal(bwSheetHTML(m.thisWk ? m.thisWk.wk : ''), '#bw-lb'); bwPrev(); }
+    else if (a === 'bw-edit') { if (weights[b.dataset.key]) { openModal(bwSheetHTML(b.dataset.key), '#bw-lb'); bwPrev(); } }
+    else if (a === 'bw-save') bwSave(b.dataset.key || '');
+    else if (a === 'bw-del') bwRemove(b.dataset.key);
+    else if (a === 'bw-day') {
+      goals.weighDay = parseInt(b.dataset.d, 10);
+      renderAll();
+      persist(function (x) { return x.doc('app/habits').set(goalsOut()); });
+    }
+    else return false;
+    return true;
+  }
+  document.addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (t && (t.id === 'bw-lb' || t.id === 'bw-date')) bwPrev();
+  });
+
+  /* ---------- evening stretch ---------- */
+  var stretches = {};     // date -> { date, routine, done: [ids], secs, fin, at }
+  var ST_HOUR = 17, ST_PREP = 6, ST_SWITCH = 4;
+  var ST_LIB = {
+    hipflex: { n: 'Half-kneeling hip flexor', s: 40, sides: true, c: 'Back knee on a pad. Squeeze that glute and shift your hips forward until you feel the front of the back hip.' },
+    quad:    { n: 'Standing quad', s: 30, sides: true, c: 'Hold a wall. Pull your heel toward your butt, knees together, hips tucked under.' },
+    fig4:    { n: 'Figure-four glute', s: 40, sides: true, c: 'Lie on your back. Cross one ankle over the opposite knee and pull that thigh toward your chest.' },
+    hams:    { n: 'Lying hamstring', s: 40, sides: true, c: 'Lie on your back with a towel or belt around one foot. Raise the leg, knee soft, head and hips down.' },
+    calf:    { n: 'Wall calf', s: 40, sides: true, c: 'Hands on a wall, one foot back, heel down, knee straight. Bend that knee a little for the last 10 seconds.' },
+    chest:   { n: 'Doorway chest', s: 30, sides: true, c: 'Forearm on a door frame, elbow at shoulder height. Turn your body away gently.' },
+    child:   { n: 'Child\'s pose, arms long', s: 45, sides: false, c: 'Sit back on your heels and reach both arms long in front. Breathe into your lats and mid back.' },
+    tri:     { n: 'Overhead triceps', s: 30, sides: true, c: 'Reach one hand down your back and press that elbow back with the other hand.' },
+    cat:     { n: 'Cat-cow', s: 45, sides: false, c: 'On hands and knees. Slowly round your back, then let it sag. About 8 slow reps.' },
+    xsho:    { n: 'Cross-body shoulder', s: 30, sides: true, c: 'Pull one arm across your chest at shoulder height with the other forearm.' },
+    needle:  { n: 'Thread the needle', s: 30, sides: true, c: 'On hands and knees, slide one arm under the other and rest that shoulder on the floor. Opens the upper back.' },
+    twist:   { n: 'Lying spinal twist', s: 30, sides: true, c: 'On your back, drop both knees to one side and keep your shoulders flat. Arms out wide.' },
+    knees:   { n: 'Knees to chest', s: 40, sides: false, c: 'On your back, hug both knees in and rock gently. Lets the low back release.' },
+    butter:  { n: 'Butterfly', s: 45, sides: false, c: 'Seated, soles of your feet together. Sit tall and let your knees fall open. Do not force them.' },
+    wrist:   { n: 'Wrist and forearm', s: 30, sides: true, c: 'Arm out, palm up, pull your fingers back gently. For the last 10 seconds turn the palm down.' }
+  };
+  var ST_ROUTINES = {
+    a:      { name: 'Lift A', focus: 'Squat, bench press and row', ids: ['hipflex', 'quad', 'fig4', 'hams', 'chest', 'child', 'needle', 'wrist'] },
+    b:      { name: 'Lift B', focus: 'Deadlift, overhead press and pulldown', ids: ['hams', 'fig4', 'hipflex', 'child', 'xsho', 'needle', 'knees', 'twist'] },
+    c:      { name: 'Lift C', focus: 'Split squat, incline press and hip thrust', ids: ['hipflex', 'quad', 'fig4', 'hams', 'calf', 'butter', 'chest', 'child', 'tri'] },
+    cardio: { name: 'Cardio day', focus: 'Legs and hips after the cardio and core work', ids: ['calf', 'hams', 'quad', 'hipflex', 'fig4', 'knees', 'twist', 'cat'] },
+    run:    { name: '5K day', focus: 'Calves, hips and hamstrings after the run', ids: ['calf', 'quad', 'hipflex', 'hams', 'fig4', 'butter', 'knees', 'twist'] },
+    rest:   { name: 'Rest day', focus: 'An easy full-body reset', ids: ['cat', 'child', 'hipflex', 'fig4', 'hams', 'chest', 'needle', 'twist'] }
+  };
+  function cleanStretch(id, o) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(id) || !o || typeof o !== 'object') return null;
+    var done = Array.isArray(o.done) ? o.done.filter(function (x) { return typeof x === 'string' && x.length <= 24; }).slice(0, 30) : [];
+    var secs = Math.round(Number(o.secs));
+    return { date: id, routine: ST_ROUTINES[o.routine] ? o.routine : 'rest', done: done, secs: isFinite(secs) && secs > 0 ? Math.min(secs, 36000) : 0, fin: !!o.fin, at: typeof o.at === 'string' ? o.at : '' };
+  }
+  function stRoutineId() {
+    var lt = lpToday(), nm = lt ? lt.day.name : '', dow = new Date().getDay();
+    if (/lift\s*a\b/i.test(nm)) return 'a';
+    if (/lift\s*b\b/i.test(nm)) return 'b';
+    if (/lift\s*c\b/i.test(nm)) return 'c';
+    if (/cardio/i.test(nm)) return 'cardio';
+    return { 1: 'a', 2: 'cardio', 3: 'b', 4: 'cardio', 5: 'c', 6: 'run', 0: 'rest' }[dow];
+  }
+  function stSecsOf(id) { var s = ST_LIB[id]; return s.s * (s.sides ? 2 : 1); }
+  function stEstimate(ids) {
+    var t = 0;
+    ids.forEach(function (id) { t += stSecsOf(id) + ST_PREP + (ST_LIB[id].sides ? ST_SWITCH : 0); });
+    return Math.round(t / 60);
+  }
+  function stDur(secs) { var m = Math.round(secs / 60); return m < 1 ? secs + ' sec' : m + ' min'; }
+  function stDone(k) { return !!(stretches[k] && stretches[k].fin); }
+  function stStreak() {
+    var d = new Date(), n = 0;
+    if (!stDone(dkey(d))) d.setDate(d.getDate() - 1);
+    while (stDone(dkey(d)) && n < 3660) { n++; d.setDate(d.getDate() - 1); }
+    return n;
+  }
+  function stView() {
+    var k = dkey(new Date()), e = stretches[k], rid = e && ST_ROUTINES[e.routine] ? e.routine : stRoutineId(), R = ST_ROUTINES[rid];
+    var have = e ? e.done : [], n = 0;
+    R.ids.forEach(function (id) { if (have.indexOf(id) >= 0) n++; });
+    return { k: k, e: e, rid: rid, R: R, n: n, total: R.ids.length, min: stEstimate(R.ids) };
+  }
+  function stHomeRow(row) {
+    var hr = new Date().getHours(), v = stView(), sk = stStreak(), h = '';
+    if (v.e && v.e.fin) h = row('STRETCH', 'Done', (v.e.secs >= 30 ? stDur(v.e.secs) + ' held' : v.n + ' of ' + v.total + ' ticked') + ' &middot; ' + (sk ? sk + '-day streak' : 'logged'), '<button class="btn" data-action="st-open">Edit</button>');
+    else if (v.n > 0) h = row('STRETCH', 'In progress', v.n + ' of ' + v.total + ' done &middot; ' + esc(v.R.name), '<button class="btn primary" data-action="st-open">Open</button>');
+    else if (hr >= ST_HOUR) h = row('STRETCH', esc(v.R.name) + ' stretch', v.min + ' min &middot; ' + (sk ? sk + '-day streak on the line' : 'start a streak'), '<button class="btn primary" data-action="st-open">Start</button>');
+    return h.replace('<span class="lbl">', '<span class="lbl long">');
+  }
+  function stCommit(k) {
+    var e = stretches[k];
+    if (!e) return Promise.resolve();
+    e.at = new Date().toISOString();
+    renderAll();
+    return persist(function (x) { return x.doc('stretches/' + k).set(e); });
+  }
+  function stRec(k) {
+    if (!stretches[k]) stretches[k] = { date: k, routine: stRoutineId(), done: [], secs: 0, fin: false, at: '' };
+    return stretches[k];
+  }
+  function stSetTick(id, on) {
+    var k = dkey(new Date()), e = stRec(k), i = e.done.indexOf(id);
+    if (on && i < 0) e.done.push(id);
+    else if (!on && i >= 0) e.done.splice(i, 1);
+    else return;
+    stCommit(k);
+  }
+  function stListHTML() {
+    var v = stView(), h = '<h3>EVENING STRETCH</h3><p class="note" style="margin:0">' + esc(v.R.name) + ' &middot; ' + esc(v.R.focus) + '. About ' + v.min + ' min.</p>';
+    var sk = stStreak(), strip = '', d, i;
+    for (i = 6; i >= 0; i--) { d = new Date(); d.setDate(d.getDate() - i); var kk = dkey(d); strip += '<span class="' + (stDone(kk) ? 'on' : '') + (i === 0 ? ' td' : '') + '" title="' + DOW[d.getDay()] + '">' + DOW[d.getDay()].slice(0, 2) + '</span>'; }
+    h += '<div class="stweek">' + strip + '</div><p class="note" style="margin:0">' + (sk ? sk + '-day streak.' : 'No streak yet.') + ' Filled days are stretch days.</p>';
+    if (v.n < v.total) h += '<div class="row"><button class="btn primary" data-action="st-start">' + (v.n ? 'Continue with the timer' : 'Start the timer') + '</button></div>';
+    h += '<div class="stlist">' + v.R.ids.map(function (id, i) {
+      var s = ST_LIB[id], on = v.e && v.e.done.indexOf(id) >= 0;
+      return '<div class="strow"><button class="stck" data-action="st-tick" data-id="' + id + '" aria-pressed="' + on + '" aria-label="Done: ' + esc(s.n) + '"></button>' +
+        '<button class="stgo" data-action="st-go" data-i="' + i + '"><b>' + esc(s.n) + '</b><span class="sth">' + s.s + ' sec' + (s.sides ? ' each side' : '') + '</span><span>' + esc(s.c) + '</span></button></div>';
+    }).join('') + '</div>';
+    h += '<p class="note" style="margin:0">Tick a stretch yourself, or tap its name to run the timer for just that one. The timer ticks it when the hold is finished.</p>';
+    h += '<div class="row"><button class="btn ' + (v.n === v.total ? 'primary' : '') + '" data-action="st-fin">' + (v.e && v.e.fin ? 'Save changes' : 'Done for tonight') + '</button>' +
+      (v.e && (v.e.fin || v.n) ? '<button class="btn danger" data-action="st-clear">Clear today</button>' : '') +
+      '<button class="btn" data-action="close-modal">Close</button></div>';
+    return h;
+  }
+  function stOpen() { stOpened = true; openModal(stListHTML()); }
+  var stOpened = false, stT = null, stTick = null, stWl = null, stHourSeen = new Date().getHours();
+  function stBusy() { return !!stT && !stT.paused; }
+  function stBeep(list) {
+    unlockAudio();
+    try {
+      if (audioCtx) list.forEach(function (x) {
+        var o = audioCtx.createOscillator(), g = audioCtx.createGain(), t = audioCtx.currentTime + x[1];
+        o.frequency.value = x[0]; g.gain.value = 0.15; o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + 0.14);
+      });
+    } catch (e) {}
+  }
+  function stBuzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+  async function stLock() { try { if (navigator.wakeLock && !stWl) { stWl = await navigator.wakeLock.request('screen'); stWl.addEventListener('release', function () { stWl = null; }); } } catch (e) { stWl = null; } }
+  function stUnlock() { try { if (stWl) stWl.release(); } catch (e) {} stWl = null; }
+  function stArm(phase, secs) {
+    var now = Date.now();
+    stT.phase = phase; stT.total = secs; stT.end = now + secs * 1000; stT.paused = false; stT.left = secs; stT.lastSec = 99;
+  }
+  function stBegin(i) {
+    var v = stView();
+    if (!v.R.ids[i]) return;
+    if (restT) restStop();
+    stT = { i: i, side: 1, held: 0, ids: v.R.ids };
+    stArm('prep', ST_PREP);
+    stLock();
+    if (!stTick) stTick = setInterval(stPaint, 250);
+    stShowTimer();
+  }
+  function stEnd(toList) {
+    clearInterval(stTick); stTick = null; stT = null; stUnlock();
+    if (toList && stOpened) $('#sheet').innerHTML = stListHTML();
+  }
+  function stCleanup() {
+    if (!stOpened && !stT) return;
+    clearInterval(stTick); stTick = null; stT = null; stUnlock(); stOpened = false;
+  }
+  function stItem() { return ST_LIB[stT.ids[stT.i]]; }
+  function stShowTimer() {
+    if (!stT) return;
+    var it = stItem(), nx = stT.ids[stT.i + 1] ? ST_LIB[stT.ids[stT.i + 1]].n : '';
+    $('#sheet').innerHTML = '<p class="note" style="margin:0" id="st-count">Stretch ' + (stT.i + 1) + ' of ' + stT.ids.length + '</p>' +
+      '<div class="st-lbl" id="st-lbl"></div><h3 id="st-name" style="margin:0;font-size:24px;letter-spacing:.05em">' + esc(it.n) + '</h3>' +
+      '<div class="st-t" id="st-t">0:00</div><div class="st-prog"><span id="st-bar"></span></div>' +
+      '<p class="st-cue">' + esc(it.c) + '</p>' +
+      '<div class="st-btns"><button class="btn" id="st-pause" data-action="st-pause">Pause</button><button class="btn" data-action="st-add">+10 sec</button><button class="btn" data-action="st-skip">Skip</button><button class="btn" data-action="st-list">List</button></div>' +
+      '<p class="note" style="margin:0">' + (nx ? 'Next: ' + esc(nx) : 'This is the last one.') + '</p>';
+    stPaint();
+  }
+  function stPaint() {
+    if (!stT) return;
+    var now = Date.now(), left = stT.paused ? stT.left : (stT.end - now) / 1000, it = stItem(), side = it.sides ? (stT.side === 1 ? 'Left side' : 'Right side') : '';
+    if (!stT.paused && left <= 0) { stAdvance(); return; }
+    var hold = stT.phase === 'hold', t = $('#st-t');
+    if (!t) return;
+    var lbl = hold ? 'HOLD' : (stT.side > 1 ? 'SWITCH SIDES' : 'GET READY');
+    $('#st-lbl').textContent = lbl + (side ? ' · ' + side.toUpperCase() : '') + (stT.paused ? ' · PAUSED' : '');
+    t.textContent = restFmt(left); t.className = 'st-t' + (hold ? ' hold' : '');
+    $('#st-bar').style.width = Math.max(0, Math.min(100, left / stT.total * 100)) + '%';
+    $('#st-pause').textContent = stT.paused ? 'Resume' : 'Pause';
+    var c = Math.ceil(left);
+    if (!stT.paused && c <= 3 && c >= 1 && c !== stT.lastSec) { stT.lastSec = c; stBeep([[700, 0]]); }
+  }
+  function stAdvance() {
+    var it = stItem(), guard = 0;
+    if (stT.phase === 'prep') { stArm('hold', it.s); stBeep([[1040, 0]]); stPaint(); return; }
+    stT.held += stT.total;
+    if (it.sides && stT.side < 2) { stT.side = 2; stArm('prep', ST_SWITCH); stBeep([[660, 0], [660, 0.2]]); stBuzz([150]); stPaint(); return; }
+    stFinishItem(true);
+  }
+  function stFinishItem(tick) {
+    var id = stT.ids[stT.i], k = dkey(new Date()), e = stRec(k);
+    e.secs += Math.round(stT.held); stT.held = 0;
+    if (tick && e.done.indexOf(id) < 0) e.done.push(id);
+    stCommit(k);
+    if (stT.ids[stT.i + 1]) {
+      stT.i++; stT.side = 1; stBeep([[880, 0], [880, 0.22], [880, 0.44]]); stBuzz([200, 100, 200]);
+      stArm('prep', ST_PREP); stShowTimer();
+    } else {
+      stBeep([[880, 0], [1100, 0.2], [1320, 0.4]]); stBuzz([300, 100, 300, 100, 300]);
+      stEnd(true); toast('Routine finished. Tap Done for tonight to save it.');
+    }
+  }
+  function stAction(a, b) {
+    if (a === 'st-open') stOpen();
+    else if (a === 'st-tick') { stSetTick(b.dataset.id, b.getAttribute('aria-pressed') !== 'true'); var sc = $('#sheet').scrollTop; $('#sheet').innerHTML = stListHTML(); $('#sheet').scrollTop = sc; }
+    else if (a === 'st-go') stBegin(parseInt(b.dataset.i, 10));
+    else if (a === 'st-start') { var v = stView(), i = 0; for (; i < v.R.ids.length; i++) if (!v.e || v.e.done.indexOf(v.R.ids[i]) < 0) break; stBegin(i >= v.R.ids.length ? 0 : i); }
+    else if (a === 'st-pause') {
+      if (!stT) return true;
+      if (stT.paused) { stT.end = Date.now() + stT.left * 1000; stT.paused = false; }
+      else { stT.left = Math.max(0, (stT.end - Date.now()) / 1000); stT.paused = true; }
+      stPaint();
+    }
+    else if (a === 'st-add') {
+      if (!stT) return true;
+      if (stT.paused) stT.left += 10; else stT.end += 10000;
+      stT.total += 10; stPaint();
+    }
+    else if (a === 'st-skip') {
+      if (!stT) return true;
+      var it = stItem();
+      if (stT.phase === 'hold') { stT.held += Math.max(0, stT.total - (stT.paused ? stT.left : (stT.end - Date.now()) / 1000)); }
+      if (stT.phase === 'prep') { stArm('hold', it.s); stPaint(); }
+      else if (it.sides && stT.side < 2) { stT.side = 2; stArm('prep', ST_SWITCH); stPaint(); }
+      else stFinishItem(false);
+    }
+    else if (a === 'st-list') { if (stT) { var e0 = stRec(dkey(new Date())); e0.secs += Math.round(stT.held); if (stT.held) stCommit(e0.date); } stEnd(true); }
+    else if (a === 'st-fin') {
+      var v2 = stView();
+      if (!v2.n) { toast('Tick at least one stretch first.'); return true; }
+      var e = stRec(v2.k); e.fin = true; e.routine = v2.rid;
+      closeModal();
+      stCommit(v2.k);
+      var sk = stStreak();
+      toast('Stretch saved.' + (sk > 1 ? ' ' + sk + '-day streak.' : ''));
+    }
+    else if (a === 'st-clear') {
+      var k = dkey(new Date());
+      if (!stretches[k]) return true;
+      delete stretches[k];
+      closeModal(); renderAll();
+      persist(function (x) { return x.doc('stretches/' + k).delete(); });
+      toast('Cleared today\'s stretch.');
+    }
+    else return false;
+    return true;
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && stT) { stPaint(); stLock(); } });
+  setInterval(function () { var h = new Date().getHours(); if (h !== stHourSeen) { stHourSeen = h; renderHome(); } }, 30000);
+
   /* ---------- modal ---------- */
   function openModal(html, focusSel) {
     $('#sheet').innerHTML = html;
@@ -3514,6 +4049,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (f) f.focus();
   }
   function closeModal() {
+    stCleanup();
     if (planSheet !== null) { saveNotes(); planSheet = null; }
     readEdit = null;
     $('#modal').hidden = true; $('#sheet').innerHTML = '';
@@ -3545,12 +4081,14 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
 
   document.addEventListener('click', function (ev) {
-    if (ev.target.id === 'modal') { closeModal(); return; }
+    if (ev.target.id === 'modal') { if (stBusy()) return; closeModal(); return; }
     var b = ev.target.closest('[data-action]');
     if (!b) return;
     var a = b.dataset.action;
     if ((a.indexOf('lift-') === 0 || a.indexOf('lp-') === 0 || a === 'ad-type') && liftAction(a, b)) return;
     if (a.indexOf('run-') === 0 && runAction(a, b)) return;
+    if (a.indexOf('bw-') === 0 && bwAction(a, b)) return;
+    if (a.indexOf('st-') === 0 && stAction(a, b)) return;
     if (a === 'wake-up') {
       if (writing) return;
       var ph = phase();
@@ -3570,6 +4108,16 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       var hk = b.dataset.kind, hkey = b.dataset.key;
       if (!habits[hk][hkey] && hkey === dkey(new Date())) habPop = hk;
       toggleHabit(hk, hkey);
+    } else if (a === 'rest-toggle') {
+      restOn = !restOn;
+      try { localStorage.setItem(LS + '.rest', restOn ? '1' : '0'); } catch (e) {}
+      if (!restOn) restStop();
+      renderAll();
+      toast('Rest timer ' + (restOn ? 'on.' : 'off.'));
+    } else if (a === 'rest-add') {
+      restAdd(parseInt(b.dataset.s, 10));
+    } else if (a === 'rest-skip') {
+      restStop();
     } else if (a === 'fb-open') {
       fbPromptSignIn();
     } else if (a === 'fb-show') {
@@ -3579,7 +4127,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     } else if (a === 'fb-signin') {
       fbAuth(false);
     } else if (a === 'fb-create') {
-      fbAuth(true);
+      fbMode('create');
+    } else if (a === 'fb-mode-in') {
+      fbMode('in');
     } else if (a === 'fb-signout') {
       if (fb) fb.A.signOut(fb.auth).then(function () { try { localStorage.removeItem(LS); } catch (e) {} location.reload(); });
     } else if (a === 'export') {
@@ -3695,7 +4245,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     ev.target.value = '';
   });
   document.addEventListener('submit', function (ev) {
-    if (ev.target && ev.target.id === 'gate-form') { ev.preventDefault(); fbAuth(false); }
+    if (ev.target && ev.target.id === 'gate-form') { ev.preventDefault(); fbAuth(gateMode === 'create'); }
   });
   document.addEventListener('keydown', function (ev) {
     if (ev.key === 'Escape' && !$('#modal').hidden) closeModal();
