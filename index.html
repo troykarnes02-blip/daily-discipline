@@ -81,7 +81,10 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .gform .gh { font-family: var(--font-display); font-weight: 800; font-size: 26px; letter-spacing: .1em; }
 .gwide { width: 100%; }
 .grow { display: flex; justify-content: space-between; gap: 12px; }
-.gmsg { min-height: 20px; margin: 0; color: var(--dim); font-size: 14px; }
+.gmsg { min-height: 20px; margin: 0; color: var(--dim); font-size: 14px; border-radius: 8px; }
+.gmsg.on, .gmsg.err { padding: 10px 12px; font-size: 15px; font-weight: 600; background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); }
+.gmsg.err { color: var(--bad-t); border-color: var(--bad-t); }
+.gform .btn:disabled { opacity: .6; cursor: default; }
 .gor { text-align: center; color: var(--dim); font-size: 13px; }
 .gload { color: var(--dim); margin: 0; }
 /* lifting */
@@ -1741,14 +1744,21 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       '<button class="btn gwide" type="button" data-action="fb-create">Create account</button></form>';
   }
   function fbPromptSignIn() { if (fb) gateShow(fbSignInHTML(), '#fb-email'); }
+  function gMsg(text, kind) {
+    var m = $('#fb-msg');
+    if (!m) return;
+    m.textContent = text || '\u00a0';
+    m.className = 'gmsg' + (text ? (kind === 'err' ? ' err' : ' on') : '');
+    if (text) { try { m.scrollIntoView({ block: 'nearest' }); } catch (e) {} }
+  }
   async function fbReset() {
-    var email = ($('#fb-email').value || '').trim(), msg = $('#fb-msg');
-    if (!email) { msg.textContent = 'Type your email above first.'; return; }
-    msg.textContent = 'Working...';
+    var email = ($('#fb-email').value || '').trim();
+    if (!email) { gMsg('Type your email above first.', 'err'); return; }
+    gMsg('Sending...', 'on');
     try {
       await fb.A.sendPasswordResetEmail(fb.auth, email);
-      msg.textContent = 'If that email has an account, a reset link is on its way. Check your inbox and spam.';
-    } catch (e) { msg.textContent = fbErr(e); }
+      gMsg('If that email has an account, a reset link is on its way. Check your inbox and spam.', 'on');
+    } catch (e) { gMsg(fbErr(e), 'err'); }
   }
   function fbShowPass(b) {
     var i = $('#fb-pass'), show = i.type === 'password';
@@ -1763,18 +1773,39 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (c === 'auth/network-request-failed') return 'No connection. Try again online.';
     if (c === 'auth/operation-not-allowed') return 'Account creation is turned off in Firebase.';
     if (c === 'auth/too-many-requests') return 'Too many tries. Wait a minute and try again.';
+    if (c === 'auth/unauthorized-domain') return 'This site is not allowed yet. In Firebase, open Authentication, then Settings, then Authorized domains, and add daily-discipline-app.netlify.app.';
+    if (c === 'auth/invalid-api-key' || c === 'auth/api-key-not-valid.-please-pass-a-valid-api-key.') return 'The API key in firebase-config.js is not valid.';
+    if (c === 'auth/missing-password') return 'Enter your password.';
+    if (c === 'dd/timeout') return 'No answer from Firebase. Check your connection and try again. If it keeps happening, check that Email/Password sign-in is turned on in Firebase.';
     return 'Could not sign in (' + (c || 'unknown') + ').';
   }
   async function fbAuth(create) {
-    var email = ($('#fb-email').value || '').trim(), pass = $('#fb-pass').value || '', msg = $('#fb-msg');
-    if (!email || !pass) { msg.textContent = 'Enter your email and password.'; return; }
-    if (create && pass.length < 6) { msg.textContent = 'Use at least 6 characters.'; return; }
-    msg.textContent = 'Working...';
+    var email = ($('#fb-email').value || '').trim(), pass = $('#fb-pass').value || '';
+    if (!email || !pass) { gMsg('Enter your email and password.', 'err'); return; }
+    if (create && pass.length < 6) { gMsg('Use at least 6 characters.', 'err'); return; }
+    var btns = $('#gate-form').querySelectorAll('button.btn'), labels = [];
+    btns.forEach(function (b, i) { labels[i] = b.textContent; b.disabled = true; });
+    var mine = create ? 1 : 0;
+    btns[mine].textContent = create ? 'Creating account...' : 'Signing in...';
+    gMsg(create ? 'Creating your account...' : 'Signing in...', 'on');
+    function restore() { btns.forEach(function (b, i) { b.disabled = false; b.textContent = labels[i]; }); }
+    var timedOut = false, timer;
+    var call = create ? fb.A.createUserWithEmailAndPassword(fb.auth, email, pass) : fb.A.signInWithEmailAndPassword(fb.auth, email, pass);
+    call.then(function (cred) {
+      if (!timedOut) return;
+      gateHide();
+      if (fbResolve) { var r0 = fbResolve; fbResolve = null; r0(cred.user); }
+    }, function () {});
     try {
-      var cred = create ? await fb.A.createUserWithEmailAndPassword(fb.auth, email, pass) : await fb.A.signInWithEmailAndPassword(fb.auth, email, pass);
+      var cred = await Promise.race([call, new Promise(function (_, rej) { timer = setTimeout(function () { timedOut = true; rej({ code: 'dd/timeout' }); }, 20000); })]);
+      clearTimeout(timer);
       gateHide();
       if (fbResolve) { var r = fbResolve; fbResolve = null; r(cred.user); }
-    } catch (e) { msg.textContent = fbErr(e); }
+    } catch (e) {
+      clearTimeout(timer);
+      restore();
+      gMsg(fbErr(e), 'err');
+    }
   }
   async function pushAll(replace) {
     var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, lifts: lifts, runs: runs, planlog: {} };
