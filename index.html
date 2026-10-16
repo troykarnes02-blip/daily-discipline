@@ -72,6 +72,133 @@ h1, h2, h3, p { margin: 0; }
 button { font: inherit; color: inherit; cursor: pointer; }
 :focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
 
+/* login gate */
+.gate { position: fixed; inset: 0; z-index: 40; background: var(--bg); overflow-y: auto; display: flex; padding: 24px 20px; padding-top: max(24px, env(safe-area-inset-top, 0px)); padding-bottom: max(24px, env(safe-area-inset-bottom, 0px)); }
+.gate-in { margin: auto; width: 100%; max-width: 380px; display: flex; flex-direction: column; gap: 22px; }
+.gbrand h1 { font-family: var(--font-display); font-weight: 800; font-size: clamp(26px, 8.4vw, 42px); letter-spacing: .05em; line-height: 1.05; border-bottom: 3px solid var(--accent); padding-bottom: 6px; display: inline-block; max-width: 100%; }
+.gbrand .tag { font-size: 12px; margin-top: 8px; }
+.gform { display: flex; flex-direction: column; gap: 14px; background: var(--panel); border: 1px solid var(--line); border-radius: 12px; padding: 20px; }
+.gform .gh { font-family: var(--font-display); font-weight: 800; font-size: 26px; letter-spacing: .1em; }
+.gwide { width: 100%; }
+.grow { display: flex; justify-content: space-between; gap: 12px; }
+.gmsg { min-height: 20px; margin: 0; color: var(--dim); font-size: 14px; }
+.gor { text-align: center; color: var(--dim); font-size: 13px; }
+.gload { color: var(--dim); margin: 0; }
+/* lifting */
+.lwk { display: grid; grid-template-columns: 52px minmax(0, 1fr) 52px; gap: 8px; align-items: center; margin-bottom: 10px; }
+.lwk .btn { padding: 0; font-size: 26px; line-height: 1; }
+.lwk .btn[disabled] { opacity: .35; }
+.lwl { text-align: center; display: flex; flex-direction: column; font-variant-numeric: tabular-nums; }
+.lwl span { color: var(--dim); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.lnote { color: var(--dim); font-size: 14px; margin: 0 0 12px; }
+.ldays { display: grid; gap: 4px; margin-bottom: 14px; }
+.lday { display: flex; flex-direction: column; align-items: center; gap: 1px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 2px; min-height: 62px; color: var(--dim); min-width: 0; }
+.lday span { font-size: 11px; letter-spacing: .1em; font-weight: 600; }
+.lday b { font-family: var(--font-display); font-weight: 800; font-size: 14px; letter-spacing: .03em; line-height: 1.05; text-align: center; overflow-wrap: anywhere; }
+.lday i { font-style: normal; font-size: 12px; line-height: 1; min-height: 12px; }
+.lday[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+.lday.done:not([aria-pressed="true"]) { color: var(--good-t); border-color: var(--good-t); }
+.lday.part:not([aria-pressed="true"]) { color: var(--ink); }
+.lh3 { font-family: var(--font-display); font-weight: 800; font-size: 24px; letter-spacing: .08em; margin: 4px 0 8px; }
+.lh3 small { font-family: var(--font-body); font-weight: 500; font-size: 12px; letter-spacing: .06em; color: var(--dim); margin-left: 8px; }
+.lwarm { margin: 0 0 12px; color: var(--dim); font-size: 14px; }
+.lwarm b { color: var(--ink); }
+.litem { border-top: 1px solid var(--line); padding: 12px 0 6px; display: flex; flex-direction: column; gap: 6px; }
+.lhead { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 8px; align-items: start; }
+.ltag { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: .04em; color: var(--accent); }
+.lname { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; min-width: 0; }
+.lname b { font-size: 17px; font-weight: 600; }
+.lname em { font-style: normal; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; }
+.ltgt { flex-basis: 100%; color: var(--dim); font-size: 13px; }
+.lcue { margin: 0; color: var(--dim); font-size: 13px; padding-left: 42px; }
+.llast { margin: 0; font-size: 13px; padding-left: 42px; color: var(--dim); }
+.llast b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.lnudge { margin: 0; font-size: 13px; font-weight: 600; padding-left: 42px; color: var(--good-t); }
+.lset { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto minmax(0, 1fr); gap: 8px; align-items: center; padding-left: 42px; }
+.lset .sn { color: var(--dim); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+.lset .x { color: var(--dim); font-size: 13px; white-space: nowrap; }
+.lset input.li { padding: 8px 10px; font-size: 18px; min-width: 0; text-align: center; }
+.lset input.li::placeholder { color: var(--dim); opacity: .55; }
+.lset.one { grid-template-columns: 54px minmax(0, 150px); }
+.lacts { display: flex; gap: 18px; padding-left: 42px; }
+.lacts .link { align-self: auto; min-height: 36px; }
+.lfld { margin-top: 12px; }
+.lfld textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; font: 500 16px var(--font-body); }
+.lfinbtn { width: 100%; min-height: 52px; font-size: 17px; }
+.lfin { align-self: center; }
+.lprog { display: flex; flex-direction: column; }
+.lpr { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-top: 1px solid var(--line); font-size: 14px; }
+.lpr:first-child { border-top: 0; }
+.lpr b { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.lpr em { font-style: normal; margin-left: 8px; font-size: 12px; }
+.lpr em.up { color: var(--good-t); }
+.lpr em.dn { color: var(--bad-t); }
+.lwu { border: 1px solid var(--line); border-radius: 10px; padding: 12px 12px 6px; margin: 0 0 14px; background: var(--panel-2); }
+.lwuh { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+.lwuh b { font-family: var(--font-display); font-weight: 800; font-size: 20px; letter-spacing: .1em; }
+.lwuh span { color: var(--dim); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+.lwu .lwarm { margin: 0 0 6px; }
+.wrow { display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 8px; align-items: start; width: 100%; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 10px 0; color: var(--ink); min-height: 52px; }
+.wrow:first-of-type { border-top: 0; }
+.wrow .box { width: 28px; height: 28px; border-radius: 6px; border: 2px solid var(--line); display: grid; place-items: center; margin: 2px auto 0; font-weight: 800; color: var(--accent-ink); }
+.wrow.on .box { background: var(--accent); border-color: var(--accent); }
+.wrow.on .wt b { color: var(--dim); text-decoration: line-through; text-decoration-thickness: 1px; }
+.wt { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 8px; min-width: 0; }
+.wt b { font-weight: 600; font-size: 16px; }
+.wt em { font-style: normal; color: var(--accent); font-size: 14px; font-weight: 600; }
+.wt small { flex-basis: 100%; color: var(--dim); font-size: 13px; }
+.lramp { margin: 0; font-size: 13px; padding-left: 42px; color: var(--accent); font-weight: 600; }
+.lphase { display: flex; align-items: baseline; gap: 10px; margin: 0 0 8px; }
+.lphase b { font-family: var(--font-display); font-weight: 800; font-size: 18px; letter-spacing: .1em; color: var(--accent); }
+.lphase span { color: var(--dim); font-size: 12px; letter-spacing: .06em; text-transform: uppercase; }
+.lplan { margin: 0; font-size: 15px; padding-left: 42px; color: var(--ink); }
+.lplan b { font-weight: 700; font-variant-numeric: tabular-nums; }
+.lplan em { font-style: normal; font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); border: 1px solid var(--line); border-radius: 4px; padding: 0 5px; margin-left: 6px; }
+.lchips { margin: 4px 0 10px; }
+.rb { border-top: 1px solid var(--line); padding-top: 10px; }
+.rb > b { display: block; margin-bottom: 8px; font-size: 16px; }
+.pc { position: relative; touch-action: pan-y; border-radius: 8px; }
+.pcsvg { display: block; width: 100%; height: auto; }
+.pc-band { fill: var(--panel-2); opacity: .75; }
+.pc-bl, .pc-xl, .pc-yl, .pc-refl { fill: var(--dim); font: 500 10px var(--font-body); }
+.pc-grid { stroke: var(--line); stroke-width: 1; }
+.pc-ref { stroke: var(--dim); stroke-width: 1; stroke-dasharray: 2 4; }
+.pc-now { stroke: var(--dim); stroke-width: 1; stroke-dasharray: 1 3; }
+.pc-line { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.pc-line.plan { stroke: var(--dim); stroke-dasharray: 6 4; }
+.pc-line.log { stroke: var(--accent); }
+.pc-mk { stroke: var(--panel); stroke-width: 2; }
+.pc-mk.log { fill: var(--accent); }
+.pc-ring { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+.pc-hov { display: none; }
+.pc.on .pc-hov { display: block; }
+.pc-xh { stroke: var(--ink); stroke-width: 1; opacity: .55; }
+.pc-hc { stroke: var(--panel); stroke-width: 2; }
+.pc-hc.log { fill: var(--accent); }
+.pc-hc.plan { fill: var(--dim); }
+.pc-tip { position: absolute; top: 4px; display: none; background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; font-size: 13px; line-height: 1.35; pointer-events: none; white-space: nowrap; z-index: 2; color: var(--ink); font-variant-numeric: tabular-nums; }
+.pc-tip span { color: var(--dim); }
+.pc.on .pc-tip { display: block; }
+.pc-leg { display: flex; flex-wrap: wrap; gap: 6px 16px; margin: 4px 0 6px; font-size: 13px; color: var(--dim); }
+.pc-leg span { display: inline-flex; align-items: center; gap: 6px; }
+.pc-sum { margin: 0 0 8px; font-size: 14px; color: var(--dim); }
+.pc-sum b { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+.pc-table { max-height: 280px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+.pc-table table { width: 100%; border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; }
+.pc-table th { position: sticky; top: 0; background: var(--panel-2); text-align: left; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--dim); padding: 8px 10px; }
+.pc-table td { padding: 7px 10px; border-top: 1px solid var(--line); }
+.pc-table tr.now td { background: var(--panel-2); font-weight: 600; }
+.rbig { font-family: var(--font-display); font-weight: 800; font-size: 64px; line-height: 1; letter-spacing: .02em; font-variant-numeric: tabular-nums; margin: 2px 0 8px; }
+.rgoal { margin-top: 14px; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.rlist { display: flex; flex-direction: column; }
+.rrow { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; align-items: baseline; text-align: left; background: none; border: 0; border-top: 1px solid var(--line); padding: 10px 0; color: var(--ink); min-height: 52px; }
+.rrow:first-child { border-top: 0; }
+.rrow b { font-family: var(--font-display); font-weight: 800; font-size: 26px; font-variant-numeric: tabular-nums; grid-row: 1; grid-column: 2; }
+.rrow .rd { font-weight: 600; grid-row: 1; grid-column: 1; }
+.rrow .rp { color: var(--dim); font-size: 13px; grid-row: 2; grid-column: 1 / 3; }
+.rrow .rn { color: var(--dim); font-size: 13px; grid-row: 3; grid-column: 1 / 3; }
+.ltips { margin: 6px 0 0; padding-left: 18px; color: var(--dim); font-size: 14px; display: flex; flex-direction: column; gap: 6px; }
+
 /* header */
 .top { display: flex; align-items: center; gap: 12px; padding: 4px 0 2px; }
 .brand { min-width: 0; }
@@ -218,9 +345,11 @@ input[type="time"], input[type="number"], input[type="text"], input[type="date"]
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(20px, env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-weight: 500; z-index: 30; max-width: calc(100% - 32px); }
 .foot { text-align: center; color: var(--dim); font-size: 12px; letter-spacing: .04em; padding-top: 4px; }
 /* tabs, home and habit boards */
-.tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 6px; }
+.tabs { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)) minmax(0, .8fr); gap: 4px; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 6px; }
 .tabbtn { min-height: 46px; border-radius: 8px; border: 1px solid var(--line); background: var(--panel); color: var(--dim); font-family: var(--font-display); font-weight: 800; font-size: 16px; letter-spacing: .06em; }
 .tabbtn[aria-selected="true"] { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+@media (max-width: 420px) { .tabbtn { font-size: 13px; letter-spacing: .01em; } }
+@media (max-width: 380px) { .tabbtn { font-size: 12px; letter-spacing: 0; padding-inline: 0; } .tabs { gap: 3px; } }
 .tab { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
 .clock.xs { font-size: clamp(56px, 17vw, 96px); }
 .clock.ok { color: var(--good-t); }
@@ -320,9 +449,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     <button class="tabbtn" id="tb-bible" role="tab" data-action="tab" data-tab="bible" aria-selected="false">BIBLE</button>
     <button class="tabbtn" id="tb-books" role="tab" data-action="tab" data-tab="books" aria-selected="false">BOOKS</button>
     <button class="tabbtn" id="tb-gym" role="tab" data-action="tab" data-tab="gym" aria-selected="false">GYM</button>
+    <button class="tabbtn" id="tb-run" role="tab" data-action="tab" data-tab="run" aria-selected="false">5K</button>
   </nav>
   <main class="wrap" style="padding:0">
     <div class="tab" id="tab-home" role="tabpanel">
+      <section id="home-read" class="card" aria-label="Today's Bible reading"></section>
       <section id="home-today" class="card" aria-label="Today"></section>
       <section id="home-score" class="trio" aria-label="Streaks"></section>
       <section id="home-combo" class="card" aria-label="Combos"></section>
@@ -361,17 +492,27 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       <section id="books-goal" class="card" aria-label="Weekly reading goal"></section>
     </div>
     <div class="tab" id="tab-gym" role="tabpanel" hidden>
+      <section id="gym-lift" class="card" aria-label="Lifting workout"></section>
       <section id="gym-hero" class="card clock-card" aria-label="Gym this week"></section>
       <section id="gym-streak" class="grid2" aria-label="Gym streak and week"></section>
       <section id="gym-form" class="card" aria-label="Gym form"></section>
       <section id="gym-rec" class="card" aria-label="Gym records"></section>
       <section id="gym-log" class="card" aria-label="Gym log"></section>
       <section id="gym-goal" class="card" aria-label="Gym weekly goal"></section>
+      <section id="gym-plan" class="card" aria-label="Lifting plan" hidden></section>
+      <input type="file" id="lp-file" accept="application/json,.json" hidden>
+    </div>
+    <div class="tab" id="tab-run" role="tabpanel" hidden>
+      <section id="run-hero" class="card" aria-label="5K Saturday"></section>
+      <section id="run-stats" class="card" aria-label="Your 5K times"></section>
+      <section id="run-chart" class="card" aria-label="5K time chart"></section>
+      <section id="run-log" class="card" aria-label="Recent runs"></section>
     </div>
   </main>
   <div class="foot" id="foot"></div>
 </div>
 
+<div id="gate" class="gate" hidden><div class="gate-in" id="gate-in"></div></div>
 <div id="modal" class="modal" hidden>
   <div class="sheet" role="dialog" aria-modal="true" id="sheet"></div>
 </div>
@@ -408,7 +549,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   var settings = null;
   var checkins = {};
   var habits = { bible: {}, gym: {} };
-  var goals = { bible: 6, gym: 4, read: 120 };
+  var goals = { bible: 6, gym: 4, read: 120, runGoal: 0 };
   var tab = 'home';
   var habPop = null;
   var db = null;
@@ -492,7 +633,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
 
   /* ---------- storage ---------- */
   function writeLocal() {
-    try { localStorage.setItem(LS, JSON.stringify({ settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym, goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads })); } catch (e) {}
+    try { localStorage.setItem(LS, JSON.stringify({ settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym, goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs })); } catch (e) {}
   }
   function loadLocal() {
     try {
@@ -510,12 +651,15 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         habits[kd] = {};
         Object.keys(o[kd] || {}).forEach(function (k) { var e = cleanHabit(k, o[kd][k]); if (e) habits[kd][k] = e; });
       });
-      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read });
+      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read, runGoal: o.goals && o.goals.runGoal });
       planDone = cleanPlan({ done: o.plan });
       planlog = {}; Object.keys(o.planlog || {}).forEach(function (k) { var r = cleanPlanLog('r' + k, o.planlog[k]); if (r) planlog[r.i] = r; });
       notes = {}; Object.keys(o.notes || {}).forEach(function (k) { var n = cleanNote(k, o.notes[k]); if (n) notes[k] = n; });
       books = {}; Object.keys(o.books || {}).forEach(function (k) { var b = cleanBook(k, o.books[k]); if (b) books[k] = b; });
       reads = {}; Object.keys(o.reads || {}).forEach(function (k) { var r = cleanRead(k, o.reads[k]); if (r) reads[k] = r; });
+      lp = lpClean(o.lp, true);
+      lifts = {}; Object.keys(o.lifts || {}).forEach(function (k) { var l = cleanLift(k, o.lifts[k]); if (l) lifts[k] = l; });
+      runs = {}; Object.keys(o.runs || {}).forEach(function (k) { var r = cleanRun(k, o.runs[k]); if (r) runs[k] = r; });
     }
   }
   function cleanHabit(id, o) {
@@ -536,14 +680,17 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var at = typeof o.at === 'string' ? o.at : '';
     return { id: id, ref: typeof o.ref === 'string' ? o.ref.slice(0, 60) : id, text: o.text.slice(0, 4000), at: at, born: typeof o.born === 'string' && o.born ? o.born : at };
   }
+  function goalsOut() { return { bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read, runGoal: goals.runGoal || 0 }; }
   function cleanGoals(o) {
-    var g = { bible: 6, gym: 4, read: 120 };
+    var g = { bible: 6, gym: 4, read: 120, runGoal: 0 };
     if (o && typeof o === 'object') {
       var b = parseInt(o.bibleTarget, 10), y = parseInt(o.gymTarget, 10);
       if (b >= 1 && b <= 7) g.bible = b;
       if (y >= 1 && y <= 7) g.gym = y;
       var rm = parseInt(o.readMinutes, 10);
       if (rm >= 30 && rm <= 1200) g.read = rm;
+      var rgl = parseInt(o.runGoal, 10);
+      if (rgl >= 600 && rgl <= 10800) g.runGoal = rgl;
     }
     return g;
   }
@@ -580,6 +727,14 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       var nq = await db.collection('notes').get();
       notes = {};
       nq.docs.forEach(function (d) { var n = cleanNote(d.id, d.data()); if (n) notes[d.id] = n; });
+      var lg = await db.doc('app/lift').get();
+      lp = lg.exists ? lpParse(lg.data()) : null;
+      var liq = await db.collection('lifts').get();
+      lifts = {};
+      liq.docs.forEach(function (d) { var l = cleanLift(d.id, d.data()); if (l) lifts[d.id] = l; });
+      var ruq = await db.collection('runs').get();
+      runs = {};
+      ruq.docs.forEach(function (d) { var r = cleanRun(d.id, d.data()); if (r) runs[d.id] = r; });
       for (var kd of ['bible', 'gym']) {
         var hq = await db.collection(kd).get();
         habits[kd] = {};
@@ -620,7 +775,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   async function connect() {
     var d = null;
     try { if (window.claude && window.claude.use) d = await window.claude.use('db'); } catch (e) { d = null; }
-    if (!d && fbOn()) d = await fbConnect();
+    if (!d && fbOn()) {
+      gateShow(gateBrand() + '<p class="gload">Loading...</p>');
+      d = await fbConnect();
+      gateHide();
+    }
     if (!d) { dbChecked = true; setSync('local'); renderAll(); return; }
     db = d;
     dbChecked = true;
@@ -658,6 +817,25 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     db.collection('reads').onSnapshot(function (snap) {
       reads = {};
       snap.docs.forEach(function (x) { var r = cleanRead(x.id, x.data()); if (r) reads[x.id] = r; });
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.doc('app/lift').onSnapshot(function (snap) {
+      lp = snap.exists ? lpParse(snap.data()) : null;
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('lifts').onSnapshot(function (snap) {
+      var n = {};
+      snap.docs.forEach(function (x) { var l = cleanLift(x.id, x.data()); if (l) n[x.id] = l; });
+      Object.keys(liftDirty).forEach(function (k) { if (liftDirty[k] && lifts[k]) n[k] = lifts[k]; });
+      lifts = n;
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('runs').onSnapshot(function (snap) {
+      runs = {};
+      snap.docs.forEach(function (x) { var r = cleanRun(x.id, x.data()); if (r) runs[x.id] = r; });
       writeLocal();
       renderAll();
     }, fail);
@@ -1004,6 +1182,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     else if (tab === 'bible') { var hb = hModel('bible'); h = 'Streak <b>' + hb.dayStreak + '</b><br>' + hb.total + ' days read'; }
     else if (tab === 'books') { var hr = readModel(); h = 'Streak <b>' + hr.cur + '</b><br>' + nfmt(hr.total) + ' pts'; }
     else if (tab === 'gym') { var hg = hModel('gym'); h = 'Week streak <b>' + hg.wrun + '</b><br>' + hg.total + ' sessions'; }
+    else if (tab === 'run') { var hu = runModel(); h = 'Week streak <b>' + hu.cur + '</b><br>' + plural(hu.n, 'run', 'runs'); }
     else h = 'Today <b>' + todayTally() + '/4</b>';
     $('#rec').innerHTML = h;
     $('#gear').hidden = !(settings && tab === 'wake');
@@ -1022,18 +1201,20 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     renderHome();
     renderHabit('bible');
     renderHabit('gym');
+    renderLift();
     renderPlan();
     renderData();
     renderNotes();
     renderNotesView();
     renderBooks();
+    renderRun();
     renderFoot();
     habPop = null;
     readPop = false;
   }
   function setTab(t) {
     tab = t;
-    ['home', 'wake', 'bible', 'books', 'gym'].forEach(function (n) {
+    ['home', 'wake', 'bible', 'books', 'gym', 'run'].forEach(function (n) {
       $('#tab-' + n).hidden = n !== t;
       $('#tb-' + n).setAttribute('aria-selected', n === t ? 'true' : 'false');
     });
@@ -1072,7 +1253,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   async function setGoal(kd, n) {
     goals[kd] = Math.min(7, Math.max(1, n));
     renderAll();
-    await persist(function (d) { return d.doc('app/habits').set({ bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read }); });
+    await persist(function (d) { return d.doc('app/habits').set(goalsOut()); });
   }
   function hModel(kd) {
     var ent = habits[kd], target = goals[kd], now = new Date(), tk = dkey(now), curWk = dkey(weekStart(now));
@@ -1241,6 +1422,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   function planDateOf(i) { return addDays(fromKey(PLAN_START), i); }
   function planToday() { return Math.round((fromKey(dkey(new Date())) - fromKey(PLAN_START)) / 86400000); }
   function planRef(i) { return PLAN[Math.floor(i / 7)][i % 7]; }
+  function refLabel(ref) { var m = String(ref).match(/^(\S+)(\s.*)?$/); return m && BK_NAME[m[1]] ? BK_NAME[m[1]] + (m[2] || '') : ref; }
   function planModel() {
     var ti = planToday(), last = Math.min(ti, PLAN_N - 1), overdue = [], ahead = 0, done = 0, i;
     for (i = 0; i < PLAN_N; i++) {
@@ -1278,9 +1460,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (lg) right = '<span class="pm">' + MODES[lg.mode].label + '</span>';
     else if (!on && diff > 0) right = '<span class="late">' + plural(diff, 'day', 'days') + ' late</span>';
     else if (i > ti && !on) right = '<span class="late ok">' + (i - ti === 1 ? 'Tomorrow' : 'In ' + (i - ti) + ' days') + '</span>';
-    return '<button class="prow' + (on ? ' on' : '') + (today ? ' today' : '') + '" data-action="plan-open" data-i="' + i + '" aria-label="' + esc(planRef(i)) + ', ' + DOW[dt.getDay()] + ' ' + dateLabel(dkey(dt)) + (on ? ', done' : '') + '">' +
+    return '<button class="prow' + (on ? ' on' : '') + (today ? ' today' : '') + '" data-action="plan-open" data-i="' + i + '" aria-label="' + esc(refLabel(planRef(i))) + ', ' + DOW[dt.getDay()] + ' ' + dateLabel(dkey(dt)) + (on ? ', done' : '') + '">' +
       '<span class="box">' + (on ? '&#10003;' : '') + '</span>' +
-      '<span><div class="ref">' + esc(planRef(i)) + '</div><div class="meta">' + DOW[dt.getDay()] + ' ' + dateLabel(dkey(dt)) + ' &middot; ' + PLAN_COLS[i % 7] + (hasNotes(i) ? ' &middot; has notes' : '') + '</div></span>' +
+      '<span><div class="ref">' + esc(refLabel(planRef(i))) + '</div><div class="meta">' + DOW[dt.getDay()] + ' ' + dateLabel(dkey(dt)) + ' &middot; ' + PLAN_COLS[i % 7] + (hasNotes(i) ? ' &middot; has notes' : '') + '</div></span>' +
       '<span>' + right + '</span></button>';
   }
   function renderPlan() {
@@ -1393,7 +1575,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
   function planSheetHTML(i) {
     var dt = planDateOf(i), on = planDone.charAt(i) === '1', lg = planlog[i], tk = dkey(new Date());
-    var h = '<h3>' + esc(planRef(i)) + '</h3><p class="note" style="margin:-6px 0 0">' + DOWL[dt.getDay()] + ', ' + dateLabel(dkey(dt)) + ' &middot; ' + PLAN_COLS[i % 7] + '</p>';
+    var h = '<h3>' + esc(refLabel(planRef(i))) + '</h3><p class="note" style="margin:-6px 0 0">' + DOWL[dt.getDay()] + ', ' + dateLabel(dkey(dt)) + ' &middot; ' + PLAN_COLS[i % 7] + '</p>';
     h += '<div class="fld"><span>' + (lg ? 'HOW YOU TOOK IT IN' : 'HOW DID YOU TAKE IT IN?') + '</span><div class="modes">' +
       ['R', 'B', 'L'].map(function (k) {
         return '<button class="modebtn' + (lg && lg.mode === k ? ' sel' : '') + '" data-action="plan-mode" data-i="' + i + '" data-mode="' + k + '"><b>' + MODES[k].label + '</b></button>';
@@ -1539,14 +1721,40 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       }
     };
   }
-  function fbSignInHTML() {
-    return '<h3>SIGN IN</h3><p>Sign in to sync your data. Use the email and password you made for your Daily Discipline account.</p>' +
-      '<label class="fld"><span>EMAIL</span><input type="email" id="fb-email" autocomplete="username" autocapitalize="none" inputmode="email"></label>' +
-      '<label class="fld"><span>PASSWORD</span><input type="password" id="fb-pass" autocomplete="current-password"></label>' +
-      '<div class="row"><button class="btn primary" data-action="fb-signin">Sign in</button><button class="btn" data-action="fb-create">Create account</button></div>' +
-      '<p class="note" id="fb-msg" style="margin:0">First time? Tap Create account.</p>';
+  function gateShow(html, focusSel) {
+    $('#gate-in').innerHTML = html;
+    $('#gate').hidden = false;
+    var f = focusSel && $(focusSel);
+    if (f) { try { f.focus(); } catch (e) {} }
   }
-  function fbPromptSignIn() { if (fb) openModal(fbSignInHTML(), '#fb-email'); }
+  function gateHide() { $('#gate').hidden = true; $('#gate-in').innerHTML = ''; }
+  function gateBrand() { return '<div class="gbrand"><h1>DAILY DISCIPLINE</h1><div class="tag">Build the good. Kill the bad.</div></div>'; }
+  function fbSignInHTML() {
+    return gateBrand() + '<form id="gate-form" class="gform" method="post" action="#">' +
+      '<h2 class="gh">SIGN IN</h2>' +
+      '<label class="fld"><span>EMAIL</span><input type="email" id="fb-email" name="email" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" inputmode="email" required></label>' +
+      '<label class="fld"><span>PASSWORD</span><input type="password" id="fb-pass" name="password" autocomplete="current-password" required></label>' +
+      '<button class="btn primary gwide" type="submit">Sign in</button>' +
+      '<div class="grow"><button class="link" type="button" data-action="fb-show">Show password</button><button class="link" type="button" data-action="fb-reset">Forgot password?</button></div>' +
+      '<p class="gmsg" id="fb-msg" role="status">&nbsp;</p>' +
+      '<div class="gor">First time here?</div>' +
+      '<button class="btn gwide" type="button" data-action="fb-create">Create account</button></form>';
+  }
+  function fbPromptSignIn() { if (fb) gateShow(fbSignInHTML(), '#fb-email'); }
+  async function fbReset() {
+    var email = ($('#fb-email').value || '').trim(), msg = $('#fb-msg');
+    if (!email) { msg.textContent = 'Type your email above first.'; return; }
+    msg.textContent = 'Working...';
+    try {
+      await fb.A.sendPasswordResetEmail(fb.auth, email);
+      msg.textContent = 'If that email has an account, a reset link is on its way. Check your inbox and spam.';
+    } catch (e) { msg.textContent = fbErr(e); }
+  }
+  function fbShowPass(b) {
+    var i = $('#fb-pass'), show = i.type === 'password';
+    i.type = show ? 'text' : 'password';
+    b.textContent = show ? 'Hide password' : 'Show password';
+  }
   function fbErr(e) {
     var c = e && e.code || '';
     if (c === 'auth/invalid-credential' || c === 'auth/wrong-password' || c === 'auth/user-not-found' || c === 'auth/invalid-email') return 'Wrong email or password.';
@@ -1564,20 +1772,21 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     msg.textContent = 'Working...';
     try {
       var cred = create ? await fb.A.createUserWithEmailAndPassword(fb.auth, email, pass) : await fb.A.signInWithEmailAndPassword(fb.auth, email, pass);
-      closeModal();
+      gateHide();
       if (fbResolve) { var r = fbResolve; fbResolve = null; r(cred.user); }
     } catch (e) { msg.textContent = fbErr(e); }
   }
   async function pushAll(replace) {
-    var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, planlog: {} };
+    var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, lifts: lifts, runs: runs, planlog: {} };
     Object.keys(planlog).forEach(function (k) { sets.planlog['r' + k] = planlog[k]; });
     if (settings) {
       var out = { alarms: {}, weeklyTarget: settings.weeklyTarget, startDate: settings.startDate, walk: settings.walk || 0 };
       Object.keys(settings.alarms).forEach(function (k) { out.alarms[k] = settings.alarms[k]; });
       w.push(db.doc('app/settings').set(out));
     } else if (replace) w.push(db.doc('app/settings').delete());
-    w.push(db.doc('app/habits').set({ bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read }));
+    w.push(db.doc('app/habits').set(goalsOut()));
     w.push(db.doc('app/plan').set({ done: planDone }));
+    if (lp) w.push(db.doc('app/lift').set({ json: JSON.stringify(lp) })); else if (replace) w.push(db.doc('app/lift').delete());
     var names = Object.keys(sets);
     for (var i = 0; i < names.length; i++) {
       var c = names[i];
@@ -1602,7 +1811,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   /* ---------- backup (standalone app only) ---------- */
   function backupObj() {
     return { app: 'dailydiscipline', v: 1, exportedAt: new Date().toISOString(), settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym,
-      goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads };
+      goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs };
   }
   function markBackup() { try { localStorage.setItem(LS + '.backup', new Date().toISOString()); } catch (e) {} renderAll(); }
   async function exportBackup() {
@@ -1686,8 +1895,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     else { bMain = 'Not yet'; bSub = mb.dayStreak ? mb.dayStreak + '-day streak on the line' : 'Start a streak today'; bAct = '<button class="btn primary" data-action="hab-toggle" data-kind="bible" data-key="' + tk + '">Mark read</button>'; }
     var pm = planModel();
     if (pm.ti >= 0) bSub += ' &middot; ' + (pm.behind > 0 ? pm.behind + ' behind on plan' : pm.ahead > 0 ? pm.ahead + ' ahead on plan' : 'plan on pace');
-    var ge = habits.gym[tk], gMain, gSub, gAct;
-    if (ge) { gMain = 'Trained'; gSub = mg.weekCount + '/' + mg.target + ' this week' + (atLabel(ge) ? ' &middot; ' + atLabel(ge) : ''); gAct = '<span class="pill bg-ontime">Done</span>'; }
+    var ge = habits.gym[tk], gMain, gSub, gAct, lt = lpToday(), ls = lt ? sessOf(lt.w, lt.day.id) : null;
+    if (ge) { gMain = 'Trained'; gSub = (ls && ls.done ? esc(lt.day.name) + ' &middot; ' : '') + mg.weekCount + '/' + mg.target + ' this week' + (atLabel(ge) ? ' &middot; ' + atLabel(ge) : ''); gAct = '<span class="pill bg-ontime">Done</span>'; }
+    else if (lt) { gMain = esc(lt.day.name); gSub = (liftHasData(ls) ? 'In progress' : 'Not started') + ' &middot; ' + mg.weekCount + '/' + mg.target + ' this week'; gAct = '<button class="btn primary" data-action="lift-go" data-w="' + lt.w + '" data-d="' + esc(lt.day.id) + '">Open</button>'; }
     else { gMain = 'Not logged'; gSub = mg.weekCount + '/' + mg.target + ' this week'; gAct = '<button class="btn primary" data-action="hab-toggle" data-kind="gym" data-key="' + tk + '">Log gym</button>'; }
     var mr = readModel(), kMain, kSub, kAct;
     if (mr.todays.length) {
@@ -1696,11 +1906,27 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     } else {
       kMain = 'Not yet'; kSub = mr.cur ? mr.cur + '-day streak on the line' : 'Start a streak today'; kAct = '<button class="btn primary" data-action="read-log">Log</button>';
     }
+    var ru = runModel(), rMain, rSub, rAct, nsd = nextSat(new Date());
+    if (ru.thisWk) { rMain = fmt(ru.thisWk.seconds); rSub = (ru.n > 1 && ru.pr === ru.thisWk ? 'New best' : 'Best ' + fmt(ru.pr.seconds)) + (ru.cur > 1 ? ' &middot; ' + ru.cur + ' weeks in a row' : ''); rAct = '<span class="pill bg-ontime">Done</span>'; }
+    else if (new Date().getDay() === 6) { rMain = '5K day'; rSub = ru.last ? 'Last ' + fmt(ru.last.seconds) + ' &middot; best ' + fmt(ru.pr.seconds) : 'Log your first one'; rAct = '<button class="btn primary" data-action="run-log">Log</button>'; }
+    else { rMain = 'Saturday'; rSub = 'Next 5K ' + dateLabel(dkey(nsd)) + (ru.last ? ' &middot; last ' + fmt(ru.last.seconds) : ''); rAct = '<button class="btn" data-action="tab" data-tab="run">Open</button>'; }
     function row(l, main, sub, act) {
       return '<div class="trow"><span class="lbl">' + l + '</span><div class="main">' + main + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div><div>' + act + '</div></div>';
     }
+    var pr = planModel(), rh;
+    if (pr.ti < 0) rh = '<h2>TODAY\'S READING</h2><p class="lead" style="margin:0">Your plan starts ' + DOWL[planDateOf(0).getDay()] + ', ' + dateLabel(PLAN_START) + '.</p>';
+    else {
+      rh = '<h2>TODAY\'S READING<small>Week ' + Math.min(52, Math.floor(pr.ti / 7) + 1) + ' of 52</small></h2><div class="plist">';
+      rh += pr.ti < PLAN_N ? planRow(pr.ti, pr.ti, true) : '<p class="lead" style="margin:0">You finished the plan.</p>';
+      if (pr.past.length) {
+        rh += '<h3>Behind &middot; ' + pr.past.length + '</h3>' + pr.past.slice(0, 2).map(function (i) { return planRow(i, pr.ti, false); }).join('');
+        if (pr.past.length > 2) rh += '<button class="link" data-action="tab" data-tab="bible" style="margin-top:6px">See all ' + pr.past.length + ' on the Bible tab</button>';
+      }
+      rh += '</div>';
+    }
+    $('#home-read').innerHTML = rh;
     $('#home-today').innerHTML = '<h2>TODAY<small>' + todayTally() + ' of 4 done</small></h2><div class="rows2">' +
-      row('WAKE', wMain, wSub, wAct) + row('BIBLE', bMain, bSub, bAct) + row('GYM', gMain, gSub, gAct) + row('BOOKS', kMain, kSub, kAct) + '</div>';
+      row('WAKE', wMain, wSub, wAct) + row('BIBLE', bMain, bSub, bAct) + row('GYM', gMain, gSub, gAct) + row('BOOKS', kMain, kSub, kAct) + row('5K', rMain, rSub, rAct) + '</div>';
     function card(tabName, label, num, sub) {
       return '<button class="tabstat" data-action="tab" data-tab="' + tabName + '"><label>' + label + '</label><div class="num">' + num + '</div><div class="sub">' + sub + '</div></button>';
     }
@@ -1914,7 +2140,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   async function setReadGoal(n) {
     goals.read = Math.min(1200, Math.max(30, n));
     renderAll();
-    await persist(function (d) { return d.doc('app/habits').set({ bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read }); });
+    await persist(function (d) { return d.doc('app/habits').set(goalsOut()); });
   }
 
   /* sheets */
@@ -2071,6 +2297,1184 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
   }
 
+  /* ---------- lifting plan and workout log ---------- */
+  var LP_TYPES = { lift: 1, cardio: 1, hold: 1, reps: 1 };
+  var LP_UNIT = { lift: 'lb', cardio: 'min', hold: 'sec', reps: 'reps' };
+  var lp = null;          // the active plan, cleaned
+  var lifts = {};         // session id -> { id, pid, week, day, date, items, note, done, at }
+  var liftSel = { w: 0, d: '', auto: true };
+  var liftDirty = {}, liftTimer = null, pendingPlan = null;
+  var STARTER_PLAN = {"app":"dailydiscipline-lifting","v":1,"rev":2,"name":"1-Year Lifting Plan","where":"10 Star Fitness Simpsonville","goal":"Get strong on the barbell and build muscle. 5 weekday mornings, 25-40 minutes each. Run a 5K on Saturdays.","start":"2026-10-12","weeks":52,"phases":[{"from":1,"to":8,"name":"Rebuild","note":"Dumbbells and machines. Rebuild the habit and learn the moves."},{"from":9,"to":24,"name":"Barbell Base","note":"Learn the bar lifts light and crisp. The weight climbs every week."},{"from":25,"to":40,"name":"Build","note":"Heavier. The weight climbs slower. Some weeks you repeat a weight."},{"from":41,"to":52,"name":"Strength","note":"Heavy fives. Week 52 is test week."}],"deloads":[8,16,24,32,40,48],"weekNotes":["Learn the moves. 2 sets. Weights should feel easy (3-4 reps left in the tank).","Still easy. 2 sets. Go up a little if Week 1 felt too light (about 3 reps left).","Build phase starts. 3 sets. Pick weights with 1-2 reps left at the end of each set.","3 sets. Hit the top of the rep range on all sets? Go up one dumbbell size next time.","3 sets. Thursday switches to intervals.","3 sets. Keep adding reps, then weight.","3 sets. Last hard week before the easy week.","Easy week (deload). Same weights as Week 7, only 2 sets. Next week the barbell starts.","Barbell phase starts. Squat, bench, deadlift and overhead press now use the bar. Start light and make every rep clean. Friday adds a light squat, hamstring curls and calf raises.","Add the planned weight if last week's reps were all clean. The plan climbs about 5 to 10 lb a week on the big lifts.","Keep every rep crisp. If bar speed slows or form slips, stay at last week's weight and repeat it.","Plan weights keep climbing. If it feels easy, trust the plan anyway. Your joints and tendons are catching up to your muscles.","Quarter mark. 5 reps on every set, 1 or 2 reps left in the tank. Bar speed should still be quick.","Plan weight on each lift. Stop a set early if form breaks. Quality beats the number.","Last hard week before the easy week. Get your sleep and your protein.","Easy week (deload). Weights drop about 10 percent and you do one fewer set. Leave feeling fresh.","Block 2 of the barbell phase. Weights keep climbing, a little slower. Hip thrusts move to the barbell.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Easy week (deload). Weights drop about 10 percent and you do one fewer set.","Build phase. The weights climb more slowly now. Some weeks the number barely moves. That is normal.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Easy week (deload). Weights drop about 10 percent and you do one fewer set.","Build phase continues. Same movements, heavier bar. Stay 1 or 2 reps from failure on every set.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Easy week (deload). Weights drop about 10 percent and you do one fewer set.","Strength phase. Heavy, crisp fives. No grinding. If a rep slows to a crawl, end the set.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Plan weight on each lift. All reps clean, 1 or 2 reps in the tank. Add weight next week if it went well.","Easy week (deload). Weights drop about 10 percent and you do one fewer set. Final push starts next week.","Final push. Last three hard weeks. Be strict about warm-up sets and form.","Plan weight on each lift. Keep rest times honest, 2 to 3 minutes between heavy sets.","Last build week. Next week you test. Do not add extra volume.","Test week. Work up to your best clean set of 5 on each lift. Stop with a rep in reserve. Log it, then ask Claude for your next block."],"tips":["You are coming back after about 4 years off. Muscles return fast. Joints and tendons take longer. Keep the first barbell weeks light and crisp, and skip the urge to jump ahead.","Barbell lifts show a planned weight and the chart on the Plan card compares it to what you log. Too easy or too hard? Tap Set where I am now and enter your real numbers.","Dumbbells: log the number printed on the dumbbell, never the total. For a pair, that is one dumbbell. Goblet squat, one-arm row, hip thrust and overhead triceps extension use a single dumbbell, so log that one.","Each exercise has a rep range, like 8-12. Hit the top of the range on every set, then go up 5 lb next time.","At 5 AM with no spotter: set the rack safeties every time, just below squat depth and just above your chest for bench. Never bench without them.","Every 8th week is a deload. Weights drop about 10 percent and you do one fewer set. Friday legs stay light so your Saturday 5K is doable.","Protein: aim for roughly 125-175 g a day (about 0.7-1 g per lb of body weight). Eating a little more than you burn helps you grow.","Sore the first weeks is normal. Sharp pain is not. Stop that exercise and swap it. Sitting at a desk all day makes hips and upper back stiff, so do the warm-up openers."],"days":[{"id":"A","name":"Lift A","dow":1,"warmup":"About 8 minutes before you touch a weight. Squat, bench, row and shoulders today. Your hips and upper back get stiff from sitting, so do not skip the openers.","items":[{"id":"A1a","tag":"1a","name":[{"from":1,"to":8,"v":"Goblet Squat"},{"from":9,"to":52,"v":"Back Squat"}],"type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":[{"from":1,"to":8,"v":"8-12"},{"from":9,"to":52,"v":"5"}],"rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":[{"from":1,"to":8,"v":"Hold one dumbbell at your chest. Sit your hips down between your heels, chest up, knees track over toes. Log the weight of the dumbbell."},{"from":9,"to":52,"v":"Bar across your upper back, not on your neck. Set the rack safeties just below your lowest depth. Feet shoulder width, sit down between your hips, chest up, then drive up."}],"ramp":true,"lb":[{"from":9,"to":9,"v":45},{"from":10,"to":10,"v":50},{"from":11,"to":11,"v":55},{"from":12,"to":12,"v":60},{"from":13,"to":13,"v":70},{"from":14,"to":14,"v":75},{"from":15,"to":15,"v":80},{"from":16,"to":16,"v":70},{"from":17,"to":17,"v":85},{"from":18,"to":18,"v":90},{"from":19,"to":19,"v":95},{"from":20,"to":20,"v":100},{"from":21,"to":21,"v":105},{"from":22,"to":22,"v":110},{"from":23,"to":23,"v":115},{"from":24,"to":24,"v":105},{"from":25,"to":26,"v":120},{"from":27,"to":27,"v":125},{"from":28,"to":28,"v":130},{"from":29,"to":29,"v":135},{"from":30,"to":30,"v":140},{"from":31,"to":31,"v":145},{"from":32,"to":32,"v":130},{"from":33,"to":33,"v":145},{"from":34,"to":34,"v":150},{"from":35,"to":36,"v":155},{"from":37,"to":37,"v":160},{"from":38,"to":39,"v":165},{"from":40,"to":40,"v":150},{"from":41,"to":42,"v":170},{"from":43,"to":44,"v":175},{"from":45,"to":47,"v":180},{"from":48,"to":48,"v":160},{"from":49,"to":52,"v":185}]},{"id":"A1b","tag":"1b","name":[{"from":1,"to":8,"v":"Dumbbell Bench Press"},{"from":9,"to":52,"v":"Bench Press"}],"type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":[{"from":1,"to":8,"v":"8-12"},{"from":9,"to":52,"v":"5"}],"rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":[{"from":1,"to":8,"v":"Feet flat, shoulder blades pinched back. Lower to mid-chest, press up. Log the weight of one dumbbell."},{"from":9,"to":52,"v":"Set the safeties just above your chest so you can never get pinned. Feet planted, shoulder blades pinched back. Lower to mid-chest, press up. No bouncing."}],"lb":[{"from":9,"to":9,"v":45},{"from":10,"to":11,"v":50},{"from":12,"to":12,"v":55},{"from":13,"to":13,"v":60},{"from":14,"to":15,"v":65},{"from":16,"to":16,"v":60},{"from":17,"to":17,"v":70},{"from":18,"to":19,"v":75},{"from":20,"to":20,"v":80},{"from":21,"to":22,"v":85},{"from":23,"to":23,"v":90},{"from":24,"to":24,"v":80},{"from":25,"to":25,"v":90},{"from":26,"to":27,"v":95},{"from":28,"to":28,"v":100},{"from":29,"to":30,"v":105},{"from":31,"to":31,"v":110},{"from":32,"to":32,"v":100},{"from":33,"to":34,"v":110},{"from":35,"to":36,"v":115},{"from":37,"to":38,"v":120},{"from":39,"to":39,"v":125},{"from":40,"to":40,"v":110},{"from":41,"to":42,"v":125},{"from":43,"to":46,"v":130},{"from":47,"to":47,"v":135},{"from":48,"to":48,"v":120},{"from":49,"to":52,"v":135}]},{"id":"A2a","tag":"2a","name":"One-Arm Dumbbell Row","type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":"10-12 each side","rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":"Hand and knee on bench, back flat. Pull the dumbbell toward your hip. Log the weight of the dumbbell."},{"id":"A2b","tag":"2b","name":"Dumbbell Lateral Raise","type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":"12-15","rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":"Go light. Slight bend in elbows, raise out to shoulder height, lower slowly. Log the weight of one dumbbell."},{"id":"A2c","tag":"3","name":"Face Pull","type":"lift","sets":2,"reps":"12-15","rest":"60 sec","cue":"Cable at face height with a rope. Pull toward your forehead, elbows high and wide, squeeze your upper back. Keep it light. (Weight = stack number.)"},{"id":"A3a","tag":"4a","name":"Dumbbell Curl","type":"lift","sets":2,"reps":"10-12","rest":"60 sec","cue":"Only if you have time. Elbows pinned at your sides, no swinging. Log the weight of one dumbbell.","bonus":true},{"id":"A3b","tag":"4b","name":"Overhead Triceps Extension","type":"lift","sets":2,"reps":"10-12","rest":"60 sec","cue":"Only if you have time. Hold one dumbbell overhead with both hands, lower behind head. Log the weight of the dumbbell.","bonus":true}],"warm":[{"id":"W1","name":"Easy bike","dose":"5 min","cue":"Easy pace. Build to a light sweat."},{"id":"W2","name":"Cat-cow","dose":"8 reps","cue":"Slow. Move through your whole spine."},{"id":"W7","name":"Half-kneeling hip flexor stretch","dose":"30 sec each side","cue":"Sitting all day tightens the front of your hips. Tuck your tailbone under and lean forward until you feel it."},{"id":"W3","name":"Bodyweight squat with pause","dose":"8 reps","cue":"Sit deep, chest up, pause 2 sec at the bottom."},{"id":"W4","name":"Open book rotation","dose":"6 each side","cue":"On your side, knees stacked. Open your top arm and follow it with your eyes."},{"id":"W5","name":"Scap push-up","dose":"10 reps","cue":"Plank position. Only your shoulder blades move."},{"id":"W6","name":"Arm circles","dose":"10 each direction","cue":"Big circles, forward then back."}]},{"id":"Tue","name":"Cardio + Core","dow":2,"warmup":"About 2 minutes. Then start the cardio easy.","items":[{"id":"Tue1","tag":"1","name":"Steady cardio: incline walk, bike, or stairs","type":"cardio","sets":1,"target":[{"from":1,"to":4,"v":"15-18 min at a pace where you can talk in short sentences"},{"from":5,"to":12,"v":"20 min at a pace where you can talk in short sentences"},{"from":13,"to":52,"v":"25 min at a pace where you can talk in short sentences"}],"cue":"Incline treadmill walk, bike, or stair climber."},{"id":"Tue2a","tag":"2a","name":"Plank","type":"hold","sets":2,"rest":"30-60 sec between rounds","target":[{"from":1,"to":2,"v":"20-30 sec"},{"from":3,"to":16,"v":"30-45 sec"},{"from":17,"to":52,"v":"45-60 sec"}],"cue":"Straight line head to heels. Do the three core moves back to back = 1 round."},{"id":"Tue2b","tag":"2b","name":"Dead Bug","type":"reps","sets":2,"target":"8 each side","cue":"Low back pressed into the floor."},{"id":"Tue2c","tag":"2c","name":"Side Plank","type":"hold","sets":2,"target":[{"from":1,"to":2,"v":"15-20 sec each side"},{"from":3,"to":16,"v":"20-30 sec each side"},{"from":17,"to":52,"v":"30-40 sec each side"}],"cue":"Log the shorter side."}],"warm":[{"id":"W1","name":"Cat-cow","dose":"8 reps","cue":"Slow. Move through your whole spine."},{"id":"W2","name":"Bird dog","dose":"6 each side","cue":"Reach long, keep your hips level."},{"id":"W3","name":"Glute bridge","dose":"10 reps","cue":"Squeeze your glutes for 1 sec at the top."}]},{"id":"B","name":"Lift B","dow":3,"warmup":"About 8 minutes before you touch a weight. Deadlift, overhead press, pulldown and lunges today. Do not skip the hip opener.","items":[{"id":"B1a","tag":"1a","name":[{"from":1,"to":8,"v":"Dumbbell Romanian Deadlift"},{"from":9,"to":52,"v":"Deadlift"}],"type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":15,"v":2},{"from":16,"to":16,"v":1},{"from":17,"to":23,"v":2},{"from":24,"to":24,"v":1},{"from":25,"to":31,"v":2},{"from":32,"to":32,"v":1},{"from":33,"to":39,"v":2},{"from":40,"to":40,"v":1},{"from":41,"to":47,"v":2},{"from":48,"to":48,"v":1},{"from":49,"to":52,"v":2}],"reps":[{"from":1,"to":8,"v":"8-12"},{"from":9,"to":52,"v":"5"}],"rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":[{"from":1,"to":8,"v":"Soft knees, push hips back, slide dumbbells down your thighs. Keep your back flat. Log the weight of one dumbbell."},{"from":9,"to":52,"v":"Bar over mid-foot, back flat, then push the floor away and stand tall. Keep the bar close to your legs. If the bar sits lower than the standard plate height, set it on blocks or rack pins at that height."}],"ramp":true,"lb":[{"from":9,"to":9,"v":95},{"from":10,"to":10,"v":100},{"from":11,"to":11,"v":105},{"from":12,"to":12,"v":110},{"from":13,"to":13,"v":115},{"from":14,"to":14,"v":120},{"from":15,"to":15,"v":125},{"from":16,"to":16,"v":110},{"from":17,"to":17,"v":130},{"from":18,"to":18,"v":135},{"from":19,"to":19,"v":140},{"from":20,"to":20,"v":145},{"from":21,"to":21,"v":150},{"from":22,"to":22,"v":155},{"from":23,"to":23,"v":160},{"from":24,"to":24,"v":145},{"from":25,"to":26,"v":165},{"from":27,"to":27,"v":170},{"from":28,"to":28,"v":175},{"from":29,"to":30,"v":180},{"from":31,"to":31,"v":185},{"from":32,"to":32,"v":165},{"from":33,"to":34,"v":190},{"from":35,"to":35,"v":195},{"from":36,"to":37,"v":200},{"from":38,"to":39,"v":205},{"from":40,"to":40,"v":185},{"from":41,"to":42,"v":210},{"from":43,"to":44,"v":215},{"from":45,"to":47,"v":220},{"from":48,"to":48,"v":200},{"from":49,"to":52,"v":225}]},{"id":"B1b","tag":"1b","name":[{"from":1,"to":8,"v":"Seated Dumbbell Shoulder Press"},{"from":9,"to":52,"v":"Overhead Press"}],"type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":[{"from":1,"to":8,"v":"8-12"},{"from":9,"to":52,"v":"5"}],"rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":[{"from":1,"to":8,"v":"Bench upright, back against pad. Press overhead without arching your low back. Log the weight of one dumbbell."},{"from":9,"to":52,"v":"Stand tall, ribs down, glutes tight. Press the bar up and slightly back, then lock out with your head through. Do not lean back."}],"lb":[{"from":9,"to":10,"v":45},{"from":11,"to":12,"v":50},{"from":13,"to":15,"v":55},{"from":16,"to":16,"v":50},{"from":17,"to":18,"v":60},{"from":19,"to":21,"v":65},{"from":22,"to":23,"v":70},{"from":24,"to":24,"v":65},{"from":25,"to":25,"v":70},{"from":26,"to":29,"v":75},{"from":30,"to":31,"v":80},{"from":32,"to":32,"v":70},{"from":33,"to":34,"v":80},{"from":35,"to":38,"v":85},{"from":39,"to":39,"v":90},{"from":40,"to":40,"v":80},{"from":41,"to":45,"v":90},{"from":46,"to":47,"v":95},{"from":48,"to":48,"v":85},{"from":49,"to":52,"v":95}]},{"id":"B2a","tag":"2a","name":"Lat Pulldown","type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":"10-12","rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":"Pull bar to upper chest, squeeze shoulder blades down. No swinging. (Weight = stack number.)"},{"id":"B2b","tag":"2b","name":"Dumbbell Reverse Lunge","type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":"8-10 each leg","rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":"Step back, lower back knee toward floor, push up through the front heel. Log the weight of one dumbbell."},{"id":"B2c","tag":"3","name":"Face Pull","type":"lift","sets":2,"reps":"12-15","rest":"60 sec","cue":"Cable at face height with a rope. Pull toward your forehead, elbows high and wide, squeeze your upper back. Keep it light. (Weight = stack number.)"},{"id":"B3a","tag":"4a","name":"Dumbbell Curl","type":"lift","sets":2,"reps":"10-12","rest":"60 sec","cue":"Only if you have time. Elbows pinned at your sides, no swinging. Log the weight of one dumbbell.","bonus":true},{"id":"B3b","tag":"4b","name":"Overhead Triceps Extension","type":"lift","sets":2,"reps":"10-12","rest":"60 sec","cue":"Only if you have time. Hold one dumbbell overhead with both hands, lower behind head. Log the weight of the dumbbell.","bonus":true}],"warm":[{"id":"W1","name":"Easy bike","dose":"5 min","cue":"Easy pace. Build to a light sweat."},{"id":"W2","name":"Cat-cow","dose":"8 reps","cue":"Slow. Move through your whole spine."},{"id":"W7","name":"Half-kneeling hip flexor stretch","dose":"30 sec each side","cue":"Sitting all day tightens the front of your hips. Tuck your tailbone under and lean forward until you feel it."},{"id":"W3","name":"Glute bridge","dose":"10 reps","cue":"Squeeze your glutes for 1 sec at the top."},{"id":"W4","name":"Bodyweight hip hinge","dose":"10 reps","cue":"Soft knees, hips back, back flat. Reach your hands down your thighs."},{"id":"W5","name":"Bodyweight reverse lunge","dose":"6 each side","cue":"Step back, lower under control, push up through the front heel."},{"id":"W6","name":"Arm circles","dose":"10 each direction","cue":"Big circles, forward then back."}]},{"id":"Thu","name":"Cardio + Core","dow":4,"warmup":"About 2 minutes. Then start the cardio easy.","items":[{"id":"Thu1","tag":"1","name":[{"from":1,"to":4,"v":"Steady cardio: incline walk, bike, or stairs"},{"from":5,"to":52,"v":"Intervals: bike or treadmill"}],"type":"cardio","sets":1,"target":[{"from":1,"to":4,"v":"15-18 min at a pace where you can talk in short sentences"},{"from":5,"to":16,"v":"3 min easy, then 6 rounds of 30 sec hard / 90 sec easy (about 15 min)"},{"from":17,"to":52,"v":"3 min easy, then 8 rounds of 30 sec hard / 90 sec easy (about 20 min)"}],"cue":"Incline treadmill walk, bike, or stair climber."},{"id":"Thu2a","tag":"2a","name":"Plank","type":"hold","sets":2,"rest":"30-60 sec between rounds","target":[{"from":1,"to":2,"v":"20-30 sec"},{"from":3,"to":16,"v":"30-45 sec"},{"from":17,"to":52,"v":"45-60 sec"}],"cue":"Straight line head to heels. Do the three core moves back to back = 1 round."},{"id":"Thu2b","tag":"2b","name":"Dead Bug","type":"reps","sets":2,"target":"8 each side","cue":"Low back pressed into the floor."},{"id":"Thu2c","tag":"2c","name":"Side Plank","type":"hold","sets":2,"target":[{"from":1,"to":2,"v":"15-20 sec each side"},{"from":3,"to":16,"v":"20-30 sec each side"},{"from":17,"to":52,"v":"30-40 sec each side"}],"cue":"Log the shorter side."}],"warm":[{"id":"W1","name":"Cat-cow","dose":"8 reps","cue":"Slow. Move through your whole spine."},{"id":"W2","name":"Bird dog","dose":"6 each side","cue":"Reach long, keep your hips level."},{"id":"W3","name":"Glute bridge","dose":"10 reps","cue":"Squeeze your glutes for 1 sec at the top."}]},{"id":"C","name":"Lift C","dow":5,"warmup":"About 8 minutes before you touch a weight. Incline press, split squat, row and hip thrust today.","items":[{"id":"C1a","tag":"1a","name":"Incline Dumbbell Press","type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":"8-12","rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":"Bench at 30-45 degrees. Lower to upper chest, press up. Log the weight of one dumbbell.","ramp":true},{"id":"C1b","tag":"1b","name":[{"from":1,"to":8,"v":"Bulgarian Split Squat"},{"from":9,"to":52,"v":"Back Squat (light)"}],"type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":15,"v":2},{"from":16,"to":16,"v":1},{"from":17,"to":23,"v":2},{"from":24,"to":24,"v":1},{"from":25,"to":31,"v":2},{"from":32,"to":32,"v":1},{"from":33,"to":39,"v":2},{"from":40,"to":40,"v":1},{"from":41,"to":47,"v":2},{"from":48,"to":48,"v":1},{"from":49,"to":52,"v":2}],"reps":[{"from":1,"to":8,"v":"8-10 each leg"},{"from":9,"to":52,"v":"5"}],"rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":[{"from":1,"to":8,"v":"Back foot on bench, drop straight down. Use body weight only in Week 1. Log the weight of one dumbbell."},{"from":9,"to":52,"v":"Technique day. Same form as Monday at about 80 percent of Monday's weight. Safeties set. Stop with plenty left, Saturday is 5K day."}],"lb":[{"from":9,"to":11,"v":45},{"from":12,"to":12,"v":50},{"from":13,"to":13,"v":55},{"from":14,"to":14,"v":60},{"from":15,"to":15,"v":65},{"from":16,"to":16,"v":55},{"from":17,"to":18,"v":70},{"from":19,"to":19,"v":75},{"from":20,"to":20,"v":80},{"from":21,"to":21,"v":85},{"from":22,"to":23,"v":90},{"from":24,"to":24,"v":85},{"from":25,"to":26,"v":95},{"from":27,"to":27,"v":100},{"from":28,"to":28,"v":105},{"from":29,"to":30,"v":110},{"from":31,"to":31,"v":115},{"from":32,"to":32,"v":105},{"from":33,"to":33,"v":115},{"from":34,"to":34,"v":120},{"from":35,"to":36,"v":125},{"from":37,"to":39,"v":130},{"from":40,"to":40,"v":120},{"from":41,"to":42,"v":135},{"from":43,"to":44,"v":140},{"from":45,"to":47,"v":145},{"from":48,"to":48,"v":130},{"from":49,"to":52,"v":150}]},{"id":"C2a","tag":"2a","name":[{"from":1,"to":8,"v":"Chest-Supported Dumbbell Row"},{"from":9,"to":52,"v":"Barbell Row"}],"type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":[{"from":1,"to":8,"v":"10-12"},{"from":9,"to":52,"v":"8-10"}],"rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":[{"from":1,"to":8,"v":"Lie face down on an incline bench, row both dumbbells, squeeze your back. Log the weight of one dumbbell."},{"from":9,"to":52,"v":"Hinge to a flat back, bar just below the knees. Pull to your lower ribs, squeeze, lower under control. Start with the empty bar."}]},{"id":"C2b","tag":"2b","name":[{"from":1,"to":16,"v":"Dumbbell Hip Thrust"},{"from":17,"to":52,"v":"Barbell Hip Thrust"}],"type":"lift","sets":[{"from":1,"to":2,"v":2},{"from":3,"to":7,"v":3},{"from":8,"to":8,"v":2},{"from":9,"to":15,"v":3},{"from":16,"to":16,"v":2},{"from":17,"to":23,"v":3},{"from":24,"to":24,"v":2},{"from":25,"to":31,"v":3},{"from":32,"to":32,"v":2},{"from":33,"to":39,"v":3},{"from":40,"to":40,"v":2},{"from":41,"to":47,"v":3},{"from":48,"to":48,"v":2},{"from":49,"to":52,"v":3}],"reps":"10-12","rest":[{"from":1,"to":8,"v":"60-90 sec after each pair"},{"from":9,"to":52,"v":"2 min after each pair"}],"cue":[{"from":1,"to":16,"v":"Upper back on bench, dumbbell on hips. Drive up and squeeze glutes at the top. Log the weight of the dumbbell."},{"from":17,"to":52,"v":"Upper back on a bench, pad or folded towel on the bar. Drive up and squeeze your glutes at the top."}]},{"id":"C2c","tag":"3a","name":[{"from":9,"to":52,"v":"Hamstring Curl"}],"type":"lift","sets":[{"from":9,"to":52,"v":3}],"reps":"10-12","rest":"60 sec","cue":"Lying or seated machine. Curl up in 2 seconds, lower in 3. Hamstrings are the back of your thighs. (Weight = stack number.)"},{"id":"C2d","tag":"3b","name":[{"from":9,"to":52,"v":"Standing Calf Raise"}],"type":"lift","sets":[{"from":9,"to":52,"v":2}],"reps":"12-15","rest":"60 sec","cue":"Machine, or hold a dumbbell on a step. Full stretch at the bottom, pause at the top. Log the stack number, or the dumbbell weight."},{"id":"C3a","tag":"4a","name":"Dumbbell Curl","type":"lift","sets":2,"reps":"10-12","rest":"60 sec","cue":"Only if you have time. Elbows pinned at your sides, no swinging. Log the weight of one dumbbell.","bonus":true},{"id":"C3b","tag":"4b","name":"Overhead Triceps Extension","type":"lift","sets":2,"reps":"10-12","rest":"60 sec","cue":"Only if you have time. Hold one dumbbell overhead with both hands, lower behind head. Log the weight of the dumbbell.","bonus":true}],"warm":[{"id":"W1","name":"Easy bike","dose":"5 min","cue":"Easy pace. Build to a light sweat."},{"id":"W2","name":"Glute bridge","dose":"10 reps","cue":"Squeeze your glutes for 1 sec at the top."},{"id":"W3","name":"Half-kneeling hip flexor stretch","dose":"30 sec each side","cue":"Tuck your tailbone under and lean forward until you feel the front of the hip."},{"id":"W4","name":"Bodyweight split squat","dose":"6 each side","cue":"Hold the bench or a rack for balance. Drop straight down."},{"id":"W5","name":"Scap push-up","dose":"10 reps","cue":"Plank position. Only your shoulder blades move."},{"id":"W6","name":"Open book rotation","dose":"6 each side","cue":"On your side, knees stacked. Open your top arm and follow it with your eyes."}]}]};
+
+  function lpStr(s, n) { return typeof s === 'string' ? s.trim().slice(0, n) : ''; }
+  function lpNewPid() { return 'p' + Date.now().toString(36).slice(-6) + Math.random().toString(36).slice(2, 4); }
+  function lpRules(v, kind, max) {
+    if (Array.isArray(v)) {
+      var out = [];
+      v.slice(0, 60).forEach(function (r) {
+        if (!r || typeof r !== 'object') return;
+        var f = parseInt(r.from, 10) || 1, t = parseInt(r.to, 10) || 52;
+        var val = kind === 'num' ? parseInt(r.v, 10) : kind === 'lb' ? parseFloat(r.v) : lpStr(r.v, max);
+        var ok = kind === 'num' ? (val >= 1 && val <= 10) : kind === 'lb' ? (val >= 5 && val <= 1000) : !!val;
+        if (ok) out.push({ from: Math.max(1, f), to: Math.min(52, Math.max(f, t)), v: val });
+      });
+      return out.length ? out : null;
+    }
+    if (kind === 'num') { var n = parseInt(v, 10); return n >= 1 && n <= 10 ? n : null; }
+    if (kind === 'lb') { var q = parseFloat(v); return q >= 5 && q <= 1000 ? q : null; }
+    return lpStr(v, max) || null;
+  }
+  function lpPick(v, w) {
+    if (!Array.isArray(v)) return v;
+    for (var i = 0; i < v.length; i++) if (w >= v[i].from && w <= v[i].to) return v[i].v;
+    return undefined;
+  }
+  function lpParse(o) { try { return lpClean(JSON.parse(o.json), true); } catch (e) { return null; } }
+  function lpClean(o, keepPid) {
+    if (!o || typeof o !== 'object') return null;
+    var name = lpStr(o.name, 60), wk = parseInt(o.weeks, 10);
+    if (!name || !(wk >= 1) || !/^\d{4}-\d{2}-\d{2}$/.test(o.start || '')) return null;
+    var weeks = Math.min(52, wk), start = dkey(weekStart(fromKey(o.start)));
+    var days = [], seenD = {}, seenDow = {};
+    (Array.isArray(o.days) ? o.days : []).slice(0, 7).forEach(function (d) {
+      if (!d || typeof d !== 'object') return;
+      var id = lpStr(d.id, 6).replace(/[^A-Za-z0-9]/g, ''), dow = parseInt(d.dow, 10);
+      if (!id || seenD[id] || !(dow >= 0 && dow <= 6) || seenDow[dow]) return;
+      var items = [], seenI = {};
+      (Array.isArray(d.items) ? d.items : []).slice(0, 20).forEach(function (it, idx) {
+        if (!it || typeof it !== 'object') return;
+        var nm = lpRules(it.name, 'str', 60);
+        if (!nm) return;
+        var iid = lpStr(it.id, 20).replace(/[^A-Za-z0-9_-]/g, '') || (id + (idx + 1));
+        if (seenI[iid]) iid = iid + '_' + idx;
+        seenI[iid] = 1;
+        var item = { id: iid, tag: lpStr(it.tag, 4), name: nm, type: LP_TYPES[it.type] ? it.type : 'lift', sets: lpRules(it.sets, 'num') || 1 };
+        ['reps', 'rest', 'cue', 'target'].forEach(function (k) { var v = lpRules(it[k], 'str', k === 'cue' ? 300 : 120); if (v) item[k] = v; });
+        if (it.bonus) item.bonus = true;
+        if (it.ramp) item.ramp = true;
+        if (item.type === 'lift') { var lbv = lpRules(it.lb, 'lb'); if (lbv) item.lb = lbv; }
+        items.push(item);
+      });
+      if (!items.length) return;
+      var warm = [], seenW = {};
+      (Array.isArray(d.warm) ? d.warm : []).slice(0, 12).forEach(function (w, wi) {
+        if (!w || typeof w !== 'object') return;
+        var wn = lpStr(w.name, 60);
+        if (!wn) return;
+        var wid = lpStr(w.id, 12).replace(/[^A-Za-z0-9_-]/g, '') || ('W' + (wi + 1));
+        if (seenW[wid]) wid = wid + '_' + wi;
+        seenW[wid] = 1;
+        warm.push({ id: wid, name: wn, dose: lpStr(w.dose, 60), cue: lpStr(w.cue, 200) });
+      });
+      seenD[id] = 1; seenDow[dow] = 1;
+      days.push({ id: id, name: lpStr(d.name, 40) || ('Day ' + id), dow: dow, warmup: lpStr(d.warmup, 200), warm: warm, items: items });
+    });
+    if (!days.length) return null;
+    days.sort(function (a, b) { return ((a.dow + 6) % 7) - ((b.dow + 6) % 7); });
+    var wn = [], tips = [];
+    (Array.isArray(o.weekNotes) ? o.weekNotes : []).slice(0, weeks).forEach(function (s) { wn.push(lpStr(s, 300)); });
+    (Array.isArray(o.tips) ? o.tips : []).slice(0, 8).forEach(function (s) { s = lpStr(s, 300); if (s) tips.push(s); });
+    var pid = keepPid && /^p[a-z0-9]{3,10}$/.test(o.pid || '') ? o.pid : lpNewPid();
+    var phases = [], deloads = [];
+    (Array.isArray(o.phases) ? o.phases : []).slice(0, 8).forEach(function (ph) {
+      if (!ph || typeof ph !== 'object') return;
+      var f = parseInt(ph.from, 10), t = parseInt(ph.to, 10), pn = lpStr(ph.name, 30);
+      if (!pn || !(f >= 1) || !(t >= f) || f > weeks) return;
+      phases.push({ from: f, to: Math.min(weeks, t), name: pn, note: lpStr(ph.note, 160) });
+    });
+    (Array.isArray(o.deloads) ? o.deloads : []).slice(0, 20).forEach(function (d0) { d0 = parseInt(d0, 10); if (d0 >= 1 && d0 <= weeks && deloads.indexOf(d0) < 0) deloads.push(d0); });
+    return { pid: pid, rev: Math.min(99, Math.max(0, parseInt(o.rev, 10) || 0)), name: name, where: lpStr(o.where, 80), goal: lpStr(o.goal, 160), start: start, weeks: weeks, weekNotes: wn, tips: tips, phases: phases, deloads: deloads, days: days };
+  }
+  function cleanLift(id, o) {
+    if (!/^[A-Za-z0-9]{2,12}-w\d{1,2}[A-Za-z0-9]{1,6}$/.test(id) || !o || typeof o !== 'object') return null;
+    var week = parseInt(o.week, 10), day = lpStr(o.day, 6);
+    if (!(week >= 1 && week <= 52) || !day) return null;
+    var items = [];
+    (Array.isArray(o.items) ? o.items : []).slice(0, 30).forEach(function (it) {
+      if (!it || typeof it !== 'object') return;
+      var iid = lpStr(it.id, 24), nm = lpStr(it.name, 60);
+      if (!iid || !nm) return;
+      var sets = [];
+      (Array.isArray(it.sets) ? it.sets : []).slice(0, 12).forEach(function (s) {
+        s = s || {};
+        var w = parseFloat(s.w), n = parseFloat(s.n);
+        sets.push({ w: isFinite(w) && w >= 0 && w <= 2000 ? w : null, n: isFinite(n) && n >= 0 && n <= 10000 ? n : null });
+      });
+      items.push({ id: iid, name: nm, type: LP_TYPES[it.type] ? it.type : 'lift', reps: lpStr(it.reps, 40), custom: !!it.custom, sets: sets });
+    });
+    var warm = [];
+    (Array.isArray(o.warm) ? o.warm : []).slice(0, 12).forEach(function (x) { x = lpStr(x, 12); if (x) warm.push(x); });
+    return { id: id, pid: id.split('-')[0], week: week, day: day, warm: warm, date: /^\d{4}-\d{2}-\d{2}$/.test(o.date || '') ? o.date : '', items: items,
+      note: lpStr(o.note, 1000), done: !!o.done, at: typeof o.at === 'string' ? o.at : '' };
+  }
+  function lpDay(id) { if (!lp) return null; for (var i = 0; i < lp.days.length; i++) if (lp.days[i].id === id) return lp.days[i]; return null; }
+  function liftId(w, d) { return lp.pid + '-w' + w + d; }
+  function sessOf(w, d) { return lp ? (lifts[liftId(w, d)] || null) : null; }
+  function sessItem(s, iid) { if (s) for (var i = 0; i < s.items.length; i++) if (s.items[i].id === iid) return s.items[i]; return null; }
+  function lpDate(w, day) { return dkey(addDays(fromKey(lp.start), (w - 1) * 7 + ((day.dow + 6) % 7))); }
+  function lpDaysIn() { return Math.round((fromKey(dkey(new Date())) - fromKey(lp.start)) / 86400000); }
+  function lpWeekNow() { return Math.min(lp.weeks, Math.max(1, Math.floor(lpDaysIn() / 7) + 1)); }
+  function lpItemFor(it, w) {
+    var nm = lpPick(it.name, w);
+    if (!nm) return null;
+    return { id: it.id, tag: it.tag, name: nm, type: it.type, sets: lpPick(it.sets, w) || 1, reps: lpPick(it.reps, w) || '', rest: lpPick(it.rest, w) || '',
+      cue: lpPick(it.cue, w) || '', target: lpPick(it.target, w) || '', bonus: !!it.bonus, ramp: !!it.ramp, lb: typeof lpPick(it.lb, w) === 'number' ? lpPick(it.lb, w) : 0 };
+  }
+  function lpToday() {
+    if (!lp) return null;
+    var dd = lpDaysIn();
+    if (dd < 0 || dd >= lp.weeks * 7) return null;
+    var dow = new Date().getDay(), w = lpWeekNow();
+    for (var i = 0; i < lp.days.length; i++) if (lp.days[i].dow === dow) return { w: w, day: lp.days[i] };
+    return null;
+  }
+  function liftAuto() {
+    var w = lpWeekNow(), t = lpToday();
+    if (t) return { w: t.w, d: t.day.id };
+    var dd = lpDaysIn(), pick = null;
+    if (dd >= 0 && dd < lp.weeks * 7) {
+      var cur = (new Date().getDay() + 6) % 7;
+      pick = lp.days.filter(function (d) { return ((d.dow + 6) % 7) > cur; })[0] || null;
+      if (!pick) { w = Math.min(lp.weeks, w + 1); }
+    }
+    return { w: w, d: (pick || lp.days[0]).id };
+  }
+  function liftCur() {
+    var a = liftSel.auto ? liftAuto() : liftSel;
+    if (!lp) return null;
+    var w = Math.min(lp.weeks, Math.max(1, a.w)), day = lpDay(a.d) || lp.days[0];
+    return { w: w, day: day };
+  }
+
+  /* history and hints */
+  function topOf(reps) {
+    var m = String(reps || '').match(/(\d+)\s*-\s*(\d+)/);
+    if (m) return +m[2];
+    m = String(reps || '').match(/\d+/);
+    return m ? +m[0] : 0;
+  }
+  function lastFor(name, excludeId, skipDeload) {
+    var key = name.toLowerCase(), best = null;
+    Object.keys(lifts).forEach(function (id) {
+      if (id === excludeId) return;
+      var s = lifts[id];
+      if (skipDeload && lp && s.pid === lp.pid && lp.deloads.indexOf(s.week) >= 0) return;
+      s.items.forEach(function (it) {
+        if (it.name.toLowerCase() !== key) return;
+        var filled = it.sets.filter(function (x) { return x.n !== null || x.w !== null; });
+        if (!filled.length) return;
+        var d = s.date || '0000-00-00';
+        if (!best || d > best.date || (d === best.date && s.week > best.week)) best = { date: d, week: s.week, sets: filled };
+      });
+    });
+    return best;
+  }
+  function numTxt(n) { return String(Math.round(n * 100) / 100); }
+  function lastTxt(b, type) {
+    if (!b) return '';
+    var s = b.sets;
+    if (type === 'cardio') return numTxt(s[0].n === null ? 0 : s[0].n) + ' min';
+    if (type === 'hold') return s.map(function (x) { return x.n === null ? '-' : numTxt(x.n); }).join(', ') + ' sec';
+    if (type === 'reps') return s.map(function (x) { return x.n === null ? '-' : numTxt(x.n); }).join(', ') + ' reps';
+    var same = s.every(function (x) { return x.w === s[0].w; });
+    if (same) return (s[0].w === null ? '' : numTxt(s[0].w) + ' lb x ') + s.map(function (x) { return x.n === null ? '-' : numTxt(x.n); }).join(', ');
+    return s.map(function (x) { return (x.w === null ? '?' : numTxt(x.w)) + 'x' + (x.n === null ? '-' : numTxt(x.n)); }).join(', ');
+  }
+  function nudgeTxt(b, reps, plannedSets, type) {
+    if (!b || type !== 'lift') return '';
+    var top = topOf(reps);
+    if (!top) return '';
+    var ss = b.sets.filter(function (x) { return x.w !== null && x.w > 0 && x.n !== null; });
+    if (ss.length < Math.min(plannedSets, 2)) return '';
+    if (!ss.every(function (x) { return x.n >= top; })) return '';
+    var w = Math.max.apply(null, ss.map(function (x) { return x.w; }));
+    return 'You hit the top of the range last time. Try ' + numTxt(w + 5) + ' lb.';
+  }
+
+  /* editing the session in memory */
+  function rampTxt(last, type, lb) {
+    if (type !== 'lift') return '';
+    if (lb) {
+      if (lb <= 45) return 'Work sets use the empty bar. Do 5 slow reps first as a warm-up.';
+      if (lb <= 85) return 'Ramp-up: 1 set of 8 with the empty bar, then your working sets.';
+      return 'Ramp-up: 45 lb x 8, then ' + lpR5(lb * 0.6) + ' lb x 5, then ' + lpR5(lb * 0.8) + ' lb x 3, then your working sets.';
+    }
+    var ws = last ? last.sets.filter(function (x) { return x.w !== null; }).map(function (x) { return x.w; }) : [], top = ws.length ? Math.max.apply(null, ws) : 0;
+    if (top < 15) return 'Ramp-up: 1 or 2 light sets at about half the weight, then your working sets.';
+    function r5(n) { return Math.max(5, Math.round(n / 5) * 5); }
+    return 'Ramp-up: ' + r5(top * 0.5) + ' lb x 8, then ' + r5(top * 0.75) + ' lb x 5, then your working sets.';
+  }
+  function ensureSess(w, day) {
+    var id = liftId(w, day.id), s = lifts[id];
+    if (!s) {
+      s = lifts[id] = { id: id, pid: lp.pid, week: w, day: day.id, warm: [], date: dkey(new Date()), items: [], note: '', done: false, at: '' };
+    }
+    return s;
+  }
+  function ensureItem(s, iid, w, day) {
+    var it = sessItem(s, iid);
+    if (it) return it;
+    var base = null;
+    day.items.forEach(function (x) { if (x.id === iid) base = lpItemFor(x, w); });
+    if (!base) return null;
+    it = { id: iid, name: base.name, type: base.type, reps: base.reps, custom: false, sets: [] };
+    s.items.push(it);
+    return it;
+  }
+  function flushLift() {
+    clearTimeout(liftTimer); liftTimer = null;
+    var ids = Object.keys(liftDirty).filter(function (k) { return liftDirty[k] && lifts[k]; });
+    if (!ids.length) return Promise.resolve();
+    var batch = ids.map(function (k) { liftDirty[k] = false; return lifts[k]; });
+    return persist(function (d) { return Promise.all(batch.map(function (s) { return d.doc('lifts/' + s.id).set(s); })); });
+  }
+  function scheduleLift() { clearTimeout(liftTimer); liftTimer = setTimeout(flushLift, 700); }
+  function liftInput(el, commit) {
+    var w = parseInt(el.dataset.w, 10), day = lpDay(el.dataset.d);
+    if (!day || !lp) return;
+    var s = ensureSess(w, day), it = ensureItem(s, el.dataset.i, w, day);
+    if (!it) return;
+    var si = parseInt(el.dataset.s, 10), f = el.dataset.f;
+    while (it.sets.length <= si) it.sets.push({ w: null, n: null });
+    var v = parseFloat(el.value);
+    it.sets[si][f] = isFinite(v) && v >= 0 ? v : null;
+    liftDirty[s.id] = true;
+    if (commit) flushLift(); else scheduleLift();
+  }
+  function liftNote(el, commit) {
+    var w = parseInt(el.dataset.w, 10), day = lpDay(el.dataset.d);
+    if (!day || !lp) return;
+    var s = ensureSess(w, day);
+    s.note = el.value.slice(0, 1000);
+    liftDirty[s.id] = true;
+    if (commit) flushLift(); else scheduleLift();
+  }
+  function liftDateSet(el) {
+    var w = parseInt(el.dataset.w, 10), day = lpDay(el.dataset.d);
+    if (!day || !lp || !/^\d{4}-\d{2}-\d{2}$/.test(el.value)) return;
+    var s = ensureSess(w, day);
+    s.date = el.value;
+    liftDirty[s.id] = true;
+    flushLift();
+  }
+  function liftWarm(w, day, wid) {
+    var s = ensureSess(w, day), i = s.warm.indexOf(wid);
+    if (i >= 0) s.warm.splice(i, 1); else s.warm.push(wid);
+    liftDirty[s.id] = true;
+    flushLift(); renderAll();
+  }
+  function lpNeedsWarm() {
+    if (!lp) return false;
+    var has = lp.days.some(function (d) { return d.warm && d.warm.length; });
+    if (has) return false;
+    return lp.days.some(function (d) { return STARTER_PLAN.days.some(function (x) { return x.id === d.id; }); });
+  }
+  async function lpAddWarm() {
+    lp.days.forEach(function (d) {
+      STARTER_PLAN.days.forEach(function (x) {
+        if (x.id !== d.id) return;
+        d.warm = JSON.parse(JSON.stringify(x.warm || []));
+        d.warmup = x.warmup || d.warmup;
+        d.items.forEach(function (it) { x.items.forEach(function (y) { if (y.id === it.id && y.ramp) it.ramp = true; }); });
+      });
+    });
+    renderAll();
+    toast('Warm-ups added to your plan.');
+    await lpSave();
+  }
+  async function liftFinish(w, day) {
+    var s = ensureSess(w, day), today = dkey(new Date());
+    s.done = true; s.at = new Date().toISOString();
+    if (!s.date) s.date = today;
+    var key = s.date, marked = false, he = null;
+    if (!habits.gym[key]) { he = habits.gym[key] = { date: key, at: s.at, manual: key !== today }; marked = true; habPop = 'gym'; }
+    liftDirty[s.id] = false;
+    renderAll();
+    toast(day.name + ' done.');
+    await persist(async function (d) {
+      await d.doc('lifts/' + s.id).set(s);
+      if (marked) await d.doc('gym/' + key).set(he);
+    });
+  }
+  async function liftReopen(w, day) {
+    var s = sessOf(w, day.id);
+    if (!s) return;
+    s.done = false;
+    liftDirty[s.id] = false;
+    renderAll();
+    await persist(function (d) { return d.doc('lifts/' + s.id).set(s); });
+  }
+  function liftAddSet(w, day, iid) {
+    var s = ensureSess(w, day), it = ensureItem(s, iid, w, day);
+    if (!it) return;
+    var planned = 1;
+    day.items.forEach(function (x) { if (x.id === iid) { var p = lpItemFor(x, w); if (p) planned = p.sets; } });
+    while (it.sets.length < planned) it.sets.push({ w: null, n: null });
+    it.sets.push({ w: null, n: null });
+    liftDirty[s.id] = true;
+    flushLift(); renderAll();
+  }
+  function liftDelCustom(w, day, iid) {
+    var s = sessOf(w, day.id);
+    if (!s) return;
+    s.items = s.items.filter(function (x) { return !(x.custom && x.id === iid); });
+    liftDirty[s.id] = true;
+    flushLift(); renderAll();
+  }
+  async function lpSave() {
+    writeLocal();
+    var j = lp ? JSON.stringify(lp) : null;
+    await persist(function (d) { return j ? d.doc('app/lift').set({ json: j }) : d.doc('app/lift').delete(); });
+  }
+
+  /* planned weights, phases, rebase and the progression chart */
+  var chartSel = { id: '', view: 'chart' };
+  function lpR5(n) { return Math.round(n / 5) * 5; }
+  function lpCompress(arr) {
+    var out = [];
+    arr.forEach(function (v, i) {
+      if (typeof v !== 'number') return;
+      var last = out[out.length - 1];
+      if (last && last.v === v && last.to === i) last.to = i + 1; else out.push({ from: i + 1, to: i + 1, v: v });
+    });
+    return out;
+  }
+  function phaseOf(w) {
+    for (var i = 0; i < lp.phases.length; i++) if (w >= lp.phases[i].from && w <= lp.phases[i].to) return lp.phases[i];
+    return null;
+  }
+  function lastTop(last) {
+    var ws = last ? last.sets.filter(function (x) { return x.w !== null && x.w > 0; }).map(function (x) { return x.w; }) : [];
+    return ws.length ? Math.max.apply(null, ws) : 0;
+  }
+  function liftTarget(x, w, nm, exId) {
+    var plan = x.lb, last = lastFor(nm, exId, true);
+    if (!last) return { lb: plan, why: '' };
+    var ss = last.sets.filter(function (q) { return q.w !== null && q.w > 0 && q.n !== null && q.n > 0; });
+    if (!ss.length) return { lb: plan, why: '' };
+    var W = Math.max.apply(null, ss.map(function (q) { return q.w; })), atW = ss.filter(function (q) { return q.w === W; });
+    var top = topOf(x.reps) || 5;
+    var done = atW.length >= Math.min(2, x.sets) && atW.every(function (q) { return q.n >= top; });
+    if (lp.deloads.indexOf(w) >= 0) return { lb: Math.max(45, lpR5(W * 0.9)), why: 'Easy week: about 90 percent of your last heavy weight.' };
+    if (done) return { lb: W + (W < plan - 10 ? 10 : 5), why: 'You finished every rep at ' + numTxt(W) + ' lb last time.' };
+    return { lb: W, why: 'Repeat ' + numTxt(W) + ' lb until every rep is clean.' };
+  }
+  function planLine(x, w) {
+    var t = x.tg || x.lb, h = '<p class="lplan">Target: <b>' + numTxt(t) + ' lb</b> for ' + x.sets + ' x ' + esc(String(x.reps || '')) + (lp.deloads.indexOf(w) >= 0 ? ' <em>easy week</em>' : '') + '</p>';
+    if (t !== x.lb) h += '<p class="lcue">The plan says ' + numTxt(x.lb) + ' lb. ' + esc(x.why || '') + '</p>';
+    return h;
+  }
+  function planAhead(x, w, last) {
+    if (!last || lp.deloads.indexOf(w) >= 0) return '';
+    if (lastTop(last) >= x.lb + 10) return 'You are ahead of the plan line. Your target already follows your logs. Use Set where I am now on the Plan card to move the planned line and the year goal too.';
+    return '';
+  }
+  function liftFill(w, day, iid) {
+    var s = ensureSess(w, day), it = ensureItem(s, iid, w, day), base = null;
+    day.items.forEach(function (x) { if (x.id === iid) base = lpItemFor(x, w); });
+    if (!it || !base || !base.lb) return;
+    var fillW = liftTarget(base, w, it.name, liftId(w, day.id)).lb;
+    while (it.sets.length < base.sets) it.sets.push({ w: null, n: null });
+    it.sets.forEach(function (q) { if (q.w === null) q.w = fillW; });
+    liftDirty[s.id] = true;
+    flushLift(); renderAll();
+  }
+  function lbItems() {
+    var out = [];
+    lp.days.forEach(function (d) { d.items.forEach(function (it) { if (it.type === 'lift' && it.lb) out.push({ day: d, it: it }); }); });
+    return out;
+  }
+  function lbName(it) {
+    var nm = '';
+    for (var w = 1; w <= lp.weeks; w++) {
+      if (typeof lpPick(it.lb, w) === 'number') { var n = lpPick(it.name, w); if (n) nm = n; }
+    }
+    return nm || (typeof it.name === 'string' ? it.name : 'Lift');
+  }
+  function lbSeries(ent) {
+    var it = ent.it, planned = [], actual = [];
+    for (var w = 1; w <= lp.weeks; w++) {
+      var p = lpPick(it.lb, w);
+      planned.push(typeof p === 'number' ? p : null);
+      actual.push(null);
+    }
+    Object.keys(lifts).forEach(function (id) {
+      var s = lifts[id];
+      if (s.pid !== lp.pid || s.day !== ent.day.id || s.week < 1 || s.week > lp.weeks || planned[s.week - 1] === null) return;
+      var li = sessItem(s, it.id), top = null;
+      if (!li) return;
+      li.sets.forEach(function (x) {
+        if (x.w !== null && x.w > 0 && x.n !== null && x.n > 0 && (top === null || x.w > top.w || (x.w === top.w && x.n > top.n))) top = x;
+      });
+      if (top) actual[s.week - 1] = { w: top.w, n: top.n };
+    });
+    return { planned: planned, actual: actual };
+  }
+  function lbChartCard() {
+    var ents = lbItems();
+    if (!ents.length) return '';
+    var ent = ents.filter(function (e) { return e.it.id === chartSel.id; })[0] || ents[0];
+    chartSel.id = ent.it.id;
+    var S = lbSeries(ent), n = lp.weeks, dd = lpDaysIn(), nowW = dd >= 0 && dd < n * 7 ? lpWeekNow() : 0;
+    var h = '<h3 class="lh3" style="margin-top:16px">LIFT PROGRESSION<small>plan vs what you logged</small></h3>';
+    h += '<div class="chips lchips" role="group" aria-label="Choose a lift">' + ents.map(function (e) {
+      return '<button class="chip" style="padding:0 12px" data-action="lp-chart-lift" data-i="' + esc(e.it.id) + '" aria-pressed="' + (e.it.id === ent.it.id) + '">' + esc(lbName(e.it)) + '</button>';
+    }).join('') + '</div>';
+    var firstW = 0, lastW = 0, lastLog = null;
+    S.planned.forEach(function (v, i) { if (v !== null) { if (!firstW) firstW = i + 1; lastW = i + 1; } });
+    S.actual.forEach(function (a, i) { if (a) lastLog = { i: i, a: a }; });
+    var refW = Math.min(lastW, Math.max(firstW, nowW || 1));
+    var sm = '<p class="pc-sum">';
+    if (nowW && nowW < firstW) sm += 'Starts week ' + firstW + ' at <b>' + numTxt(S.planned[firstW - 1]) + ' lb</b>. ';
+    else sm += 'Week ' + refW + ' plan: <b>' + numTxt(S.planned[refW - 1]) + ' lb</b>. ';
+    if (lastLog) {
+      var diff = lastLog.a.w - S.planned[lastLog.i];
+      sm += 'Last logged: <b>' + numTxt(lastLog.a.w) + ' x ' + numTxt(lastLog.a.n) + '</b> in week ' + (lastLog.i + 1) + ' (' + (diff === 0 ? 'on plan' : numTxt(Math.abs(diff)) + ' lb ' + (diff > 0 ? 'over' : 'under') + ' plan') + '). ';
+    } else sm += 'Nothing logged yet. ';
+    sm += 'Week ' + lastW + ' target: <b>' + numTxt(S.planned[lastW - 1]) + ' lb</b>.</p>';
+    h += sm;
+    function wkDate(i) { return dateLabel(dkey(addDays(fromKey(lp.start), i * 7))); }
+    if (chartSel.view === 'table') {
+      var rows = '';
+      for (var i = 0; i < n; i++) {
+        var p = S.planned[i], a = S.actual[i];
+        if (p === null && !a) continue;
+        rows += '<tr' + (i + 1 === nowW ? ' class="now"' : '') + '><td>' + (i + 1) + (lp.deloads.indexOf(i + 1) >= 0 ? ' (easy)' : '') + '</td><td>' + wkDate(i) + '</td><td>' + (p === null ? '-' : numTxt(p)) + '</td><td>' + (a ? numTxt(a.w) + ' x ' + numTxt(a.n) : '-') + '</td></tr>';
+      }
+      h += '<div class="pc-table"><table><thead><tr><th>Week</th><th>Starts</th><th>Plan (lb)</th><th>Logged</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    } else {
+      var all = [];
+      S.planned.forEach(function (v) { if (v !== null) all.push(v); });
+      S.actual.forEach(function (a) { if (a) all.push(a.w); });
+      var mx = Math.max.apply(null, all), step = mx <= 150 ? 25 : mx <= 400 ? 50 : 100, yMax = Math.ceil(mx * 1.05 / step) * step;
+      var ticks = [0], stp = n <= 12 ? 2 : n <= 26 ? 4 : 13;
+      for (var t = stp; t < n - 1; t += stp) ticks.push(t);
+      if (n > 1) ticks.push(n - 1);
+      h += '<div class="pc-leg"><span><svg width="28" height="10" aria-hidden="true"><line class="pc-line plan" x1="1" x2="27" y1="5" y2="5"/></svg>Plan</span>' +
+        '<span><svg width="28" height="10" aria-hidden="true"><line class="pc-line log" x1="1" x2="27" y1="5" y2="5"/><circle class="pc-mk log" cx="14" cy="5" r="4.5"/></svg>Logged top set</span></div>';
+      h += pcChart({
+        id: 'lift', n: n, yMin: 0, yMax: yMax, yStep: step, yFmt: function (v) { return String(v); },
+        label: lbName(ent.it) + ' planned weight by week and the top set you logged. Use the table view for the numbers.',
+        bands: lp.phases.map(function (p) { return { a: p.from - 1, b: p.to - 1, name: p.name }; }),
+        xTicks: ticks, xAt: function (i) { return 'Wk ' + (i + 1); },
+        nowI: nowW ? nowW - 1 : -1, start: nowW ? nowW - 1 : Math.max(0, firstW - 1),
+        series: [
+          { cls: 'plan', vals: S.planned, marker: false },
+          { cls: 'log', vals: S.actual.map(function (a) { return a ? a.w : null; }), marker: true }
+        ],
+        tip: function (i) {
+          var p = S.planned[i], a = S.actual[i];
+          return '<b>Week ' + (i + 1) + '</b> <span>' + wkDate(i) + (lp.deloads.indexOf(i + 1) >= 0 ? ' &middot; easy week' : '') + '</span><br>Plan: ' + (p === null ? 'none yet' : numTxt(p) + ' lb') + '<br>Logged: ' + (a ? numTxt(a.w) + ' lb x ' + numTxt(a.n) : 'nothing');
+        }
+      });
+      h += '<p class="note" style="margin:6px 0 0">The dips are easy weeks. Tap or drag on the chart to read a week.</p>';
+    }
+    h += '<div class="row" style="margin-top:8px"><button class="link" data-action="lp-chart-view">' + (chartSel.view === 'table' ? 'Show the chart' : 'Show as a table') + '</button></div>';
+    return h;
+  }
+  function lpAnchor(it) {
+    var dd = lpDaysIn(), a = dd >= 0 ? lpWeekNow() : 1;
+    for (var w = a; w <= lp.weeks; w++) if (typeof lpPick(it.lb, w) === 'number' && lp.deloads.indexOf(w) < 0) return w;
+    return 0;
+  }
+  function lpRebaseModal() {
+    var ents = lbItems();
+    if (!ents.length) return;
+    var h = '<h3>WHERE I AM NOW</h3><p class="note" style="margin:0">For each lift, enter the weight you could do for 5 clean reps today, and the weight you want at the end of the plan. The rest of the plan rescales from there. Weeks before it do not change.</p>';
+    ents.forEach(function (e, i) {
+      var a = lpAnchor(e.it), T = lpPick(e.it.lb, lp.weeks), P = a ? lpPick(e.it.lb, a) : 0, nm = lbName(e.it), lt = lastTop(lastFor(nm));
+      var now = lt || P, goal = T >= now * 1.1 ? T : lpR5(now * 1.3);
+      h += '<div class="rb"><b>' + esc(nm) + '</b><div class="two"><label class="fld"><span>5 REPS NOW (LB)</span><input type="number" inputmode="decimal" id="rb-n-' + i + '" min="20" max="1000" value="' + numTxt(now) + '"></label>' +
+        '<label class="fld"><span>WEEK ' + lp.weeks + ' GOAL (LB)</span><input type="number" inputmode="decimal" id="rb-g-' + i + '" min="20" max="1000" value="' + numTxt(goal) + '"></label></div></div>';
+    });
+    h += '<p class="note" style="margin:0">Starting numbers come from your last logged set, or the plan if you have not logged that lift.</p>' +
+      '<div class="row"><button class="btn primary" data-action="lp-rebase-go">Update my plan</button><button class="btn" data-action="close-modal">Cancel</button></div>';
+    openModal(h);
+  }
+  async function lpRebaseGo() {
+    var ents = lbItems(), changed = 0;
+    ents.forEach(function (e, i) {
+      var nowV = parseFloat($('#rb-n-' + i).value), goal = parseFloat($('#rb-g-' + i).value), it = e.it, a = lpAnchor(it);
+      if (!a || !(nowV >= 20 && nowV <= 1000)) return;
+      if (!(goal >= nowV)) goal = nowV;
+      var P = [];
+      for (var w = 1; w <= lp.weeks; w++) { var v = lpPick(it.lb, w); P.push(typeof v === 'number' ? v : null); }
+      var p0 = P[a - 1], pT = P[lp.weeks - 1], arr = [];
+      P.forEach(function (v, i2) {
+        if (v === null) { arr.push(null); return; }
+        if (i2 + 1 < a) { arr.push(v); return; }
+        var f = pT > p0 ? (v - p0) / (pT - p0) : 0;
+        arr.push(Math.max(45, lpR5(nowV + (goal - nowV) * f)));
+      });
+      it.lb = lpCompress(arr);
+      changed++;
+    });
+    closeModal();
+    if (!changed) { toast('Nothing changed. Enter your numbers in pounds.'); return; }
+    renderAll();
+    toast('Plan updated from this week on.');
+    await lpSave();
+  }
+  function lpSameShape(c) {
+    if (!lp || lp.start !== c.start || lp.days.length !== c.days.length) return false;
+    return lp.days.every(function (d) { return c.days.some(function (x) { return x.id === d.id && x.dow === d.dow; }); });
+  }
+  function lpCanUpdate() {
+    return !!lp && lp.name === STARTER_PLAN.name && lp.weeks >= STARTER_PLAN.weeks && (lp.rev || 0) < (STARTER_PLAN.rev || 0) && lpSameShape(lpClean(STARTER_PLAN, false));
+  }
+  function lpCanExtend() {
+    return !!lp && lp.weeks < STARTER_PLAN.weeks && lpSameShape(lpClean(STARTER_PLAN, false));
+  }
+
+  /* rendering */
+  function tgtNum(str) { var m = String(str || '').match(/\d+(?:\s*-\s*\d+)?/); return m ? m[0].replace(/\s/g, '') : ''; }
+  function oneTgt(planned, type) {
+    if (!planned || !planned.target) return '';
+    if (type === 'cardio') { var m = String(planned.target).match(/^(\d+(?:-\d+)?) min/); return m ? m[1] : ''; }
+    return tgtNum(planned.target);
+  }
+  function setRows(n, w, day, it, planned, last) {
+    var h = '', u = LP_UNIT[it.type], rows = Math.max(n, it.sets.length);
+    var bump = planned && planned.reps && !planned.lb && last && nudgeTxt(last, planned.reps, planned.sets, it.type) ? 5 : 0;
+    for (var i = 0; i < rows; i++) {
+      var sv = it.sets[i] || { w: null, n: null }, lw = last && last.sets.length ? (last.sets[Math.min(i, last.sets.length - 1)].w) : null;
+      var base = 'data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(it.id) + '" data-s="' + i + '"';
+      h += '<div class="lset' + (it.type === 'lift' ? '' : ' one') + '"><span class="sn">' + (it.type === 'cardio' ? 'Time' : (it.type === 'lift' ? 'Set ' : 'Round ') + (i + 1)) + '</span>';
+      if (it.type === 'lift') {
+        h += '<input type="number" inputmode="decimal" step="any" min="0" class="li" ' + base + ' data-f="w" value="' + (sv.w === null ? '' : sv.w) + '" placeholder="' + (planned && planned.lb ? numTxt(planned.tg || planned.lb) : (lw === null || lw === undefined ? 'lb' : numTxt(lw + bump))) + '" aria-label="Set ' + (i + 1) + ' weight in pounds">' +
+          '<span class="x">lb x</span>' +
+          '<input type="number" inputmode="numeric" step="any" min="0" class="li" ' + base + ' data-f="n" value="' + (sv.n === null ? '' : sv.n) + '" placeholder="' + (tgtNum(planned && planned.reps) || 'reps') + '" aria-label="Set ' + (i + 1) + ' reps">';
+      } else {
+        h += '<input type="number" inputmode="decimal" step="any" min="0" class="li one" ' + base + ' data-f="n" value="' + (sv.n === null ? '' : sv.n) + '" placeholder="' + (oneTgt(planned, it.type) || u) + '" aria-label="' + esc(it.name) + ' ' + u + '">';
+      }
+      h += '</div>';
+    }
+    return h;
+  }
+  function liftItemHTML(w, day, x, s, exId) {
+    var logged = sessItem(s, x.id), it = logged || { id: x.id, name: x.name, type: x.type, reps: x.reps, custom: false, sets: [] };
+    var nm = logged && logged.name ? logged.name : x.name;
+    var last = lastFor(nm, exId), lt = lastTxt(last, it.type);
+    if (x.lb) { var tgt0 = liftTarget(x, w, nm, exId); x.tg = tgt0.lb; x.why = tgt0.why; }
+    var nd = x.lb ? planAhead(x, w, last) : nudgeTxt(last, x.reps || it.reps, x.sets, it.type);
+    var tgt = x.reps ? x.reps + (it.type === 'lift' ? ' reps' : '') : x.target || '';
+    var h = '<div class="litem' + (x.bonus ? ' bonus' : '') + '"><div class="lhead"><span class="ltag">' + esc(x.tag || (x.bonus ? '+' : '')) + '</span>' +
+      '<div class="lname"><b>' + esc(nm) + '</b>' + (x.bonus ? '<em>Bonus</em>' : '') + '<span class="ltgt">' + esc(tgt) + (x.rest ? ' &middot; rest ' + esc(x.rest) : '') + '</span></div></div>';
+    if (x.cue) h += '<p class="lcue">' + esc(x.cue) + '</p>';
+    if (x.reps && x.target) h += '<p class="lcue">' + esc(x.target) + '</p>';
+    if (x.lb) h += planLine(x, w);
+    if (lt) h += '<p class="llast">Last time: <b>' + esc(lt) + '</b></p>';
+    if (nd) h += '<p class="lnudge">' + esc(nd) + '</p>';
+    if (x.ramp) h += '<p class="lramp">' + esc(rampTxt(last, it.type, x.tg || x.lb)) + '</p>';
+    h += setRows(x.sets, w, day, it, x, last);
+    h += '<div class="lacts">' + (x.lb ? '<button class="link" data-action="lift-fill" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '">Fill ' + numTxt(x.tg || x.lb) + ' lb</button>' : '') + (it.type === 'cardio' ? '' : '<button class="link" data-action="lift-addset" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '">+ Set</button>') +
+      '<button class="link" data-action="lift-swap" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '">Swap exercise</button></div></div>';
+    return h;
+  }
+  function liftCustomHTML(w, day, it, exId) {
+    var last = lastFor(it.name, exId), lt = lastTxt(last, it.type);
+    var h = '<div class="litem"><div class="lhead"><span class="ltag">+</span><div class="lname"><b>' + esc(it.name) + '</b><em>Added</em></div></div>';
+    if (lt) h += '<p class="llast">Last time: <b>' + esc(lt) + '</b></p>';
+    h += setRows(Math.max(1, it.sets.length), w, day, it, 1, last);
+    h += '<div class="lacts"><button class="link" data-action="lift-addset" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(it.id) + '">+ Set</button>' +
+      '<button class="link" data-action="lift-swap" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(it.id) + '">Rename</button>' +
+      '<button class="link" data-action="lift-delcustom" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(it.id) + '">Remove</button></div></div>';
+    return h;
+  }
+  function liftHasData(s) {
+    return !!s && (s.warm.length > 0 || s.items.some(function (it) { return it.sets.some(function (x) { return x.n !== null || x.w !== null; }); }));
+  }
+  function noPlanHTML() {
+    return '<h2>LIFTING PLAN</h2><p class="lead">No plan loaded yet. Load your 1-year plan, or import a plan file.</p>' +
+      '<div class="row"><button class="btn primary" data-action="lp-starter">Load my 1-year plan</button><button class="btn" data-action="lp-import">Import a plan file</button></div>' +
+      '<p class="note">A plan file is a small JSON file. You can ask Claude to build one, so your plan can change from block to block.</p>';
+  }
+  function renderLift() {
+    var el = $('#gym-lift'), pl = $('#gym-plan');
+    var ae = document.activeElement;
+    if (ae && el.contains(ae) && /^(INPUT|TEXTAREA)$/.test(ae.tagName)) return;
+    if (!lp) { el.innerHTML = noPlanHTML(); pl.hidden = true; pl.innerHTML = ''; return; }
+    var c = liftCur(), w = c.w, day = c.day, s = sessOf(w, day.id), dd = lpDaysIn(), nowW = (dd >= 0 && dd < lp.weeks * 7) ? lpWeekNow() : 0, today = dkey(new Date());
+    var exId = lp.pid + '-w' + w + day.id;
+    var h = '<h2>' + esc(lp.name.toUpperCase()) + '<small>Week ' + w + ' of ' + lp.weeks + '</small></h2>';
+    h += '<div class="lwk"><button class="btn" data-action="lift-week" data-n="-1" aria-label="Previous week"' + (w <= 1 ? ' disabled' : '') + '>&lsaquo;</button>' +
+      '<div class="lwl"><b>Week of ' + dateLabel(dkey(addDays(fromKey(lp.start), (w - 1) * 7))) + '</b>' + (nowW === w ? '<span>This week</span>' : (dd < 0 ? '<span>Starts ' + dateLabel(lp.start) + '</span>' : (nowW ? '<button class="link" data-action="lift-now">Back to this week</button>' : ''))) + '</div>' +
+      '<button class="btn" data-action="lift-week" data-n="1" aria-label="Next week"' + (w >= lp.weeks ? ' disabled' : '') + '>&rsaquo;</button></div>';
+    var phs = phaseOf(w);
+    if (phs) h += '<p class="lphase"><b>' + esc(phs.name.toUpperCase()) + '</b><span>Weeks ' + phs.from + ' to ' + phs.to + (lp.deloads.indexOf(w) >= 0 ? ' &middot; easy week' : '') + '</span></p>';
+    if (lp.weekNotes[w - 1]) h += '<p class="lnote">' + esc(lp.weekNotes[w - 1]) + '</p>';
+    h += '<div class="ldays" style="grid-template-columns:repeat(' + lp.days.length + ',minmax(0,1fr))">' + lp.days.map(function (d) {
+      var ss = sessOf(w, d.id), st = ss && ss.done ? 'done' : liftHasData(ss) ? 'part' : '';
+      return '<button class="lday ' + st + '" data-action="lift-day" data-d="' + esc(d.id) + '" aria-pressed="' + (d.id === day.id) + '"><span>' + DOW[d.dow].toUpperCase() + '</span><b>' + esc(d.name) + '</b><i>' + (st === 'done' ? '&#10003;' : st === 'part' ? '&bull;' : '&nbsp;') + '</i></button>';
+    }).join('') + '</div>';
+    var dt = lpDate(w, day);
+    h += '<h3 class="lh3">' + esc(day.name) + '<small>' + DOWL[day.dow] + ', ' + dateLabel(dt) + (dt === today ? ' (today)' : '') + '</small></h3>';
+    if (day.warm && day.warm.length) {
+      var wd = s ? s.warm : [], wc = day.warm.filter(function (x) { return wd.indexOf(x.id) >= 0; }).length;
+      h += '<div class="lwu"><div class="lwuh"><b>WARM-UP</b><span>' + wc + ' of ' + day.warm.length + ' done</span></div>' + (day.warmup ? '<p class="lwarm">' + esc(day.warmup) + '</p>' : '') +
+        day.warm.map(function (x) {
+          var on = wd.indexOf(x.id) >= 0;
+          return '<button class="wrow' + (on ? ' on' : '') + '" data-action="lift-warm" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '" aria-pressed="' + on + '">' +
+            '<span class="box">' + (on ? '&#10003;' : '') + '</span><span class="wt"><b>' + esc(x.name) + '</b>' + (x.dose ? '<em>' + esc(x.dose) + '</em>' : '') + (x.cue ? '<small>' + esc(x.cue) + '</small>' : '') + '</span></button>';
+        }).join('') + '</div>';
+    } else if (day.warmup) h += '<p class="lwarm"><b>Warm-up.</b> ' + esc(day.warmup) + '</p>';
+    var shownIds = {};
+    day.items.forEach(function (it) {
+      var x = lpItemFor(it, w);
+      if (!x) return;
+      shownIds[x.id] = 1;
+      h += liftItemHTML(w, day, x, s, exId);
+    });
+    if (s) s.items.forEach(function (it) { if (it.custom) h += liftCustomHTML(w, day, it, exId); });
+    h += '<div class="row" style="margin-top:8px"><button class="btn" data-action="lift-add" data-w="' + w + '" data-d="' + esc(day.id) + '">+ Add an exercise</button></div>';
+    h += '<label class="fld lfld"><span>WORKOUT NOTES</span><textarea rows="2" data-lnote="1" data-w="' + w + '" data-d="' + esc(day.id) + '" placeholder="How did it feel?">' + esc(s ? s.note : '') + '</textarea></label>';
+    h += '<label class="fld lfld"><span>DONE ON</span><input type="date" data-ldate="1" data-w="' + w + '" data-d="' + esc(day.id) + '" value="' + esc(s && s.date ? s.date : today) + '"></label>';
+    if (s && s.done) {
+      h += '<div class="row"><span class="pill bg-ontime lfin">Finished' + (s.at ? ' ' + clock12(new Date(s.at)) : '') + '</span><button class="btn" data-action="lift-reopen" data-w="' + w + '" data-d="' + esc(day.id) + '">Reopen</button></div>';
+    } else {
+      h += '<div class="row"><button class="btn primary lfinbtn" data-action="lift-finish" data-w="' + w + '" data-d="' + esc(day.id) + '">Finish workout</button></div>' +
+        '<p class="note" style="margin:0">Finishing counts today as a gym day.</p>';
+    }
+    el.innerHTML = h;
+    renderLiftPlan();
+  }
+  function liftProgress() {
+    var by = {};
+    Object.keys(lifts).forEach(function (id) {
+      var s = lifts[id];
+      s.items.forEach(function (it) {
+        if (it.type !== 'lift') return;
+        var top = null;
+        it.sets.forEach(function (x) { if (x.w !== null && x.n !== null && x.n > 0 && x.w > 0 && (top === null || x.w > top.w || (x.w === top.w && x.n > top.n))) top = x; });
+        if (!top) return;
+        var k = it.name.toLowerCase();
+        (by[k] = by[k] || { name: it.name, pts: [] }).pts.push({ d: s.date || '', w: top.w, n: top.n });
+      });
+    });
+    return Object.keys(by).map(function (k) {
+      var p = by[k].pts.sort(function (a, b) { return a.d < b.d ? -1 : a.d > b.d ? 1 : 0; });
+      return { name: by[k].name, first: p[0], last: p[p.length - 1], n: p.length };
+    }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+  }
+  function renderLiftPlan() {
+    var pl = $('#gym-plan');
+    pl.hidden = false;
+    var done = 0, total = 0;
+    Object.keys(lifts).forEach(function (id) { var s = lifts[id]; if (s.pid === lp.pid && s.done) done++; });
+    total = lp.weeks * lp.days.length;
+    var end = dkey(addDays(fromKey(lp.start), lp.weeks * 7 - 1));
+    var h = '<h2>PLAN</h2><p class="lead" style="margin-bottom:8px"><b>' + esc(lp.name) + '</b>' + (lp.where ? ' at ' + esc(lp.where) : '') + '</p>' +
+      '<p class="note" style="margin:0 0 10px">' + dateLabel(lp.start) + (lp.weeks > 26 ? ', ' + fromKey(lp.start).getFullYear() : '') + ' to ' + dateLabel(end) + (lp.weeks > 26 ? ', ' + fromKey(end).getFullYear() : '') + ' &middot; ' + plural(lp.weeks, 'week', 'weeks') + ' &middot; ' + plural(lp.days.length, 'day', 'days') + ' a week' + (lp.goal ? ' &middot; ' + esc(lp.goal) : '') + '</p>' +
+      '<div class="tiles"><div class="tile"><label>Workouts done</label><div class="v">' + done + '</div><div class="s">of ' + total + ' in this plan</div></div>' +
+      '<div class="tile"><label>Lifting sessions</label><div class="v">' + Object.keys(lifts).filter(function (k) { return lifts[k].done; }).length + '</div><div class="s">all plans</div></div></div>';
+    h += lbChartCard();
+    if (lbItems().length) h += '<div class="row" style="margin-top:12px"><button class="btn" data-action="lp-rebase">Set where I am now</button></div><p class="note" style="margin:6px 0 0">Lifting more or less than the plan? Tell it your real numbers and it rescales the rest of the year.</p>';
+    var pr = liftProgress();
+    if (pr.length) {
+      h += '<h3 class="lh3" style="margin-top:16px">STRENGTH<small>top set, first to latest</small></h3><div class="lprog">' + pr.map(function (r) {
+        var a = r.first, b = r.last, delta = b.w - a.w;
+        return '<div class="lpr"><span>' + esc(r.name) + '</span><b>' + (r.n > 1 ? numTxt(a.w) + ' x ' + numTxt(a.n) + ' &rarr; ' : '') + numTxt(b.w) + ' x ' + numTxt(b.n) +
+          (r.n > 1 && delta ? '<em class="' + (delta > 0 ? 'up' : 'dn') + '">' + (delta > 0 ? '+' : '') + numTxt(delta) + ' lb</em>' : '') + '</b></div>';
+      }).join('') + '</div>';
+    }
+    if (lp.tips.length) h += '<h3 class="lh3" style="margin-top:16px">NOTES FROM YOUR PLAN</h3><ul class="ltips">' + lp.tips.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>';
+    if (lpCanUpdate()) h += '<div class="row" style="margin-top:14px"><button class="btn primary" data-action="lp-starter">Update my plan</button></div><p class="note" style="margin:6px 0 0">A newer version adds face pulls, hamstring curls and calf raises, a light Friday squat, and a note on logging dumbbells. Every workout you logged stays. Plan weights you changed with Set where I am now reset.</p>';
+    if (lpCanExtend()) h += '<div class="row" style="margin-top:14px"><button class="btn primary" data-action="lp-starter">Extend to my 1-year plan</button></div><p class="note" style="margin:6px 0 0">Adds 44 more weeks with barbell lifts, planned weights and the progression chart. Every workout you logged stays.</p>';
+    if (lpNeedsWarm()) h += '<div class="row" style="margin-top:14px"><button class="btn primary" data-action="lp-addwarm">Add warm-ups to my plan</button></div><p class="note" style="margin:6px 0 0">Your plan was loaded before warm-ups existed. This adds them and keeps every workout you logged.</p>';
+    h += '<div class="row" style="margin-top:14px"><button class="btn' + ((lpNeedsWarm() || lpCanExtend() || lpCanUpdate()) ? '' : ' primary') + '" data-action="lp-claude">Get my next block from Claude</button></div>' +
+      '<div class="row" style="margin-top:8px"><button class="btn" data-action="lp-import">Import a plan</button>' +
+      (window.claude ? '' : '<button class="btn" data-action="lp-export">Export plan</button>') +
+      '<button class="btn danger" data-action="lp-remove">Remove plan</button></div>' +
+      '<p class="note">Removing a plan keeps every workout you logged.</p>';
+    pl.innerHTML = h;
+  }
+
+  /* plan import, export and the Claude hand-off */
+  function lpAsk(obj, title) {
+    var c = lpClean(obj, false);
+    if (!c) { toast('That plan file is not valid. It needs a name, start date, weeks and days.'); return; }
+    pendingPlan = c;
+    var n = c.days.reduce(function (a, d) { return a + d.items.length; }, 0);
+    openModal('<h3>LOAD THIS PLAN?</h3><p><b>' + esc(c.name) + '</b><br>' + plural(c.weeks, 'week', 'weeks') + ', ' + plural(c.days.length, 'day', 'days') + ' a week, ' + plural(n, 'exercise', 'exercises') + '.</p>' +
+      (lp ? (lpSameShape(c) ? '<p class="note" style="margin:0">This updates your current plan. Every workout you logged keeps its place.</p>' : '<p class="note" style="margin:0">This replaces your current plan. Workouts you already logged stay.</p>') : '') +
+      '<label class="fld"><span>FIRST WEEK STARTS</span><input type="date" id="lp-start" value="' + c.start + '"></label>' +
+      '<p class="note" style="margin:0">Any date works. The plan starts on the Monday of that week.</p>' +
+      '<div class="row"><button class="btn primary" data-action="lp-load-yes">Load plan</button><button class="btn" data-action="close-modal">Cancel</button></div>');
+  }
+  async function lpLoadYes() {
+    if (!pendingPlan) return;
+    var sv = $('#lp-start') ? $('#lp-start').value : '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(sv)) pendingPlan.start = dkey(weekStart(fromKey(sv)));
+    if (lp && lpSameShape(pendingPlan)) pendingPlan.pid = lp.pid;
+    lp = pendingPlan; pendingPlan = null;
+    liftSel = { w: 0, d: '', auto: true };
+    closeModal();
+    renderAll();
+    toast('Plan loaded.');
+    await lpSave();
+  }
+  function lpImportText(text) {
+    var o;
+    try { o = JSON.parse(text); } catch (e) { toast('That file is not a plan file.'); return; }
+    lpAsk(o);
+  }
+  function lpFileSave(name, text, title) {
+    try {
+      var f = new File([text], name, { type: 'application/json' });
+      if (navigator.canShare && navigator.canShare({ files: [f] })) { navigator.share({ files: [f], title: title }).catch(function () {}); return; }
+    } catch (e) {}
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+    a.download = name;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { try { URL.revokeObjectURL(a.href); } catch (e) {} }, 4000);
+  }
+  function lpExportObj() {
+    var o = JSON.parse(JSON.stringify(lp));
+    delete o.pid;
+    o.app = 'dailydiscipline-lifting'; o.v = 1;
+    return o;
+  }
+  function liftSummary() {
+    var pr = liftProgress(), lines = [];
+    var by = {};
+    Object.keys(lifts).forEach(function (id) {
+      var s = lifts[id];
+      s.items.forEach(function (it) {
+        if (it.type !== 'lift') return;
+        var tops = it.sets.filter(function (x) { return x.w !== null && x.n !== null; });
+        if (!tops.length) return;
+        (by[it.name] = by[it.name] || []).push({ d: s.date, t: tops.map(function (x) { return numTxt(x.w) + 'x' + numTxt(x.n); }).join(', ') });
+      });
+    });
+    Object.keys(by).sort().forEach(function (k) {
+      var a = by[k].sort(function (x, y) { return x.d < y.d ? -1 : 1; }).slice(-3);
+      lines.push('- ' + k + ': ' + a.map(function (x) { return (x.d ? x.d.slice(5) : '?') + ' ' + x.t; }).join(' | '));
+    });
+    var notes = [];
+    Object.keys(lifts).forEach(function (id) { var s = lifts[id]; if (s.note) notes.push((s.date || '?') + ' ' + s.day + ': ' + s.note); });
+    return { lines: lines, notes: notes.slice(-8) };
+  }
+  function lpClaudeText() {
+    var sm = liftSummary();
+    return 'I use the Daily Discipline app to log my lifting. Build my next training block as a plan file I can import.\n\n' +
+      'Before you write it, ask me anything you need (days per week, equipment, time per session, goal, anything that hurt or felt too easy). Then give me the file as JSON only, in a code block, in the exact format below.\n\n' +
+      'FORMAT\n' +
+      '{ "app":"dailydiscipline-lifting", "v":1, "name":"", "where":"", "goal":"", "start":"YYYY-MM-DD (a Monday)", "weeks":8 (up to 52),\n' +
+      '  "weekNotes":["one short coaching line per week"], "tips":["optional notes"],\n' +
+      '  "phases":[ { "from":1, "to":8, "name":"Rebuild", "note":"one line" } ], "deloads":[8],\n' +
+      '  "days":[ { "id":"A", "name":"Lift A", "dow":1 (0=Sun..6=Sat), "warmup":"one line on what the warm-up is for",\n' +
+      '    "warm":[ { "id":"W1", "name":"Cat-cow", "dose":"8 reps", "cue":"how to do it" } ],\n' +
+      '    "items":[ { "id":"A1a", "tag":"1a", "name":"Goblet Squat", "type":"lift|cardio|hold|reps", "sets":3, "reps":"8-12", "rest":"60-90 sec", "cue":"how to do it", "bonus":false, "ramp":true } ] } ] }\n' +
+      'Rules: type lift logs weight and reps per set, cardio logs minutes, hold logs seconds per round, reps logs reps per round. For anything that changes by week, "name", "sets", "reps", "rest", "cue" and "target" can be a list of {"from":1,"to":2,"v":value} instead of one value. "warm" is a short checklist done before the workout, matched to the muscles and movements for that day (about 8 minutes on lift days). Set "ramp":true on the first lift so the app suggests ramp-up sets. For barbell lifts add "lb": a list of {"from":9,"to":9,"v":95} giving the planned top working weight for each week, and the app charts it against what I log. "deloads" lists the easy weeks. Use the same exercise name every week so my history carries over. No em dashes.\n\n' +
+      'MY CURRENT PLAN\n' + JSON.stringify(lpExportObj()) + '\n\n' +
+      'WHAT I ACTUALLY LIFTED (last 3 sessions per exercise, weight x reps)\n' + (sm.lines.length ? sm.lines.join('\n') : 'Nothing logged yet.') + '\n' +
+      (sm.notes.length ? '\nMY WORKOUT NOTES\n' + sm.notes.join('\n') + '\n' : '');
+  }
+  function lpClaudeModal() {
+    openModal('<h3>NEXT BLOCK</h3><p>Copy this and paste it into a chat with Claude. It has your plan, what you lifted, and the exact file format. Claude will ask a few questions and give you a new plan file to import.</p>' +
+      '<textarea id="lp-prompt" rows="8" readonly style="font-size:13px"></textarea>' +
+      '<div class="row"><button class="btn primary" data-action="lp-copy">Copy</button><button class="btn" data-action="close-modal">Close</button></div>');
+    $('#lp-prompt').value = lpClaudeText();
+  }
+  function lpCopy() {
+    var ta = $('#lp-prompt');
+    if (!ta) return;
+    ta.focus(); ta.select();
+    var ok = false;
+    try { ok = document.execCommand('copy'); } catch (e) {}
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(ta.value).then(function () { toast('Copied.'); }, function () { toast(ok ? 'Copied.' : 'Select the text and copy it.'); });
+    } else toast(ok ? 'Copied.' : 'Select the text and copy it.');
+  }
+  function liftSwapModal(w, day, iid, isCustom) {
+    var s = sessOf(w, day.id), it = sessItem(s, iid), nm = it ? it.name : '';
+    if (!nm) day.items.forEach(function (x) { if (x.id === iid) { var p = lpItemFor(x, w); if (p) nm = p.name; } });
+    openModal('<h3>' + (isCustom ? 'RENAME' : 'SWAP EXERCISE') + '</h3><p class="note" style="margin:0">Machine busy or it hurts? Type what you did instead.</p>' +
+      '<label class="fld"><span>EXERCISE</span><input type="text" id="sw-name" maxlength="60" value="' + esc(nm) + '"></label>' +
+      '<div class="row"><button class="btn primary" data-action="lift-swap-go" data-scope="once" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(iid) + '">' + (isCustom ? 'Save' : 'Just this workout') + '</button>' +
+      (isCustom ? '' : '<button class="btn" data-action="lift-swap-go" data-scope="all" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(iid) + '">From now on</button>') +
+      '<button class="btn" data-action="close-modal">Cancel</button></div>', '#sw-name');
+  }
+  function liftSwapGo(b) {
+    var w = parseInt(b.dataset.w, 10), day = lpDay(b.dataset.d), iid = b.dataset.i, nm = lpStr($('#sw-name').value, 60);
+    if (!day || !nm) { toast('Type an exercise name.'); return; }
+    var s = ensureSess(w, day), it = ensureItem(s, iid, w, day);
+    if (!it) return;
+    it.name = nm;
+    liftDirty[s.id] = true;
+    var planChanged = false;
+    if (b.dataset.scope === 'all' && !it.custom) {
+      day.items.forEach(function (x) { if (x.id === iid) { x.name = nm; planChanged = true; } });
+    }
+    closeModal(); flushLift(); renderAll();
+    if (planChanged) lpSave();
+  }
+  function liftAddModal(w, day) {
+    openModal('<h3>ADD AN EXERCISE</h3><p class="note" style="margin:0">Added to this workout only.</p>' +
+      '<label class="fld"><span>EXERCISE</span><input type="text" id="ad-name" maxlength="60" placeholder="Hammer Curl"></label>' +
+      '<div class="fld"><span>LOG AS</span><div class="chips" id="ad-type">' +
+      [['lift', 'Weight x reps'], ['cardio', 'Minutes'], ['hold', 'Seconds'], ['reps', 'Reps']].map(function (t, i) { return '<button class="chip" style="padding:0 12px" data-action="ad-type" data-t="' + t[0] + '" aria-pressed="' + (i === 0) + '">' + t[1] + '</button>'; }).join('') + '</div></div>' +
+      '<div class="row"><button class="btn primary" data-action="lift-add-go" data-w="' + w + '" data-d="' + esc(day.id) + '">Add</button><button class="btn" data-action="close-modal">Cancel</button></div>', '#ad-name');
+  }
+  function liftAddGo(b) {
+    var w = parseInt(b.dataset.w, 10), day = lpDay(b.dataset.d), nm = lpStr($('#ad-name').value, 60);
+    if (!day || !nm) { toast('Type an exercise name.'); return; }
+    var sel = $('#ad-type .chip[aria-pressed="true"]'), type = sel ? sel.dataset.t : 'lift';
+    var s = ensureSess(w, day);
+    s.items.push({ id: 'x' + Date.now().toString(36), name: nm, type: type, reps: '', custom: true, sets: [{ w: null, n: null }] });
+    liftDirty[s.id] = true;
+    closeModal(); flushLift(); renderAll();
+  }
+  function liftAction(a, b) {
+    var ae = document.activeElement;
+    if (ae && ae.blur && /^(INPUT|TEXTAREA)$/.test(ae.tagName) && ae.closest && ae.closest('#gym-lift')) ae.blur();
+    var w = parseInt(b.dataset.w, 10), day = lp ? lpDay(b.dataset.d) : null, c;
+    if (a === 'lift-week') { c = liftCur(); liftSel = { w: Math.min(lp.weeks, Math.max(1, c.w + parseInt(b.dataset.n, 10))), d: c.day.id, auto: false }; renderAll(); }
+    else if (a === 'lift-day') { c = liftCur(); liftSel = { w: c.w, d: b.dataset.d, auto: false }; renderAll(); }
+    else if (a === 'lift-addset') { if (day) liftAddSet(w, day, b.dataset.i); }
+    else if (a === 'lift-swap') { if (day) { var s0 = sessItem(sessOf(w, day.id), b.dataset.i); liftSwapModal(w, day, b.dataset.i, !!(s0 && s0.custom)); } }
+    else if (a === 'lift-swap-go') liftSwapGo(b);
+    else if (a === 'lift-add') { if (day) liftAddModal(w, day); }
+    else if (a === 'ad-type') { Array.prototype.forEach.call(b.parentNode.querySelectorAll('.chip'), function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false'); }); }
+    else if (a === 'lift-add-go') liftAddGo(b);
+    else if (a === 'lift-delcustom') { if (day) liftDelCustom(w, day, b.dataset.i); }
+    else if (a === 'lift-warm') { if (day) liftWarm(w, day, b.dataset.i); }
+    else if (a === 'lift-fill') { if (day) liftFill(w, day, b.dataset.i); }
+    else if (a === 'lift-now') { liftSel = { w: 0, d: '', auto: true }; renderAll(); }
+    else if (a === 'lp-rebase') lpRebaseModal();
+    else if (a === 'lp-rebase-go') lpRebaseGo();
+    else if (a === 'lp-chart-lift') { chartSel.id = b.dataset.i; renderAll(); }
+    else if (a === 'lp-chart-view') { chartSel.view = chartSel.view === 'table' ? 'chart' : 'table'; renderAll(); }
+    else if (a === 'lp-addwarm') lpAddWarm();
+    else if (a === 'lift-finish') { if (day) liftFinish(w, day); }
+    else if (a === 'lift-reopen') { if (day) liftReopen(w, day); }
+    else if (a === 'lift-go') { liftSel = { w: w, d: b.dataset.d, auto: false }; setTab('gym'); renderAll(); }
+    else if (a === 'lp-starter') lpAsk(STARTER_PLAN);
+    else if (a === 'lp-import') $('#lp-file').click();
+    else if (a === 'lp-load-yes') lpLoadYes();
+    else if (a === 'lp-export') { if (lp) lpFileSave('lifting-plan-' + lp.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') + '.json', JSON.stringify(lpExportObj(), null, 1), lp.name); }
+    else if (a === 'lp-claude') { if (lp) lpClaudeModal(); }
+    else if (a === 'lp-copy') lpCopy();
+    else if (a === 'lp-remove') openModal('<h3>REMOVE PLAN?</h3><p>The plan comes off your Gym tab. Every workout you logged stays in your history.</p><div class="row"><button class="btn danger" data-action="lp-remove-yes">Remove plan</button><button class="btn" data-action="close-modal">Cancel</button></div>');
+    else if (a === 'lp-remove-yes') { lp = null; closeModal(); renderAll(); lpSave(); }
+    else return false;
+    return true;
+  }
+  document.addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (!t || !t.classList) return;
+    if (t.classList.contains('li')) liftInput(t, false);
+    else if (t.dataset.lnote) liftNote(t, false);
+  });
+  document.addEventListener('change', function (ev) {
+    var t = ev.target;
+    if (!t || !t.classList) return;
+    if (t.classList.contains('li')) liftInput(t, true);
+    else if (t.dataset.lnote) liftNote(t, true);
+    else if (t.dataset.ldate) liftDateSet(t);
+    else if (t.id === 'lp-file') {
+      var f = t.files && t.files[0];
+      if (!f) return;
+      f.text().then(lpImportText, function () { toast('Could not read that file.'); });
+      t.value = '';
+    }
+  });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) flushLift(); });
+  window.addEventListener('pagehide', function () { flushLift(); });
+
+  /* ---------- small line charts: lift progression and 5K times ---------- */
+  var pcs = {}, pcOpen = null;
+  function pcChart(cfg) {
+    var W = 340, H = 214, L = 42, R = 14, T = 26, B = 28, pw = W - L - R, ph = H - T - B, n = cfg.n, id = cfg.id;
+    var slot = n > 1 ? pw / (n - 1) : pw;
+    function X(i) { return n > 1 ? L + i / (n - 1) * pw : L + pw / 2; }
+    function Y(v) { return T + ph - (v - cfg.yMin) / (cfg.yMax - cfg.yMin) * ph; }
+    cfg.X = X; cfg.Y = Y; cfg.W = W; cfg.L = L; cfg.pw = pw;
+    pcs[id] = cfg;
+    var s = '<div class="pc" data-pc="' + id + '" tabindex="0" role="group" aria-label="' + esc(cfg.label) + '"><svg viewBox="0 0 ' + W + ' ' + H + '" class="pcsvg" aria-hidden="true">';
+    (cfg.bands || []).forEach(function (b, k) {
+      var x0 = Math.max(L, X(b.a) - slot / 2), x1 = Math.min(L + pw, X(b.b) + slot / 2);
+      if (k % 2 === 0) s += '<rect class="pc-band" x="' + x0.toFixed(1) + '" y="' + T + '" width="' + (x1 - x0).toFixed(1) + '" height="' + ph + '"/>';
+      if (x1 - x0 >= 36) s += '<text class="pc-bl" x="' + ((x0 + x1) / 2).toFixed(1) + '" y="' + (T - 9) + '" text-anchor="middle">' + esc(b.name) + '</text>';
+    });
+    for (var v = cfg.yMin; v <= cfg.yMax + 0.001; v += cfg.yStep) {
+      s += '<line class="pc-grid" x1="' + L + '" x2="' + (L + pw) + '" y1="' + Y(v).toFixed(1) + '" y2="' + Y(v).toFixed(1) + '"/>' +
+        '<text class="pc-yl" x="' + (L - 6) + '" y="' + (Y(v) + 3.5).toFixed(1) + '" text-anchor="end">' + esc(cfg.yFmt(v)) + '</text>';
+    }
+    (cfg.xTicks || []).forEach(function (i) {
+      s += '<text class="pc-xl" x="' + X(i).toFixed(1) + '" y="' + (H - 9) + '" text-anchor="middle">' + esc(cfg.xAt(i)) + '</text>';
+    });
+    (cfg.hlines || []).forEach(function (h) {
+      s += '<line class="pc-ref" x1="' + L + '" x2="' + (L + pw) + '" y1="' + Y(h.v).toFixed(1) + '" y2="' + Y(h.v).toFixed(1) + '"/>' +
+        '<text class="pc-refl" x="' + (L + pw - 2) + '" y="' + (Y(h.v) - 4).toFixed(1) + '" text-anchor="end">' + esc(h.label) + '</text>';
+    });
+    if (cfg.nowI >= 0 && cfg.nowI < n) {
+      s += '<line class="pc-now" x1="' + X(cfg.nowI).toFixed(1) + '" x2="' + X(cfg.nowI).toFixed(1) + '" y1="' + T + '" y2="' + (T + ph) + '"/>' +
+        '<text class="pc-refl" x="' + (X(cfg.nowI) + 4).toFixed(1) + '" y="' + (T + 11) + '">Now</text>';
+    }
+    cfg.series.forEach(function (sr) {
+      var d = '';
+      sr.vals.forEach(function (v2, i) { if (v2 === null || v2 === undefined) return; d += (d ? 'L' : 'M') + X(i).toFixed(1) + ' ' + Y(v2).toFixed(1); });
+      if (d) s += '<path class="pc-line ' + sr.cls + '" d="' + d + '"/>';
+    });
+    (cfg.rings || []).forEach(function (r) {
+      s += '<circle class="pc-ring" cx="' + X(r.i).toFixed(1) + '" cy="' + Y(r.v).toFixed(1) + '" r="9"/>';
+      if (r.label) s += '<text class="pc-refl" x="' + X(r.i).toFixed(1) + '" y="' + (Y(r.v) - 13).toFixed(1) + '" text-anchor="middle">' + esc(r.label) + '</text>';
+    });
+    cfg.series.forEach(function (sr) {
+      if (!sr.marker) return;
+      sr.vals.forEach(function (v2, i) {
+        if (v2 === null || v2 === undefined) return;
+        s += '<circle class="pc-mk ' + sr.cls + '" cx="' + X(i).toFixed(1) + '" cy="' + Y(v2).toFixed(1) + '" r="4.5"/>';
+      });
+    });
+    s += '<g class="pc-hov"><line class="pc-xh" id="pcx-' + id + '" x1="0" x2="0" y1="' + T + '" y2="' + (T + ph) + '"/>';
+    cfg.series.forEach(function (sr, k) { s += '<circle class="pc-hc ' + sr.cls + '" id="pch-' + id + '-' + k + '" cx="0" cy="0" r="5.5"/>'; });
+    s += '</g></svg><div class="pc-tip"></div></div>';
+    return s;
+  }
+  function pcShow(box, i) {
+    var cfg = pcs[box.dataset.pc];
+    if (!cfg) return;
+    i = Math.max(0, Math.min(cfg.n - 1, i));
+    var x = cfg.X(i), xl = box.querySelector('#pcx-' + cfg.id);
+    if (!xl) return;
+    xl.setAttribute('x1', x); xl.setAttribute('x2', x);
+    cfg.series.forEach(function (sr, k) {
+      var c = box.querySelector('#pch-' + cfg.id + '-' + k), v = sr.vals[i];
+      if (!c) return;
+      if (v === null || v === undefined) { c.style.display = 'none'; return; }
+      c.style.display = ''; c.setAttribute('cx', x); c.setAttribute('cy', cfg.Y(v));
+    });
+    var tip = box.querySelector('.pc-tip');
+    tip.innerHTML = cfg.tip(i);
+    box.classList.add('on');
+    box.dataset.i = i;
+    var rect = box.getBoundingClientRect(), px = x / cfg.W * rect.width;
+    if (px > rect.width / 2) { tip.style.left = 'auto'; tip.style.right = Math.max(0, rect.width - px + 10) + 'px'; }
+    else { tip.style.right = 'auto'; tip.style.left = (px + 10) + 'px'; }
+    if (pcOpen && pcOpen !== box) pcOpen.classList.remove('on');
+    pcOpen = box;
+  }
+  function pcHide() { if (pcOpen) { pcOpen.classList.remove('on'); pcOpen = null; } }
+  function pcIndex(box, ev) {
+    var cfg = pcs[box.dataset.pc], rect = box.getBoundingClientRect();
+    if (!cfg || !rect.width) return 0;
+    return Math.round(((ev.clientX - rect.left) / rect.width * cfg.W - cfg.L) / cfg.pw * (cfg.n - 1));
+  }
+  document.addEventListener('pointermove', function (ev) {
+    var box = ev.target && ev.target.closest ? ev.target.closest('.pc') : null;
+    if (!box) { if (pcOpen && ev.pointerType === 'mouse') pcHide(); return; }
+    pcShow(box, pcIndex(box, ev));
+  });
+  document.addEventListener('pointerdown', function (ev) {
+    var box = ev.target && ev.target.closest ? ev.target.closest('.pc') : null;
+    if (!box) { pcHide(); return; }
+    pcShow(box, pcIndex(box, ev));
+  });
+  document.addEventListener('keydown', function (ev) {
+    var box = ev.target && ev.target.classList && ev.target.classList.contains('pc') ? ev.target : null;
+    if (!box) return;
+    var cfg = pcs[box.dataset.pc];
+    if (!cfg) return;
+    if (ev.key === 'Escape') { pcHide(); return; }
+    if (ev.key !== 'ArrowLeft' && ev.key !== 'ArrowRight' && ev.key !== 'Home' && ev.key !== 'End') return;
+    ev.preventDefault();
+    var cur = box.classList.contains('on') ? parseInt(box.dataset.i, 10) : (cfg.start !== undefined ? cfg.start : cfg.n - 1);
+    if (ev.key === 'Home') cur = 0; else if (ev.key === 'End') cur = cfg.n - 1; else cur += ev.key === 'ArrowRight' ? 1 : -1;
+    pcShow(box, cur);
+  });
+
+  /* ---------- 5K Saturday ---------- */
+  var runs = {};          // date -> { date, seconds, note, at }
+  var RUN_MI = 3.10686;
+  function cleanRun(id, o) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(id) || !o || typeof o !== 'object') return null;
+    var s = Math.round(Number(o.seconds));
+    if (!isFinite(s) || s < 60 || s > 14400) return null;
+    return { date: id, seconds: s, note: lpStr(o.note, 300), at: typeof o.at === 'string' ? o.at : '' };
+  }
+  function runPace(s) { return fmt(Math.round(s / RUN_MI)); }
+  function runWeekKey(k) { return dkey(weekStart(fromKey(k))); }
+  function secTxt(n) { n = Math.abs(Math.round(n)); return n < 60 ? n + ' sec' : fmt(n); }
+  function runVs(cur, other) {
+    if (!other) return 'First one logged';
+    var d = cur - other.seconds;
+    if (d === 0) return 'Same as last time';
+    return secTxt(d) + (d < 0 ? ' faster' : ' slower') + ' than last time';
+  }
+  function runModel() {
+    var list = Object.keys(runs).sort().map(function (k) { return runs[k]; });
+    var m = { list: list, n: list.length, pr: null, last: null, prev: null, avg4: 0, cur: 0, best: 0, thisWk: null, tkW: dkey(weekStart(new Date())) };
+    if (!list.length) return m;
+    m.last = list[list.length - 1];
+    m.prev = list.length > 1 ? list[list.length - 2] : null;
+    list.forEach(function (r) { if (!m.pr || r.seconds < m.pr.seconds) m.pr = r; });
+    var l4 = list.slice(-4);
+    m.avg4 = Math.round(l4.reduce(function (a, r) { return a + r.seconds; }, 0) / l4.length);
+    var wk = {};
+    list.forEach(function (r) { wk[runWeekKey(r.date)] = 1; });
+    m.thisWk = list.filter(function (r) { return runWeekKey(r.date) === m.tkW; }).pop() || null;
+    var d = fromKey(m.tkW);
+    if (!wk[m.tkW]) d = addDays(d, -7);
+    while (wk[dkey(d)]) { m.cur++; d = addDays(d, -7); }
+    var ws = Object.keys(wk).sort(), run = 0, pv = null;
+    ws.forEach(function (k) { run = pv && dkey(addDays(fromKey(pv), 7)) === k ? run + 1 : 1; if (run > m.best) m.best = run; pv = k; });
+    return m;
+  }
+  function nextSat(now) { var d = fromKey(dkey(now)); return addDays(d, (6 - d.getDay() + 7) % 7); }
+  function runBefore(m, r) { var i = m.list.indexOf(r); return i > 0 ? m.list[i - 1] : null; }
+  function renderRun() {
+    if (!$('#run-hero')) return;
+    var m = runModel(), now = new Date(), isSat = now.getDay() === 6, h = '';
+    var tw = m.thisWk;
+    h = '<h2>5K SATURDAY</h2>';
+    if (tw) {
+      var bf = runBefore(m, tw), isPR = m.n > 1 && m.pr === tw;
+      h += '<div class="rbig">' + fmt(tw.seconds) + '</div><p class="lead" style="margin:0 0 4px">' + (isPR ? '<b>New best.</b> ' : '') + runVs(tw.seconds, bf) + '. ' + runPace(tw.seconds) + ' per mile.</p>' +
+        '<p class="note" style="margin:0 0 12px">' + DOWL[fromKey(tw.date).getDay()] + ', ' + dateLabel(tw.date) + (m.cur > 1 ? ' &middot; ' + m.cur + ' weeks in a row' : '') + '</p>' +
+        '<div class="row"><button class="btn" data-action="run-edit" data-key="' + tw.date + '">Edit this run</button></div>';
+    } else if (isSat) {
+      h += '<p class="lead" style="margin-bottom:12px"><b>Today is 5K day.</b> ' + (m.pr ? 'Your best is ' + fmt(m.pr.seconds) + '.' : 'Log your first time when you finish.') + '</p>' +
+        '<div class="row"><button class="btn primary" data-action="run-log">Log my 5K</button></div>';
+    } else {
+      var ns = nextSat(now), days = Math.round((ns - fromKey(dkey(now))) / 86400000);
+      h += '<div class="rbig">' + (days === 1 ? 'Tomorrow' : 'Saturday') + '</div><p class="lead" style="margin:0 0 12px">Next 5K: ' + dateLabel(dkey(ns)) + ' (' + (days === 1 ? 'tomorrow' : 'in ' + days + ' days') + ').' + (m.cur ? ' Run it to keep your ' + plural(m.cur, 'week', 'weeks') + ' going.' : '') + '</p>' +
+        '<div class="row"><button class="btn" data-action="run-log">Log a run</button></div>';
+    }
+    $('#run-hero').innerHTML = h;
+
+    var t = '<h2>YOUR TIMES</h2>';
+    if (!m.n) t += '<p class="lead" style="margin:0">Nothing logged yet. Your best, average, pace and weekly streak show up here after your first run.</p>';
+    else {
+      t += '<div class="tiles">' +
+        '<div class="tile"><label>Best</label><div class="v">' + fmt(m.pr.seconds) + '</div><div class="s">' + dateLabel(m.pr.date) + ' &middot; ' + runPace(m.pr.seconds) + ' /mi</div></div>' +
+        '<div class="tile"><label>Latest</label><div class="v">' + fmt(m.last.seconds) + '</div><div class="s">' + (m.prev ? runVs(m.last.seconds, m.prev) : 'First one logged') + '</div></div>' +
+        '<div class="tile"><label>Average</label><div class="v">' + fmt(m.avg4) + '</div><div class="s">' + (m.n >= 4 ? 'last 4 runs' : 'all ' + plural(m.n, 'run', 'runs')) + '</div></div>' +
+        '<div class="tile"><label>Pace</label><div class="v">' + runPace(m.last.seconds) + '</div><div class="s">per mile, latest run</div></div>' +
+        '<div class="tile"><label>Weeks in a row</label><div class="v">' + m.cur + '</div><div class="s">Best ' + m.best + '</div></div>' +
+        '<div class="tile"><label>Total runs</label><div class="v">' + m.n + '</div><div class="s">' + nfmt(Math.round(m.n * 5)) + ' km</div></div></div>';
+    }
+    var g = goals.runGoal || 0;
+    t += '<div class="rgoal">';
+    if (g) {
+      t += '<p class="lead" style="margin:0">Goal: <b>' + fmt(g) + '</b>' + (m.pr ? (m.pr.seconds <= g ? '. You have hit it, best ' + fmt(m.pr.seconds) + '.' : '. ' + secTxt(m.pr.seconds - g) + ' to go from your best.') : '.') + '</p>';
+    }
+    t += '<button class="link" data-action="run-goal">' + (g ? 'Change goal time' : 'Set a goal time') + '</button></div>';
+    $('#run-stats').innerHTML = t;
+
+    var c = '<h2>TIME BY RUN<small>lower is faster</small></h2>';
+    if (m.n < 2) c += '<p class="lead" style="margin:0">Log two runs to see your trend.</p>';
+    else {
+      var L = m.list.slice(-20), vals = L.map(function (r) { return r.seconds; }), lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
+      if (g) { lo = Math.min(lo, g); hi = Math.max(hi, g); }
+      var span = hi - lo, step = span <= 120 ? 30 : span <= 360 ? 60 : span <= 900 ? 120 : 300;
+      var yMin = Math.max(0, Math.floor((lo - step * 0.5) / step) * step), yMax = Math.ceil((hi + step * 0.5) / step) * step;
+      var prI = -1; L.forEach(function (r, i) { if (r === m.pr) prI = i; });
+      var tk = [0]; if (L.length > 2) tk.push(Math.floor((L.length - 1) / 2)); tk.push(L.length - 1);
+      c += pcChart({
+        id: 'run', n: L.length, yMin: yMin, yMax: yMax, yStep: step, yFmt: function (v) { return fmt(v); },
+        label: '5K time for each of your last ' + L.length + ' runs. Lower is faster. The recent runs list below has the numbers.',
+        xTicks: tk, xAt: function (i) { return dateLabel(L[i].date); }, nowI: -1, start: L.length - 1,
+        hlines: g ? [{ v: g, label: 'Goal ' + fmt(g) }] : [],
+        rings: prI >= 0 ? [{ i: prI, v: L[prI].seconds, label: 'Best' }] : [],
+        series: [{ cls: 'log', vals: vals, marker: true }],
+        tip: function (i) { var r = L[i]; return '<b>' + fmt(r.seconds) + '</b> <span>' + DOW[fromKey(r.date).getDay()] + ', ' + dateLabel(r.date) + '</span><br>' + runPace(r.seconds) + ' per mile' + (r === m.pr ? '<br>Best so far' : ''); }
+      });
+      c += '<p class="note" style="margin:6px 0 0">Tap or drag on the chart to read a run. Each dot is one run, oldest on the left.</p>';
+    }
+    $('#run-chart').innerHTML = c;
+
+    var l = '<h2>RECENT RUNS</h2>';
+    if (!m.n) l += '<p class="lead" style="margin:0">No runs yet.</p>';
+    else l += '<div class="rlist">' + m.list.slice().reverse().slice(0, 30).map(function (r) {
+      return '<button class="rrow" data-action="run-edit" data-key="' + r.date + '"><span class="rd">' + DOW[fromKey(r.date).getDay()] + ' ' + dateLabel(r.date) + '</span><b>' + fmt(r.seconds) + '</b><span class="rp">' + runPace(r.seconds) + ' /mi' + (r === m.pr ? ' &middot; best' : '') + '</span>' + (r.note ? '<span class="rn">' + esc(r.note) + '</span>' : '') + '</button>';
+    }).join('') + '</div>';
+    $('#run-log').innerHTML = l;
+  }
+  function runSheetHTML(k) {
+    var e = k ? runs[k] : null, dv = k || dkey(new Date()), mm = e ? Math.floor(e.seconds / 60) : '', ss = e ? e.seconds % 60 : '';
+    return '<h3>' + (e ? 'EDIT YOUR 5K' : 'LOG A 5K') + '</h3>' +
+      '<label class="fld"><span>DATE</span><input type="date" id="q-date" value="' + dv + '" max="' + dkey(new Date()) + '"></label>' +
+      '<div class="two"><label class="fld"><span>MINUTES</span><input id="q-min" type="number" inputmode="numeric" min="0" max="180" value="' + mm + '"></label>' +
+      '<label class="fld"><span>SECONDS</span><input id="q-sec" type="number" inputmode="numeric" min="0" max="59" value="' + ss + '"></label></div>' +
+      '<div class="prev" id="q-prev"></div>' +
+      '<label class="fld lfld"><span>NOTES</span><textarea id="q-note" rows="2" maxlength="300" placeholder="Route, weather, how it felt">' + esc(e ? e.note : '') + '</textarea></label>' +
+      '<div class="row"><button class="btn primary" data-action="run-save" data-key="' + (k || '') + '">Save</button>' +
+      (e ? '<button class="btn danger" data-action="run-del" data-key="' + k + '">Delete</button>' : '') +
+      '<button class="btn" data-action="close-modal">Cancel</button></div>';
+  }
+  function runSecs(a, b) {
+    var mi = $(a).value, se = $(b).value;
+    if (mi === '' && se === '') return null;
+    return (parseInt(mi || '0', 10) || 0) * 60 + (parseInt(se || '0', 10) || 0);
+  }
+  function runPrev() {
+    var p = $('#q-prev');
+    if (!p) return;
+    var t = runSecs('#q-min', '#q-sec');
+    if (t === null || t < 600 || t > 10800) { p.textContent = 'Enter a time between 10:00 and 3:00:00.'; return; }
+    p.textContent = fmt(t) + '  ·  ' + runPace(t) + ' per mile';
+  }
+  async function runSave(old) {
+    var k = $('#q-date').value, t = runSecs('#q-min', '#q-sec'), note = $('#q-note').value;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) { toast('Pick the date of the run.'); return; }
+    if (k > dkey(new Date())) { toast('That date is in the future.'); return; }
+    if (t === null || t < 600 || t > 10800) { toast('Enter a time between 10:00 and 3:00:00.'); return; }
+    if (runs[k] && k !== old) { toast('You already logged a run on that day. Tap it in the list to edit it.'); return; }
+    var before = runModel(), e = cleanRun(k, { seconds: t, note: note, at: new Date().toISOString() });
+    var dropOld = old && old !== k && runs[old] ? old : '';
+    if (dropOld) delete runs[dropOld];
+    runs[k] = e;
+    var pr = !before.pr || t < before.pr.seconds || (old && before.pr && before.pr.date === old && t <= before.pr.seconds);
+    closeModal();
+    renderAll();
+    toast(pr && before.n ? 'New best: ' + fmt(t) + '.' : 'Run saved.');
+    await persist(async function (d) {
+      await d.doc('runs/' + k).set(e);
+      if (dropOld) await d.doc('runs/' + dropOld).delete();
+    });
+  }
+  async function runRemove(k) {
+    if (!runs[k]) return;
+    delete runs[k];
+    closeModal();
+    renderAll();
+    await persist(function (d) { return d.doc('runs/' + k).delete(); });
+  }
+  function goalSheetHTML() {
+    var g = goals.runGoal || 0;
+    return '<h3>GOAL TIME</h3><p class="note" style="margin:0">The time you want to run a 5K in. It shows as a dashed line on your chart.</p>' +
+      '<div class="two"><label class="fld"><span>MINUTES</span><input id="g-min" type="number" inputmode="numeric" min="0" max="180" value="' + (g ? Math.floor(g / 60) : '') + '"></label>' +
+      '<label class="fld"><span>SECONDS</span><input id="g-sec" type="number" inputmode="numeric" min="0" max="59" value="' + (g ? g % 60 : '') + '"></label></div>' +
+      '<div class="row"><button class="btn primary" data-action="run-goal-save">Save</button>' + (g ? '<button class="btn danger" data-action="run-goal-clear">Remove goal</button>' : '') +
+      '<button class="btn" data-action="close-modal">Cancel</button></div>';
+  }
+  async function runGoalSave(clear) {
+    var t = clear ? 0 : runSecs('#g-min', '#g-sec');
+    if (!clear && (t === null || t < 600 || t > 10800)) { toast('Enter a goal between 10:00 and 3:00:00.'); return; }
+    goals.runGoal = t || 0;
+    closeModal();
+    renderAll();
+    await persist(function (d) { return d.doc('app/habits').set(goalsOut()); });
+  }
+  function runAction(a, b) {
+    if (a === 'run-log') { openModal(runSheetHTML(''), '#q-min'); runPrev(); }
+    else if (a === 'run-edit') { if (runs[b.dataset.key]) { openModal(runSheetHTML(b.dataset.key), '#q-min'); runPrev(); } }
+    else if (a === 'run-save') runSave(b.dataset.key || '');
+    else if (a === 'run-del') runRemove(b.dataset.key);
+    else if (a === 'run-goal') { openModal(goalSheetHTML(), '#g-min'); }
+    else if (a === 'run-goal-save') runGoalSave(false);
+    else if (a === 'run-goal-clear') runGoalSave(true);
+    else return false;
+    return true;
+  }
+  document.addEventListener('input', function (ev) {
+    var t = ev.target;
+    if (t && (t.id === 'q-min' || t.id === 'q-sec')) runPrev();
+  });
+
   /* ---------- modal ---------- */
   function openModal(html, focusSel) {
     $('#sheet').innerHTML = html;
@@ -2114,6 +3518,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var b = ev.target.closest('[data-action]');
     if (!b) return;
     var a = b.dataset.action;
+    if ((a.indexOf('lift-') === 0 || a.indexOf('lp-') === 0 || a === 'ad-type') && liftAction(a, b)) return;
+    if (a.indexOf('run-') === 0 && runAction(a, b)) return;
     if (a === 'wake-up') {
       if (writing) return;
       var ph = phase();
@@ -2135,6 +3541,10 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       toggleHabit(hk, hkey);
     } else if (a === 'fb-open') {
       fbPromptSignIn();
+    } else if (a === 'fb-show') {
+      fbShowPass(b);
+    } else if (a === 'fb-reset') {
+      fbReset();
     } else if (a === 'fb-signin') {
       fbAuth(false);
     } else if (a === 'fb-create') {
@@ -2253,6 +3663,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     f.text().then(importChosen, function () { toast('Could not read that file.'); });
     ev.target.value = '';
   });
+  document.addEventListener('submit', function (ev) {
+    if (ev.target && ev.target.id === 'gate-form') { ev.preventDefault(); fbAuth(false); }
+  });
   document.addEventListener('keydown', function (ev) {
     if (ev.key === 'Escape' && !$('#modal').hidden) closeModal();
   });
@@ -2280,7 +3693,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   try { if (navigator.storage && navigator.storage.persist) navigator.storage.persist(); } catch (e) {}
   loadLocal();
   try { var f0 = localStorage.getItem(LS + '.fmt'); if (FMT[f0]) fmtSel = f0; lastBook = localStorage.getItem(LS + '.book') || ''; } catch (e) {}
-  try { var st0 = localStorage.getItem(LS + '.tab'); if (['home', 'wake', 'bible', 'books', 'gym'].indexOf(st0) >= 0) tab = st0; } catch (e) {}
+  try { var st0 = localStorage.getItem(LS + '.tab'); if (['home', 'wake', 'bible', 'books', 'gym', 'run'].indexOf(st0) >= 0) tab = st0; } catch (e) {}
   renderAll();
   setTab(tab);
   autoWake();
