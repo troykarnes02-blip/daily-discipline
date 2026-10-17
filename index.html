@@ -201,6 +201,33 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .rrow .rd { font-weight: 600; grid-row: 1; grid-column: 1; }
 .rrow .rp { color: var(--dim); font-size: 13px; grid-row: 2; grid-column: 1 / 3; }
 .rrow .rn { color: var(--dim); font-size: 13px; grid-row: 3; grid-column: 1 / 3; }
+.fld textarea#fb-text { min-height: 64px; }
+.fblist { display: flex; flex-direction: column; margin-top: 10px; }
+.fbrow { display: grid; grid-template-columns: 36px minmax(0, 1fr) auto; gap: 10px; align-items: start; border-top: 1px solid var(--line); padding: 10px 0; }
+.fbck { width: 30px; height: 30px; border-radius: 6px; border: 2px solid var(--line); background: none; display: grid; place-items: center; font-weight: 800; color: var(--accent-ink); margin-top: 2px; }
+.fbrow.on .fbck { background: var(--accent); border-color: var(--accent); }
+.fbt span { display: block; line-height: 1.4; overflow-wrap: anywhere; }
+.fbrow.on .fbt span { color: var(--dim); text-decoration: line-through; text-decoration-thickness: 1px; }
+.fbt em { display: block; font-style: normal; color: var(--dim); font-size: 12px; letter-spacing: .06em; margin-top: 2px; }
+.gwk { position: fixed; inset: 0; z-index: 18; background: var(--bg); display: flex; flex-direction: column; }
+.gwk[hidden] { display: none; }
+.gwk-in { flex: 1; overflow-y: auto; width: 100%; max-width: 720px; margin: 0 auto; padding: 14px 16px 24px; padding-top: max(14px, env(safe-area-inset-top, 0px)); }
+.gwk-act { width: 100%; max-width: 720px; margin: 0 auto; display: flex; gap: 8px; padding: 10px 16px; padding-bottom: max(12px, env(safe-area-inset-bottom, 0px)); border-top: 1px solid var(--line); background: var(--bg); }
+.gwk-act .btn { min-height: 54px; }
+.gwk-act .btn.primary { flex: 1; font-size: 18px; }
+body.gwk-on .rest { z-index: 25; }
+body.rest-on .gwk-act { padding-bottom: 100px; }
+body.gwk-on { overflow: hidden; }
+.gw-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; min-height: 36px; }
+.gw-top b { font-family: var(--font-display); font-weight: 800; font-size: 16px; letter-spacing: .12em; }
+.prof-id { display: flex; align-items: center; gap: 12px; }
+.prof-id b { display: block; overflow-wrap: anywhere; }
+.prof-id span:not(.avatar) { color: var(--dim); font-size: 13px; }
+.avatar { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: var(--accent-ink); display: grid; place-items: center; font-family: var(--font-display); font-weight: 800; font-size: 24px; flex: none; }
+.prow { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-top: 1px solid var(--line); }
+.prow:first-child { border-top: 0; }
+.prow b { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sheet .tile .v { font-size: 34px; }
 .trow .lbl.long { font-size: 15px; letter-spacing: .06em; }
 .stweek { display: flex; gap: 8px; }
 .stweek span { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 1px solid var(--line); font-size: 12px; font-weight: 600; color: var(--dim); }
@@ -232,6 +259,20 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .tag { font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--dim); margin-top: 4px; white-space: nowrap; }
 .rec { margin-left: auto; text-align: right; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); font-variant-numeric: tabular-nums; }
 .rec b { font-family: var(--font-display); font-size: 24px; letter-spacing: .04em; color: var(--ink); font-weight: 800; }
+.rbr { display: block; height: 0; }
+@media (max-width: 430px) {
+  .top { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; column-gap: 8px; row-gap: 2px; }
+  .top h1 { font-size: 26px; letter-spacing: .05em; }
+  .tag { display: none; }
+  .brand { grid-column: 1; grid-row: 1; }
+  .rec { grid-column: 1; grid-row: 2; margin-left: 0; text-align: left; font-size: 11px; letter-spacing: .1em; }
+  .rec b { font-size: 18px; }
+  .rbr { display: inline; }
+  .rbr::before { content: '\00a0\00b7\00a0'; }
+  #prof { grid-column: 2; grid-row: 1 / span 2; }
+  #gear { grid-column: 3; grid-row: 1 / span 2; }
+}
+@media (max-width: 350px) { .top h1 { font-size: 21px; } }
 .icon-btn { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; width: 40px; height: 40px; display: grid; place-items: center; color: var(--dim); }
 .icon-btn:hover { color: var(--ink); }
 
@@ -481,6 +522,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   <header class="top">
     <div class="brand"><h1>DAILY DISCIPLINE</h1><div class="tag">Build the good. Kill the bad.</div></div>
     <div class="rec" id="rec"></div>
+    <button class="icon-btn" id="prof" data-action="open-profile" aria-label="Profile and stats">
+      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg>
+    </button>
     <button class="icon-btn" id="gear" data-action="open-settings" aria-label="Board settings">
       <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
     </button>
@@ -552,8 +596,10 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       <section id="run-log" class="card" aria-label="Recent runs"></section>
     </div>
   </main>
+  <section id="fb-box" class="card" aria-label="Feedback for the next build"></section>
   <div class="foot" id="foot"></div>
 </div>
+<div id="gwk" class="gwk" hidden role="dialog" aria-modal="true" aria-label="Guided workout"><div class="gwk-in" id="gwk-in"></div><div class="gwk-act" id="gwk-act"></div></div>
 
 <div id="gate" class="gate" hidden><div class="gate-in" id="gate-in"></div></div>
 <div id="modal" class="modal" hidden>
@@ -677,7 +723,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
 
   /* ---------- storage ---------- */
   function writeLocal() {
-    try { localStorage.setItem(LS, JSON.stringify({ settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym, goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs, weights: weights, stretches: stretches })); } catch (e) {}
+    try { localStorage.setItem(LS, JSON.stringify({ settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym, goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs, weights: weights, stretches: stretches, feedback: feedback })); } catch (e) {}
   }
   function loadLocal() {
     try {
@@ -706,6 +752,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       runs = {}; Object.keys(o.runs || {}).forEach(function (k) { var r = cleanRun(k, o.runs[k]); if (r) runs[k] = r; });
       weights = {}; Object.keys(o.weights || {}).forEach(function (k) { var r = cleanWeight(k, o.weights[k]); if (r) weights[k] = r; });
       stretches = {}; Object.keys(o.stretches || {}).forEach(function (k) { var r = cleanStretch(k, o.stretches[k]); if (r) stretches[k] = r; });
+      feedback = {}; Object.keys(o.feedback || {}).forEach(function (k) { var r = cleanFeedback(k, o.feedback[k]); if (r) feedback[k] = r; });
     }
   }
   function cleanHabit(id, o) {
@@ -789,6 +836,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       var stq = await db.collection('stretches').get();
       stretches = {};
       stq.docs.forEach(function (d) { var r = cleanStretch(d.id, d.data()); if (r) stretches[d.id] = r; });
+      var fbq = await db.collection('feedback').get();
+      feedback = {};
+      fbq.docs.forEach(function (d) { var r = cleanFeedback(d.id, d.data()); if (r) feedback[d.id] = r; });
       for (var kd of ['bible', 'gym']) {
         var hq = await db.collection(kd).get();
         habits[kd] = {};
@@ -903,6 +953,12 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     db.collection('stretches').onSnapshot(function (snap) {
       stretches = {};
       snap.docs.forEach(function (x) { var r = cleanStretch(x.id, x.data()); if (r) stretches[x.id] = r; });
+      writeLocal();
+      renderAll();
+    }, fail);
+    db.collection('feedback').onSnapshot(function (snap) {
+      feedback = {};
+      snap.docs.forEach(function (x) { var r = cleanFeedback(x.id, x.data()); if (r) feedback[x.id] = r; });
       writeLocal();
       renderAll();
     }, fail);
@@ -1245,11 +1301,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
 
   function renderHeader(m) {
     var h = '';
-    if (tab === 'wake') h = m ? 'Season <b>' + m.w + '-' + m.l + '</b><br>' + m.ptsT + ' pts' : '';
-    else if (tab === 'bible') { var hb = hModel('bible'); h = 'Streak <b>' + hb.dayStreak + '</b><br>' + hb.total + ' days read'; }
-    else if (tab === 'books') { var hr = readModel(); h = 'Streak <b>' + hr.cur + '</b><br>' + nfmt(hr.total) + ' pts'; }
-    else if (tab === 'gym') { var hg = hModel('gym'); h = 'Week streak <b>' + hg.wrun + '</b><br>' + hg.total + ' sessions'; }
-    else if (tab === 'run') { var hu = runModel(); h = 'Week streak <b>' + hu.cur + '</b><br>' + plural(hu.n, 'run', 'runs'); }
+    if (tab === 'wake') h = m ? 'Season <b>' + m.w + '-' + m.l + '</b><i class="rbr"></i>' + m.ptsT + ' pts' : '';
+    else if (tab === 'bible') { var hb = hModel('bible'); h = 'Streak <b>' + hb.dayStreak + '</b><i class="rbr"></i>' + hb.total + ' days read'; }
+    else if (tab === 'books') { var hr = readModel(); h = 'Streak <b>' + hr.cur + '</b><i class="rbr"></i>' + nfmt(hr.total) + ' pts'; }
+    else if (tab === 'gym') { var hg = hModel('gym'); h = 'Week streak <b>' + hg.wrun + '</b><i class="rbr"></i>' + hg.total + ' sessions'; }
+    else if (tab === 'run') { var hu = runModel(); h = 'Week streak <b>' + hu.cur + '</b><i class="rbr"></i>' + plural(hu.n, 'run', 'runs'); }
     else h = 'Today <b>' + todayTally() + '/4</b>';
     $('#rec').innerHTML = h;
     $('#gear').hidden = !(settings && tab === 'wake');
@@ -1276,6 +1332,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     renderBooks();
     renderRun();
     renderBody();
+    renderFeedback();
     renderFoot();
     habPop = null;
     readPop = false;
@@ -1735,7 +1792,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 16 #b48673', fbEmail = '';
+  var APP_BUILD = 'Oct 17 #52731a', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -1887,7 +1944,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
   }
   async function pushAll(replace) {
-    var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, lifts: lifts, runs: runs, weights: weights, stretches: stretches, planlog: {} };
+    var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, lifts: lifts, runs: runs, weights: weights, stretches: stretches, feedback: feedback, planlog: {} };
     Object.keys(planlog).forEach(function (k) { sets.planlog['r' + k] = planlog[k]; });
     if (settings) {
       var out = { alarms: {}, weeklyTarget: settings.weeklyTarget, startDate: settings.startDate, walk: settings.walk || 0 };
@@ -1921,7 +1978,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   /* ---------- backup (standalone app only) ---------- */
   function backupObj() {
     return { app: 'dailydiscipline', v: 1, exportedAt: new Date().toISOString(), settings: settings, checkins: checkins, bible: habits.bible, gym: habits.gym,
-      goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs, weights: weights, stretches: stretches };
+      goals: goals, plan: planDone, planlog: planlog, notes: notes, books: books, reads: reads, lp: lp, lifts: lifts, runs: runs, weights: weights, stretches: stretches, feedback: feedback };
   }
   function markBackup() { try { localStorage.setItem(LS + '.backup', new Date().toISOString()); } catch (e) {} renderAll(); }
   async function exportBackup() {
@@ -2514,7 +2571,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     });
     var warm = [];
     (Array.isArray(o.warm) ? o.warm : []).slice(0, 12).forEach(function (x) { x = lpStr(x, 12); if (x) warm.push(x); });
-    return { id: id, pid: id.split('-')[0], week: week, day: day, warm: warm, date: /^\d{4}-\d{2}-\d{2}$/.test(o.date || '') ? o.date : '', items: items,
+    var gd = [];
+    (Array.isArray(o.gd) ? o.gd : []).slice(0, 40).forEach(function (x) { x = lpStr(x, 24); if (x) gd.push(x); });
+    return { id: id, pid: id.split('-')[0], week: week, day: day, warm: warm, gd: gd, date: /^\d{4}-\d{2}-\d{2}$/.test(o.date || '') ? o.date : '', items: items,
       note: lpStr(o.note, 1000), done: !!o.done, at: typeof o.at === 'string' ? o.at : '' };
   }
   function lpDay(id) { if (!lp) return null; for (var i = 0; i < lp.days.length; i++) if (lp.days[i].id === id) return lp.days[i]; return null; }
@@ -2617,7 +2676,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   function ensureSess(w, day) {
     var id = liftId(w, day.id), s = lifts[id];
     if (!s) {
-      s = lifts[id] = { id: id, pid: lp.pid, week: w, day: day.id, warm: [], date: dkey(new Date()), items: [], note: '', done: false, at: '' };
+      s = lifts[id] = { id: id, pid: lp.pid, week: w, day: day.id, warm: [], gd: [], date: dkey(new Date()), items: [], note: '', done: false, at: '' };
     }
     return s;
   }
@@ -2723,6 +2782,16 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     it.sets.push({ w: null, n: null });
     liftDirty[s.id] = true;
     flushLift(); renderAll();
+  }
+  function liftDelSet(w, day, iid) {
+    var s = sessOf(w, day.id), it = s ? sessItem(s, iid) : null, planned = 1;
+    if (!it) return;
+    day.items.forEach(function (x) { if (x.id === iid) { var q = lpItemFor(x, w); if (q) planned = q.sets; } });
+    if (it.sets.length <= planned) return;
+    it.sets.pop();
+    liftDirty[s.id] = true;
+    flushLift(); renderAll();
+    toast('Set ' + (it.sets.length + 1) + ' removed.');
   }
   function liftDelCustom(w, day, iid) {
     var s = sessOf(w, day.id);
@@ -2961,7 +3030,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
     return h;
   }
-  function liftItemHTML(w, day, x, s, exId) {
+  function liftItemHTML(w, day, x, s, exId, g) {
     var logged = sessItem(s, x.id), it = logged || { id: x.id, name: x.name, type: x.type, reps: x.reps, custom: false, sets: [] };
     var nm = logged && logged.name ? logged.name : x.name;
     var last = lastFor(nm, exId), lt = lastTxt(last, it.type);
@@ -2976,19 +3045,25 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (lt) h += '<p class="llast">Last time: <b>' + esc(lt) + '</b></p>';
     if (nd) h += '<p class="lnudge">' + esc(nd) + '</p>';
     if (x.ramp) h += '<p class="lramp">' + esc(rampTxt(last, it.type, x.tg || x.lb)) + '</p>';
+    if (g === 1) return h + '</div>';
     h += setRows(x.sets, w, day, it, x, last);
-    h += '<div class="lacts">' + (x.lb ? '<button class="link" data-action="lift-fill" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '">Fill ' + numTxt(x.tg || x.lb) + ' lb</button>' : '') + (it.type === 'cardio' ? '' : '<button class="link" data-action="lift-addset" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '">+ Set</button>') +
-      '<button class="link" data-action="lift-swap" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '">Swap exercise</button></div></div>';
+    var ba = 'data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '"';
+    h += '<div class="lacts">' + (x.lb ? '<button class="link" data-action="lift-fill" ' + ba + '>Fill ' + numTxt(x.tg || x.lb) + ' lb</button>' : '') + (it.type === 'cardio' ? '' : '<button class="link" data-action="lift-addset" ' + ba + '>+ Set</button>') +
+      (it.type !== 'cardio' && it.sets.length > x.sets ? '<button class="link" data-action="lift-delset" ' + ba + '>Remove set ' + it.sets.length + '</button>' : '') +
+      (g ? '' : '<button class="link" data-action="lift-swap" ' + ba + '>Swap exercise</button>') + '</div></div>';
     return h;
   }
-  function liftCustomHTML(w, day, it, exId) {
+  function liftCustomHTML(w, day, it, exId, g) {
     var last = lastFor(it.name, exId), lt = lastTxt(last, it.type);
     var h = '<div class="litem"><div class="lhead"><span class="ltag">+</span><div class="lname"><b>' + esc(it.name) + '</b><em>Added</em></div></div>';
     if (lt) h += '<p class="llast">Last time: <b>' + esc(lt) + '</b></p>';
+    if (g === 1) return h + '</div>';
     h += setRows(Math.max(1, it.sets.length), w, day, it, 1, last);
-    h += '<div class="lacts"><button class="link" data-action="lift-addset" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(it.id) + '">+ Set</button>' +
-      '<button class="link" data-action="lift-swap" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(it.id) + '">Rename</button>' +
-      '<button class="link" data-action="lift-delcustom" data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(it.id) + '">Remove</button></div></div>';
+    var bc = 'data-w="' + w + '" data-d="' + esc(day.id) + '" data-i="' + esc(it.id) + '"';
+    h += '<div class="lacts"><button class="link" data-action="lift-addset" ' + bc + '>+ Set</button>' +
+      (it.sets.length > 1 ? '<button class="link" data-action="lift-delset" ' + bc + '>Remove set ' + it.sets.length + '</button>' : '') +
+      (g ? '' : '<button class="link" data-action="lift-swap" ' + bc + '>Rename</button>' +
+      '<button class="link" data-action="lift-delcustom" ' + bc + '>Remove</button>') + '</div></div>';
     return h;
   }
   function liftHasData(s) {
@@ -3019,6 +3094,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }).join('') + '</div>';
     var dt = lpDate(w, day);
     h += '<h3 class="lh3">' + esc(day.name) + '<small>' + DOWL[day.dow] + ', ' + dateLabel(dt) + (dt === today ? ' (today)' : '') + '</small></h3>';
+    if (!(s && s.done)) {
+      var gstarted = (s && s.gd && s.gd.length) || liftHasData(s);
+      h += '<div class="row" style="margin:0 0 12px"><button class="btn primary" data-action="gw-start">' + (gstarted ? 'Continue workout' : 'Start workout') + '</button></div>' +
+        '<p class="note" style="margin:-4px 0 12px">Goes one exercise at a time, with a rest timer in between.</p>';
+    }
     if (day.warm && day.warm.length) {
       var wd = s ? s.warm : [], wc = day.warm.filter(function (x) { return wd.indexOf(x.id) >= 0; }).length;
       h += '<div class="lwu"><div class="lwuh"><b>WARM-UP</b><span>' + wc + ' of ' + day.warm.length + ' done</span></div>' + (day.warmup ? '<p class="lwarm">' + esc(day.warmup) + '</p>' : '') +
@@ -3243,6 +3323,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (a === 'lift-week') { c = liftCur(); liftSel = { w: Math.min(lp.weeks, Math.max(1, c.w + parseInt(b.dataset.n, 10))), d: c.day.id, auto: false }; renderAll(); }
     else if (a === 'lift-day') { c = liftCur(); liftSel = { w: c.w, d: b.dataset.d, auto: false }; renderAll(); }
     else if (a === 'lift-addset') { if (day) liftAddSet(w, day, b.dataset.i); }
+    else if (a === 'lift-delset') { if (day) liftDelSet(w, day, b.dataset.i); }
     else if (a === 'lift-swap') { if (day) { var s0 = sessItem(sessOf(w, day.id), b.dataset.i); liftSwapModal(w, day, b.dataset.i, !!(s0 && s0.custom)); } }
     else if (a === 'lift-swap-go') liftSwapGo(b);
     else if (a === 'lift-add') { if (day) liftAddModal(w, day); }
@@ -3808,7 +3889,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
 
   /* ---------- evening stretch ---------- */
   var stretches = {};     // date -> { date, routine, done: [ids], secs, fin, at }
-  var ST_HOUR = 17, ST_PREP = 6, ST_SWITCH = 4;
+  var ST_HOUR = 18, ST_PREP = 6, ST_SWITCH = 4;
   var ST_LIB = {
     hipflex: { n: 'Half-kneeling hip flexor', s: 40, sides: true, c: 'Back knee on a pad. Squeeze that glute and shift your hips forward until you feel the front of the back hip.' },
     quad:    { n: 'Standing quad', s: 30, sides: true, c: 'Hold a wall. Pull your heel toward your butt, knees together, hips tucked under.' },
@@ -3873,6 +3954,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (v.e && v.e.fin) h = row('STRETCH', 'Done', (v.e.secs >= 30 ? stDur(v.e.secs) + ' held' : v.n + ' of ' + v.total + ' ticked') + ' &middot; ' + (sk ? sk + '-day streak' : 'logged'), '<button class="btn" data-action="st-open">Edit</button>');
     else if (v.n > 0) h = row('STRETCH', 'In progress', v.n + ' of ' + v.total + ' done &middot; ' + esc(v.R.name), '<button class="btn primary" data-action="st-open">Open</button>');
     else if (hr >= ST_HOUR) h = row('STRETCH', esc(v.R.name) + ' stretch', v.min + ' min &middot; ' + (sk ? sk + '-day streak on the line' : 'start a streak'), '<button class="btn primary" data-action="st-open">Start</button>');
+    else h = row('STRETCH', esc(v.R.name) + ' stretch', v.min + ' min &middot; best after 6 pm', '<button class="btn" data-action="st-open">Start</button>');
     return h.replace('<span class="lbl">', '<span class="lbl long">');
   }
   function stCommit(k) {
@@ -4041,6 +4123,409 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   document.addEventListener('visibilitychange', function () { if (!document.hidden && stT) { stPaint(); stLock(); } });
   setInterval(function () { var h = new Date().getHours(); if (h !== stHourSeen) { stHourSeen = h; renderHome(); } }, 30000);
 
+  /* ---------- feedback box ---------- */
+  var feedback = {};      // id -> { id, text, at, tab, done }
+  var fbDraft = '', fbShowAll = false, fbShowBuilt = false;
+  function cleanFeedback(id, o) {
+    if (!/^f[a-z0-9]{4,24}$/.test(id) || !o || typeof o !== 'object') return null;
+    var t = String(o.text || '').replace(/\s+/g, ' ').trim().slice(0, 600);
+    if (!t) return null;
+    return { id: id, text: t, at: typeof o.at === 'string' ? o.at : '', tab: typeof o.tab === 'string' ? o.tab.slice(0, 8) : '', done: !!o.done };
+  }
+  function fbItems(done) {
+    return Object.keys(feedback).map(function (k) { return feedback[k]; }).filter(function (f) { return f.done === done; }).sort(function (a, b) { return a.at < b.at ? 1 : a.at > b.at ? -1 : 0; });
+  }
+  function fbMeta(f) {
+    var d = f.at ? new Date(f.at) : null;
+    return (f.tab ? f.tab.toUpperCase() + ' &middot; ' : '') + (d && !isNaN(d) ? MON[d.getMonth()] + ' ' + d.getDate() : '');
+  }
+  function renderFeedback() {
+    var el = $('#fb-box');
+    if (!el) return;
+    var ae = document.activeElement;
+    if (ae && el.contains(ae) && ae.tagName === 'TEXTAREA') return;
+    var open = fbItems(false), built = fbItems(true), shown = fbShowAll ? open : open.slice(0, 4);
+    var h = '<h2>FEEDBACK<small>for the next build</small></h2>' +
+      '<label class="fld"><span>WHAT SHOULD CHANGE?</span><textarea id="fb-text" rows="2" maxlength="600" placeholder="A bug, an idea, something that annoys you">' + esc(fbDraft) + '</textarea></label>' +
+      '<div class="row"><button class="btn primary" data-action="fb-add">Add</button>' + (open.length ? '<button class="btn" data-action="fb-copy">Copy ' + open.length + ' to send</button>' : '') + '</div>';
+    if (open.length) {
+      h += '<div class="fblist">' + shown.map(function (f) { return fbRow(f); }).join('') + '</div>';
+      if (open.length > shown.length) h += '<button class="link" data-action="fb-more">Show all ' + open.length + '</button>';
+      else if (fbShowAll && open.length > 4) h += '<button class="link" data-action="fb-more">Show fewer</button>';
+    } else h += '<p class="note" style="margin:10px 0 0">Nothing logged yet. Type it here the moment you think of it, so it makes the next build.</p>';
+    if (built.length) {
+      h += '<p class="note" style="margin:10px 0 0">' + built.length + ' marked built. <button class="link" data-action="fb-showbuilt">' + (fbShowBuilt ? 'Hide' : 'Show') + '</button> <button class="link" data-action="fb-clearbuilt">Clear them</button></p>';
+      if (fbShowBuilt) h += '<div class="fblist">' + built.map(function (f) { return fbRow(f); }).join('') + '</div>';
+    }
+    el.innerHTML = h;
+  }
+  function fbRow(f) {
+    return '<div class="fbrow' + (f.done ? ' on' : '') + '"><button class="fbck" data-action="fb-done" data-id="' + f.id + '" aria-pressed="' + f.done + '" aria-label="' + (f.done ? 'Mark not built' : 'Mark built') + '">' + (f.done ? '&#10003;' : '') + '</button>' +
+      '<div class="fbt"><span>' + esc(f.text) + '</span><em>' + fbMeta(f) + '</em></div><button class="link" data-action="fb-del" data-id="' + f.id + '">Delete</button></div>';
+  }
+  function fbSave(f) { return persist(function (x) { return x.doc('feedback/' + f.id).set(f); }); }
+  function fbCopyText() {
+    var open = fbItems(false), d = new Date();
+    return 'Daily Discipline, things to change (' + MON[d.getMonth()] + ' ' + d.getDate() + ')\n' + open.slice().reverse().map(function (f) { return '- ' + (f.tab ? '[' + f.tab.toUpperCase() + '] ' : '') + f.text; }).join('\n');
+  }
+  function fbAction(a, b) {
+    if (a === 'fb-add') {
+      var ta = $('#fb-text'), t = ta ? ta.value.replace(/\s+/g, ' ').trim() : '';
+      if (!t) { toast('Type something first.'); return true; }
+      var id = 'f' + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+      var f = cleanFeedback(id, { text: t, at: new Date().toISOString(), tab: tab === 'run' ? '5K' : tab, done: false });
+      feedback[id] = f; fbDraft = '';
+      if (ta) ta.value = '';
+      renderAll(); toast('Saved for the next build.');
+      fbSave(f);
+    }
+    else if (a === 'fb-done') {
+      var g = feedback[b.dataset.id];
+      if (!g) return true;
+      g.done = !g.done; renderAll(); fbSave(g);
+    }
+    else if (a === 'fb-del') {
+      var k = b.dataset.id;
+      if (!feedback[k]) return true;
+      delete feedback[k]; renderAll();
+      persist(function (x) { return x.doc('feedback/' + k).delete(); });
+    }
+    else if (a === 'fb-more') { fbShowAll = !fbShowAll; renderFeedback(); }
+    else if (a === 'fb-showbuilt') { fbShowBuilt = !fbShowBuilt; renderFeedback(); }
+    else if (a === 'fb-clearbuilt') {
+      var ids = fbItems(true).map(function (x) { return x.id; });
+      ids.forEach(function (i) { delete feedback[i]; });
+      renderAll();
+      persist(function (x) { return Promise.all(ids.map(function (i) { return x.doc('feedback/' + i).delete(); })); });
+    }
+    else if (a === 'fb-copy') {
+      var txt = fbCopyText();
+      var ok = false;
+      try { if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(txt); ok = true; } } catch (e) {}
+      if (!ok) {
+        try { var ta2 = document.createElement('textarea'); ta2.value = txt; ta2.style.position = 'fixed'; ta2.style.opacity = '0'; document.body.appendChild(ta2); ta2.select(); ok = document.execCommand('copy'); document.body.removeChild(ta2); } catch (e) {}
+      }
+      toast(ok ? 'Copied. Paste it to Claude.' : 'Could not copy. Select the items and copy them by hand.');
+    }
+    else return false;
+    return true;
+  }
+  document.addEventListener('input', function (ev) { if (ev.target && ev.target.id === 'fb-text') fbDraft = ev.target.value; });
+
+  /* ---------- guided workout ---------- */
+  var gwk = null, gR = null, gTick = null;
+  function gwkGroups(w, day, s) {
+    var groups = [];
+    day.items.forEach(function (it) {
+      var x = lpItemFor(it, w);
+      if (!x) return;
+      var m = String(x.tag || '').match(/^(\d+)[a-z]$/i), key = m ? m[1] : 'i' + x.id;
+      var g = groups.length && groups[groups.length - 1].key === key ? groups[groups.length - 1] : null;
+      if (!g) { g = { key: key, xs: [], cu: [] }; groups.push(g); }
+      g.xs.push(x);
+    });
+    if (s) s.items.forEach(function (it) { if (it.custom) groups.push({ key: 'c' + it.id, xs: [], cu: [it] }); });
+    groups.forEach(function (g) {
+      g.bonus = g.xs.length > 0 && g.xs.every(function (x) { return x.bonus; });
+      g.ids = g.xs.map(function (x) { return x.id; }).concat(g.cu.map(function (c) { return c.id; }));
+    });
+    return groups;
+  }
+  function gwkCtx() {
+    var day = lp && gwk ? lpDay(gwk.d) : null;
+    if (!day) return null;
+    var s = sessOf(gwk.w, day.id);
+    return { w: gwk.w, day: day, s: s, exId: lp.pid + '-w' + gwk.w + day.id, groups: gwkGroups(gwk.w, day, s) };
+  }
+  function gwkIsDone(c, g) { var gd = c.s && c.s.gd ? c.s.gd : []; return g.ids.length > 0 && g.ids.every(function (id) { return gd.indexOf(id) >= 0; }); }
+  function gwkHasData(c, g) {
+    return g.ids.some(function (id) { var it = sessItem(c.s, id); return !!it && it.sets.some(function (x) { return x.n !== null || x.w !== null; }); });
+  }
+  function gwkNames(c, g) {
+    return g.xs.map(function (x) { var l = sessItem(c.s, x.id); return l && l.name ? l.name : x.name; }).concat(g.cu.map(function (i) { return i.name; })).join(' + ');
+  }
+  function gwkNextUndone(c, from) {
+    for (var i = from; i < c.groups.length; i++) if (!gwkIsDone(c, c.groups[i])) return i;
+    return -1;
+  }
+  function gwkRestSecs(g) {
+    var rs = '';
+    g.xs.forEach(function (x) { if (x.rest) rs = x.rest; });
+    var secs = rs ? parseRest(rs) : 0;
+    if (g.xs.length && g.xs[0].type === 'cardio') return 0;
+    return secs || ((g.xs.length && g.xs[0].type !== 'lift') ? 30 : 90);
+  }
+  function gwkStart() {
+    if (!lp) return;
+    var c0 = liftCur(), w = c0.w, day = c0.day, s = sessOf(w, day.id);
+    if (s && s.done) return;
+    if (restT) restStop();
+    if (stT) stCleanup();
+    gwk = { w: w, d: day.id, gi: 0, stage: 'ex', started: false, t0: Date.now(), sig: '' };
+    var c = gwkCtx();
+    var warmLeft = day.warm && day.warm.length && !(s && s.warm.length >= day.warm.length) && !(s && s.gd && s.gd.length);
+    if (warmLeft) gwk.stage = 'warm'; else gwkSeek(c, 0);
+    document.body.classList.add('gwk-on');
+    $('#gwk').hidden = false;
+    stLock();
+    if (!gTick) gTick = setInterval(gwkTick, 250);
+    gwkShow();
+  }
+  function gwkSeek(c, from) {
+    var i = gwkNextUndone(c, from);
+    if (i < 0) { gwk.stage = 'done'; gwk.gi = Math.max(0, c.groups.length - 1); return; }
+    gwk.stage = 'ex'; gwk.gi = i; gwk.started = gwkHasData(c, c.groups[i]);
+  }
+  function gwkClose(noRender) {
+    clearInterval(gTick); gTick = null; gwk = null; gR = null;
+    $('#gwk').hidden = true; $('#gwk-in').innerHTML = ''; $('#gwk-act').innerHTML = '';
+    document.body.classList.remove('gwk-on');
+    stUnlock();
+    if (!noRender) renderAll();
+  }
+  function gwkWarmRows(c) {
+    var wd = c.s ? c.s.warm : [], day = c.day;
+    return day.warm.map(function (x) {
+      var on = wd.indexOf(x.id) >= 0;
+      return '<button class="wrow' + (on ? ' on' : '') + '" data-action="lift-warm" data-w="' + c.w + '" data-d="' + esc(day.id) + '" data-i="' + esc(x.id) + '" aria-pressed="' + on + '">' +
+        '<span class="box">' + (on ? '&#10003;' : '') + '</span><span class="wt"><b>' + esc(x.name) + '</b>' + (x.dose ? '<em>' + esc(x.dose) + '</em>' : '') + (x.cue ? '<small>' + esc(x.cue) + '</small>' : '') + '</span></button>';
+    }).join('');
+  }
+  function gwkSummary(c) {
+    var sets = 0, vol = 0, ex = 0;
+    c.groups.forEach(function (g) {
+      if (gwkHasData(c, g)) ex++;
+      g.ids.forEach(function (id) {
+        var it = sessItem(c.s, id);
+        if (!it) return;
+        it.sets.forEach(function (x) {
+          if (x.n === null && x.w === null) return;
+          sets++;
+          if (it.type === 'lift' && x.w && x.n) vol += x.w * x.n;
+        });
+      });
+    });
+    return { sets: sets, vol: Math.round(vol), ex: ex };
+  }
+  function gwkShow() {
+    if (!gwk) return;
+    var c = gwkCtx();
+    if (!c) { gwkClose(); return; }
+    var inEl = $('#gwk-in'), actEl = $('#gwk-act'), sc = inEl.scrollTop, h = '', act = '';
+    var total = c.groups.length, doneN = c.groups.filter(function (g) { return gwkIsDone(c, g); }).length, pct = total ? Math.round(doneN / total * 100) : 0;
+    var step = gwk.stage === 'warm' ? 'WARM-UP' : gwk.stage === 'done' ? 'ALL DONE' : gwk.stage === 'rest' ? 'REST' : 'EXERCISE ' + (gwk.gi + 1) + ' OF ' + total;
+    h += '<div class="gw-top">' + (gwk.stage === 'warm' ? '<span></span>' : '<button class="link" data-action="gw-back">&lsaquo; Back</button>') + '<b>' + step + '</b><button class="link" data-action="gw-exit">Exit</button></div>' +
+      '<div class="st-prog"><span style="width:' + pct + '%"></span></div>';
+    if (gwk.stage === 'warm') {
+      h += '<h3 class="lh3" style="margin-top:14px">WARM-UP<small>' + esc(c.day.name) + '</small></h3>' + (c.day.warmup ? '<p class="lwarm">' + esc(c.day.warmup) + '</p>' : '') + '<div class="lwu" style="padding-bottom:0">' + gwkWarmRows(c) + '</div>';
+      act = '<button class="btn primary" data-action="gw-warmdone">Complete warm-up</button>';
+    } else if (gwk.stage === 'ex') {
+      var g = c.groups[gwk.gi];
+      if (!g) { gwk.stage = 'done'; gwkShow(); return; }
+      if (g.bonus) h += '<p class="note" style="margin:12px 0 0"><b>Bonus.</b> Only if you have time. Tap Skip to finish up.</p>';
+      if (g.xs.length + g.cu.length > 1) h += '<p class="note" style="margin:12px 0 0">Do one set of each, in order, then rest. Repeat for every set.</p>';
+      g.xs.forEach(function (x) { h += liftItemHTML(c.w, c.day, x, c.s, c.exId, gwk.started ? 2 : 1); });
+      g.cu.forEach(function (it) { h += liftCustomHTML(c.w, c.day, it, c.exId, gwk.started ? 2 : 1); });
+      act = (gwk.started ? '<button class="btn primary" data-action="gw-complete">Complete</button>' : '<button class="btn primary" data-action="gw-begin">Start</button>') + '<button class="btn" data-action="gw-skip">Skip</button>';
+    } else if (gwk.stage === 'rest') {
+      var ng = c.groups[gwk.gi];
+      h += '<div class="st-lbl" style="margin-top:18px">REST</div><div class="st-t" id="gw-t">0:00</div><div class="st-prog"><span id="gw-bar"></span></div>';
+      if (ng) {
+        h += '<p class="note" style="margin:14px 0 0">Next up</p><h3 class="lh3" style="margin:0;font-size:22px">' + esc(gwkNames(c, ng)) + '</h3>' + ng.xs.map(function (x) {
+          return '<p class="lcue" style="margin:4px 0 0;padding-left:0"><b>' + esc(x.name) + '</b>: ' + x.sets + (x.type === 'lift' ? ' sets' : x.type === 'cardio' ? ' block' : ' rounds') + (x.reps ? ', ' + esc(x.reps) + (x.type === 'lift' ? ' reps' : '') : x.target ? ', ' + esc(x.target) : '') + '</p>';
+        }).join('');
+      }
+      act = '<button class="btn" data-action="gw-radd" data-s="-30">-30</button><button class="btn" data-action="gw-radd" data-s="30">+30</button><button class="btn primary" data-action="gw-rskip">Skip rest</button>';
+    } else {
+      var sm = gwkSummary(c);
+      h += '<h3 class="lh3" style="margin-top:18px">WORKOUT COMPLETE<small>' + esc(c.day.name) + '</small></h3><div class="tiles">' +
+        '<div class="tile"><label>Exercises</label><div class="v">' + sm.ex + '</div><div class="s">with sets logged</div></div>' +
+        '<div class="tile"><label>Sets</label><div class="v">' + sm.sets + '</div><div class="s">logged</div></div>' +
+        '<div class="tile"><label>Volume</label><div class="v">' + sm.vol.toLocaleString('en-US') + '</div><div class="s">lb lifted</div></div>' +
+        '<div class="tile"><label>Time</label><div class="v">' + Math.max(1, Math.round((Date.now() - gwk.t0) / 60000)) + '</div><div class="s">min this session</div></div></div>' +
+        '<label class="fld lfld"><span>WORKOUT NOTES</span><textarea rows="2" data-lnote="1" data-w="' + c.w + '" data-d="' + esc(c.day.id) + '" placeholder="How did it feel?">' + esc(c.s ? c.s.note : '') + '</textarea></label>';
+      act = '<button class="btn primary" data-action="gw-finish">Finish workout</button>';
+    }
+    inEl.innerHTML = h; actEl.innerHTML = act;
+    var sig = gwk.stage + ':' + gwk.gi + ':' + gwk.started;
+    inEl.scrollTop = sig === gwk.sig ? sc : 0;
+    gwk.sig = sig;
+    if (gwk.stage === 'rest') gwkPaintRest();
+  }
+  function gwkPaintRest() {
+    if (!gwk || gwk.stage !== 'rest' || !gR) return;
+    var left = (gR.end - Date.now()) / 1000, t = $('#gw-t');
+    if (!t) return;
+    t.textContent = restFmt(left);
+    $('#gw-bar').style.width = Math.max(0, Math.min(100, left / gR.total * 100)) + '%';
+    var cs = Math.ceil(left);
+    if (cs <= 3 && cs >= 1 && cs !== gR.lastSec) { gR.lastSec = cs; stBeep([[700, 0]]); }
+  }
+  function gwkTick() {
+    if (!gwk || gwk.stage !== 'rest' || !gR) return;
+    if ((gR.end - Date.now()) / 1000 <= 0) { gwkRestEnd(true); return; }
+    gwkPaintRest();
+  }
+  function gwkRestEnd(alert) {
+    gR = null;
+    var c = gwkCtx();
+    if (!c) { gwkClose(); return; }
+    if (alert) { stBeep([[880, 0], [880, 0.22], [880, 0.44]]); stBuzz([200, 100, 200]); }
+    gwk.stage = 'ex'; gwk.started = c.groups[gwk.gi] ? gwkHasData(c, c.groups[gwk.gi]) : false;
+    gwkShow();
+  }
+  function gwkMarkDone(c, g) {
+    var s = ensureSess(c.w, c.day);
+    if (!s.gd) s.gd = [];
+    g.ids.forEach(function (id) { if (s.gd.indexOf(id) < 0) s.gd.push(id); });
+    liftDirty[s.id] = true;
+    flushLift();
+  }
+  function gwkAdvance(c, g, skipRest) {
+    var next = gwkNextUndone(c, gwk.gi + 1), left = null;
+    if (next < 0) next = gwkNextUndone(c, 0);
+    if (restT) { left = restT.done ? 0 : Math.max(0, (restT.end - Date.now()) / 1000); restStop(); }
+    if (next < 0) { gwk.stage = 'done'; gwk.gi = Math.max(0, c.groups.length - 1); gwkShow(); return; }
+    var secs = gwkRestSecs(g);
+    if (!restOn || skipRest) secs = 0;
+    else if (left !== null) secs = Math.round(left);
+    gwk.gi = next;
+    if (secs >= 5) {
+      gwk.stage = 'rest';
+      gR = { end: Date.now() + secs * 1000, total: secs, lastSec: 99 };
+    } else {
+      gwk.stage = 'ex'; gwk.started = gwkHasData(c, c.groups[next]);
+    }
+    gwkShow();
+  }
+  function gwkAction(a, b) {
+    var c;
+    if (a === 'gw-start') gwkStart();
+    else if (!gwk) return false;
+    else if (a === 'gw-exit') { gwkClose(); toast('Saved. Tap Continue workout to pick up where you left off.'); }
+    else if (a === 'gw-begin') { gwk.started = true; gwkShow(); }
+    else if (a === 'gw-warmdone') { c = gwkCtx(); if (c) { gwkSeek(c, 0); gwkShow(); } }
+    else if (a === 'gw-complete' || a === 'gw-skip') {
+      c = gwkCtx();
+      if (!c || !c.groups[gwk.gi]) return true;
+      var g = c.groups[gwk.gi];
+      gwkMarkDone(c, g);
+      gwkAdvance(c, g, a === 'gw-skip');
+    }
+    else if (a === 'gw-back') {
+      c = gwkCtx();
+      if (!c) return true;
+      gR = null;
+      if (gwk.stage === 'done') gwk.gi = Math.max(0, c.groups.length - 1);
+      else if (gwk.stage === 'rest') gwk.gi = Math.max(0, gwk.gi - 1);
+      else if (gwk.gi > 0) gwk.gi--;
+      else if (c.day.warm && c.day.warm.length) { gwk.stage = 'warm'; gwkShow(); return true; }
+      gwk.stage = 'ex'; gwk.started = c.groups[gwk.gi] ? gwkHasData(c, c.groups[gwk.gi]) : false;
+      gwkShow();
+    }
+    else if (a === 'gw-radd') {
+      if (!gR) return true;
+      var d = parseInt(b.dataset.s, 10);
+      gR.end += d * 1000; gR.total = Math.max(gR.total, (gR.end - Date.now()) / 1000);
+      if ((gR.end - Date.now()) <= 0) gwkRestEnd(false); else gwkPaintRest();
+    }
+    else if (a === 'gw-rskip') gwkRestEnd(false);
+    else if (a === 'gw-finish') {
+      c = gwkCtx();
+      var w = gwk.w, day = c ? c.day : null;
+      gwkClose(true);
+      if (day) liftFinish(w, day);
+    }
+    else return false;
+    return true;
+  }
+  document.addEventListener('visibilitychange', function () { if (!document.hidden && gwk) gwkTick(); });
+
+  /* ---------- profile and stats ---------- */
+  function profTile(l, v, s) { return '<div class="tile"><label>' + l + '</label><div class="v">' + v + '</div><div class="s">' + (s || '&nbsp;') + '</div></div>'; }
+  function profBlock(title, tiles, extra) { return '<h3 class="lh3" style="margin:18px 0 8px">' + title + '</h3><div class="tiles">' + tiles + '</div>' + (extra || ''); }
+  function profTry(fn) { try { return fn() || ''; } catch (e) { return ''; } }
+  function profLifts() {
+    var by = {};
+    Object.keys(lifts).forEach(function (id) {
+      var s = lifts[id];
+      s.items.forEach(function (it) {
+        if (it.type !== 'lift') return;
+        it.sets.forEach(function (x) {
+          if (x.w === null || x.n === null || !(x.w > 0) || !(x.n > 0)) return;
+          var k = it.name.toLowerCase(), b = by[k];
+          if (!b || x.w > b.w || (x.w === b.w && x.n > b.n)) by[k] = { name: it.name, w: x.w, n: x.n, d: s.date || '' };
+        });
+      });
+    });
+    return Object.keys(by).map(function (k) { return by[k]; }).sort(function (a, b) { return b.w - a.w || (a.name < b.name ? -1 : 1); });
+  }
+  function profLiftTotals() {
+    var t = { done: 0, week: 0, sets: 0, vol: 0 }, wk = dkey(weekStart(new Date()));
+    Object.keys(lifts).forEach(function (id) {
+      var s = lifts[id];
+      if (s.done) { t.done++; if (s.date && dkey(weekStart(fromKey(s.date))) === wk) t.week++; }
+      s.items.forEach(function (it) { it.sets.forEach(function (x) { if (x.n !== null || x.w !== null) { t.sets++; if (it.type === 'lift' && x.w && x.n) t.vol += x.w * x.n; } }); });
+    });
+    t.vol = Math.round(t.vol);
+    return t;
+  }
+  function profHM(min) { return min >= 60 ? Math.floor(min / 60) + 'h ' + (min % 60) + 'm' : min + 'm'; }
+  function profileHTML() {
+    var email = fbOn() ? fbEmail : '', ini = (email || 'D').charAt(0).toUpperCase();
+    var h = '<div class="prof-id"><span class="avatar">' + esc(ini) + '</span><div><b>' + (email ? esc(email) : 'Your profile') + '</b><span>' + (fbOn() ? 'Synced to your account' : (typeof db !== 'undefined' && db ? 'Saved to your Claude board' : 'Saved on this phone')) + '</span></div></div>';
+    h += profTry(function () {
+      var hb = hModel('bible'), hg = hModel('gym'), rm = runModel(), rd = readModel(), m = curModel;
+      return profBlock('STREAKS',
+        (m ? profTile('Wake wins', m.streak, 'best ' + m.best) : '') +
+        profTile('Bible days', hb.dayStreak, 'best ' + hb.best) +
+        profTile('Gym weeks', hg.wrun, 'best ' + hg.wbest) +
+        profTile('5K weeks', rm.cur, 'best ' + rm.best) +
+        profTile('Reading days', rd.cur, 'best ' + rd.best) +
+        profTile('Stretch days', stStreak(), 'evenings in a row'));
+    });
+    h += profTry(function () {
+      var t = profLiftTotals(), pbs = profLifts().slice(0, 6), ex = '';
+      if (pbs.length) ex = '<p class="note" style="margin:12px 0 4px">Heaviest set for each lift</p><div class="plist">' + pbs.map(function (p) {
+        return '<div class="prow"><span>' + esc(p.name) + '</span><b>' + numTxt(p.w) + ' lb x ' + numTxt(p.n) + '</b></div>';
+      }).join('') + '</div>';
+      return profBlock('LIFTING',
+        profTile('Workouts', t.done, t.week + ' this week') +
+        profTile('Sets logged', t.sets, 'all time') +
+        profTile('Volume', t.vol.toLocaleString('en-US'), 'lb lifted') +
+        profTile('Gym days', hModel('gym').total, 'incl. manual'), ex);
+    });
+    h += profTry(function () {
+      var bm = bwModel();
+      if (!bm.n) return profBlock('BODYWEIGHT', profTile('Latest', 'n/a', 'no weigh-ins yet') + profTile('Weigh-ins', 0, 'once a week'));
+      return profBlock('BODYWEIGHT',
+        profTile('Latest', numTxt(bm.last.lb), 'lb &middot; ' + dateLabel(bm.last.date)) +
+        profTile('Since start', bm.n > 1 ? bwSgn(bm.last.lb - bm.first.lb) : 'n/a', bm.n > 1 ? 'lb since ' + dateLabel(bm.first.date) : 'needs two weigh-ins') +
+        profTile('Weigh-ins', bm.n, 'one a week'));
+    });
+    h += profTry(function () {
+      var rm = runModel();
+      if (!rm.n) return profBlock('5K', profTile('Best', 'n/a', 'no runs yet') + profTile('Runs', 0, 'every Saturday'));
+      return profBlock('5K', profTile('Best', fmt(rm.pr.seconds), dateLabel(rm.pr.date)) + profTile('Last', fmt(rm.last.seconds), dateLabel(rm.last.date)) + profTile('Runs', rm.n, 'logged') + profTile('Last 4 avg', fmt(rm.avg4), runPace(rm.avg4) + ' per mile'));
+    });
+    h += profTry(function () {
+      var hb = hModel('bible');
+      return profBlock('BIBLE', profTile('Days read', hb.total, 'all time') + profTile('This week', hb.weekCount + '/' + hb.target, 'goal') + profTile('Best streak', hb.best, 'days') + profTile('30 days', hb.rate30 === null ? 'n/a' : hb.rate30 + '%', 'days read'));
+    });
+    h += profTry(function () {
+      var rd = readModel();
+      return profBlock('BOOKS', profTile('Finished', rd.finished, rd.finYear + ' this year') + profTile('Minutes read', rd.totMin.toLocaleString('en-US'), profHM(rd.totMin)) + profTile('Pages', rd.totPg.toLocaleString('en-US'), 'logged') + profTile('This week', rd.weekMin, 'minutes'));
+    });
+    h += profTry(function () {
+      var m = curModel;
+      if (!m) return '';
+      return profBlock('WAKE', profTile('Wins', m.w, m.l + ' losses') + profTile('Best streak', m.best, 'wins in a row') + profTile('Fastest', m.fastest ? fmt(m.fastest.seconds) : 'n/a', m.fastest ? dateLabel(m.fastest.k) : '') + profTile('Elite', m.elite, 'under 0:30'));
+    });
+    h += '<div class="row" style="margin-top:18px">' + (fbOn() ? '<button class="btn" data-action="fb-signout">Sign out</button>' : '') + '<button class="btn primary" data-action="close-modal">Close</button></div>';
+    return h;
+  }
+  function profOpen() { openModal(profileHTML()); }
+
   /* ---------- modal ---------- */
   function openModal(html, focusSel) {
     $('#sheet').innerHTML = html;
@@ -4085,10 +4570,13 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var b = ev.target.closest('[data-action]');
     if (!b) return;
     var a = b.dataset.action;
-    if ((a.indexOf('lift-') === 0 || a.indexOf('lp-') === 0 || a === 'ad-type') && liftAction(a, b)) return;
+    if ((a.indexOf('lift-') === 0 || a.indexOf('lp-') === 0 || a === 'ad-type') && liftAction(a, b)) { if (gwk) gwkShow(); return; }
     if (a.indexOf('run-') === 0 && runAction(a, b)) return;
     if (a.indexOf('bw-') === 0 && bwAction(a, b)) return;
     if (a.indexOf('st-') === 0 && stAction(a, b)) return;
+    if (a.indexOf('gw-') === 0 && gwkAction(a, b)) return;
+    if (a.indexOf('fb-') === 0 && fbAction(a, b)) return;
+    if (a === 'open-profile') { profOpen(); return; }
     if (a === 'wake-up') {
       if (writing) return;
       var ph = phase();
