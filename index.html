@@ -613,6 +613,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       <section id="books-goal" class="card" aria-label="Weekly reading goal"></section>
     </div>
     <div class="tab" id="tab-gym" role="tabpanel" hidden>
+      <section id="gym-ease" class="card" aria-label="Easing back" hidden></section>
       <section id="gym-lift" class="card" aria-label="Lifting workout"></section>
       <section id="gym-hero" class="card clock-card" aria-label="Gym this week"></section>
       <section id="gym-streak" class="grid2" aria-label="Gym streak and week"></section>
@@ -680,7 +681,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   var settings = null;
   var checkins = {};
   var habits = { bible: {}, gym: {} };
-  var goals = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1, runStart: 0, runWeeks: 0, runFrom: '' };
+  var goals = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1, runStart: 0, runWeeks: 0, runFrom: '', runEase: '' };
   var tab = 'home';
   var habPop = null;
   var db = null;
@@ -814,7 +815,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         habits[kd] = {};
         Object.keys(o[kd] || {}).forEach(function (k) { var e = cleanHabit(k, o[kd][k]); if (e) habits[kd][k] = e; });
       });
-      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read, runGoal: o.goals && o.goals.runGoal, weighDay: o.goals && o.goals.weighDay, runStart: o.goals && o.goals.runStart, runWeeks: o.goals && o.goals.runWeeks, runFrom: o.goals && o.goals.runFrom });
+      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read, runGoal: o.goals && o.goals.runGoal, weighDay: o.goals && o.goals.weighDay, runStart: o.goals && o.goals.runStart, runWeeks: o.goals && o.goals.runWeeks, runFrom: o.goals && o.goals.runFrom, runEase: o.goals && o.goals.runEase });
       planDone = cleanPlan({ done: o.plan });
       planlog = {}; Object.keys(o.planlog || {}).forEach(function (k) { var r = cleanPlanLog('r' + k, o.planlog[k]); if (r) planlog[r.i] = r; });
       notes = {}; Object.keys(o.notes || {}).forEach(function (k) { var n = cleanNote(k, o.notes[k]); if (n) notes[k] = n; });
@@ -846,9 +847,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var at = typeof o.at === 'string' ? o.at : '';
     return { id: id, ref: typeof o.ref === 'string' ? o.ref.slice(0, 60) : id, text: o.text.slice(0, 4000), at: at, born: typeof o.born === 'string' && o.born ? o.born : at };
   }
-  function goalsOut() { return { bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read, runGoal: goals.runGoal || 0, weighDay: goals.weighDay, runStart: goals.runStart || 0, runWeeks: goals.runWeeks || 0, runFrom: goals.runFrom || '' }; }
+  function goalsOut() { return { bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read, runGoal: goals.runGoal || 0, weighDay: goals.weighDay, runStart: goals.runStart || 0, runWeeks: goals.runWeeks || 0, runFrom: goals.runFrom || '', runEase: goals.runEase || '' }; }
   function cleanGoals(o) {
-    var g = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1, runStart: 0, runWeeks: 0, runFrom: '' };
+    var g = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1, runStart: 0, runWeeks: 0, runFrom: '', runEase: '' };
     if (o && typeof o === 'object') {
       var b = parseInt(o.bibleTarget, 10), y = parseInt(o.gymTarget, 10);
       if (b >= 1 && b <= 7) g.bible = b;
@@ -862,6 +863,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       var rwk = parseInt(o.runWeeks, 10);
       if (rwk >= 4 && rwk <= 52) g.runWeeks = rwk;
       if (/^\d{4}-\d{2}-\d{2}$/.test(o.runFrom || '')) g.runFrom = o.runFrom;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(o.runEase || '')) g.runEase = o.runEase;
       var wdy = parseInt(o.weighDay, 10);
       if (wdy >= 0 && wdy <= 6) g.weighDay = wdy;
     }
@@ -1484,6 +1486,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     renderHabit('bible');
     renderHabit('gym');
     renderLift();
+    renderGymEase();
     renderPlan();
     renderData();
     renderNotes();
@@ -1951,7 +1954,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 17 #795c96', fbEmail = '';
+  var APP_BUILD = 'Oct 17 #12f0c7', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -2241,6 +2244,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     else if (ru.allWk) { rMain = ru.allWk.miles.toFixed(2) + ' mi'; rSub = fmt(ru.allWk.seconds) + ' &middot; ' + paceOf(ru.allWk) + ' /mi' + (ru.cur > 1 ? ' &middot; ' + ru.cur + ' weeks in a row' : ''); rAct = '<span class="pill bg-ontime">Done</span>'; }
     else if (new Date().getDay() === 6) { rMain = '5K day'; rSub = (ru.last ? 'Last ' + fmt(ru.last.seconds) + ' &middot; best ' + fmt(ru.pr.seconds) : 'Log your first one') + (rpTargetNow() ? ' &middot; target ' + fmt(rpTargetNow()) : ''); rAct = '<button class="btn primary" data-action="run-log">Log</button>'; }
     else { rMain = 'Saturday'; rSub = 'Next 5K ' + dateLabel(dkey(nsd)) + (rpTargetNow() ? ' &middot; target ' + fmt(rpTargetNow()) : ru.last ? ' &middot; last ' + fmt(ru.last.seconds) : ''); rAct = '<button class="btn" data-action="tab" data-tab="run">Open</button>'; }
+    if (easeOn() && !ru.thisWk && !ru.allWk) rSub = 'Easing back until ' + dateLabel(goals.runEase) + ' &middot; run easy';
     function row(l, main, sub, act) {
       return '<div class="trow"><span class="lbl">' + l + '</span><div class="main">' + main + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div><div>' + act + '</div></div>';
     }
@@ -3778,6 +3782,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       h += '<div class="rbig">' + (days === 1 ? 'Tomorrow' : 'Saturday') + '</div><p class="lead" style="margin:0 0 12px">Next 5K: ' + dateLabel(dkey(ns)) + ' (' + (days === 1 ? 'tomorrow' : 'in ' + days + ' days') + ').' + (m.cur ? ' Run it to keep your ' + plural(m.cur, 'week', 'weeks') + ' going.' : '') + '</p>' +
         '<div class="row">' + gpsBtn(true) + '<button class="btn" data-action="run-log">Log a run</button></div>';
     }
+    if (easeOn()) h = h.replace('<div class="row">', easeNoteHTML() + '<div class="row">');
+    else h += '<button class="link" data-action="run-ease-open" style="margin-top:12px">Sore Achilles or legs? Ease back</button>';
     $('#run-hero').innerHTML = h;
 
     var t = '<h2>YOUR TIMES</h2>';
@@ -3893,6 +3899,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var ph = M.ph.filter(function (p) { return wk >= p.from && wk <= p.to; })[0] || M.ph[0];
     var sub = M.over ? 'finished' : M.wk ? 'week ' + M.wk + ' of ' + n : 'starts ' + dateLabel(c.from);
     var h = '<h2>5K PLAN<small>' + sub + '</small></h2>';
+    if (easeOn()) h += easeBannerHTML();
     if (!c.saved) {
       h += '<p class="note" style="margin:0 0 10px">A preview: ' + n + ' weeks from ' + fmt(c.start) + ' down to ' + fmt(c.goal) + '. Tap Start to lock it in, or change the numbers first.</p>' +
         '<div class="row" style="margin-bottom:12px"><button class="btn primary" data-action="run-plan-start">Start this plan</button><button class="btn" data-action="run-plan-open">Change numbers</button></div>';
@@ -4101,6 +4108,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     else if (a === 'run-plan-clear') rpClear();
     else if (a === 'run-plan-view') { rpView = rpView === 'table' ? 'chart' : 'table'; renderRunPlan(); }
     else if (a === 'run-live') rnOpen();
+    else if (a === 'run-ease-open') openModal(easeSheetHTML());
+    else if (a === 'run-ease-set') easeSet(parseInt(b.dataset.w, 10) || 2);
+    else if (a === 'run-ease-end') easeEnd();
     else if (a === 'run-goal-save') runGoalSave(false);
     else if (a === 'run-goal-clear') runGoalSave(true);
     else return false;
@@ -4110,6 +4120,52 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var t = ev.target;
     if (t && (t.id === 'q-min' || t.id === 'q-sec')) runPrev();
   });
+
+  /* ---------- ease back: a few easy weeks when the Achilles or legs are sore ---------- */
+  var EASE_SLOW = 45;     // seconds per mile slower than the plan pace while easing back
+  function easeOn() { return !!goals.runEase && dkey(new Date()) <= goals.runEase; }
+  function easeNoteHTML() {
+    return '<p class="note" style="margin:0 0 12px"><b>Easing back until ' + dateLabel(goals.runEase) + '.</b> Run easy, about 2 miles. Stop and walk if the Achilles goes past 3 out of 10.</p>';
+  }
+  function easeBannerHTML() {
+    var base = rnDefaultTgt().pace + EASE_SLOW;
+    return '<p class="lead" style="margin:0 0 12px"><b>Easing back until ' + dateLabel(goals.runEase) + '.</b> Run at ' + fmt(base) + ' per mile or slower, about 2 miles is plenty, and walk whenever you need to. The plan targets keep their dates. When you are back, tap Change plan if you want week 1 to start over. <button class="link" data-action="run-ease-end">End early</button></p>';
+  }
+  function easeSheetHTML() {
+    return '<h3>EASE BACK</h3><p class="note" style="margin:0">For a sore Achilles or legs. Your GPS runs get a slower pace target (plan pace plus ' + EASE_SLOW + ' sec per mile), default to 2 miles, and stop nagging you to speed up. The Gym tab gets a card with lifting swaps. How long?</p>' +
+      '<div class="row" style="margin-top:12px">' + [1, 2, 3, 4].map(function (w) { return '<button class="btn' + (w === 2 ? ' primary' : '') + '" data-action="run-ease-set" data-w="' + w + '">' + w + (w === 1 ? ' week' : ' weeks') + '</button>'; }).join('') + '</div>' +
+      '<div class="row" style="margin-top:8px"><button class="btn" data-action="close-modal">Cancel</button></div>' +
+      '<p class="note" style="margin-top:12px">If it is sharp, swollen, or you felt a pop, see a doctor instead.</p>';
+  }
+  async function easeSet(w) {
+    goals.runEase = dkey(addDays(new Date(), w * 7));
+    closeModal();
+    renderAll();
+    toast('Easing back until ' + dateLabel(goals.runEase) + '.');
+    await persist(function (d) { return d.doc('app/habits').set(goalsOut()); });
+  }
+  async function easeEnd() {
+    goals.runEase = '';
+    renderAll();
+    toast('Back to your normal plan pace.');
+    await persist(function (d) { return d.doc('app/habits').set(goalsOut()); });
+  }
+  function renderGymEase() {
+    var el = $('#gym-ease');
+    if (!el) return;
+    if (!easeOn()) { el.hidden = true; el.innerHTML = ''; return; }
+    el.hidden = false;
+    function p(b, t) { return '<p style="margin:0 0 8px"><b>' + b + '</b> ' + t + '</p>'; }
+    el.innerHTML = '<h2>EASING BACK<small>until ' + dateLabel(goals.runEase) + '</small></h2>' +
+      '<p class="lead" style="margin:0 0 10px">Your Achilles sets the limit for now. Keep lifting, with these swaps.</p>' +
+      p('Cardio days.', 'Bike only. Skip the incline walk and the stair climber.') +
+      p('Squats (Lift A).', 'Lighter than normal, a depth that feels fine, and no bouncing out of the bottom.') +
+      p('Lunges and split squats (Lifts B and C).', 'Skip them, or do a short step with your heel down. Do more hip thrusts or hamstring curls for leg work instead.') +
+      p('Calf raises (plan week 9 on).', 'Slow and light, 2 sets, only if the pain stays at 3 out of 10 or less.') +
+      p('Everything else.', 'Presses, rows, pulldowns, hinges, hip thrusts and core stay the same.') +
+      '<p class="note" style="margin:6px 0 10px">Stop any move that pushes the Achilles past 3 out of 10, and log what you actually did.</p>' +
+      '<div class="row"><button class="link" data-action="run-ease-end">End early</button></div>';
+  }
 
   /* ---------- live run: GPS distance, time and pace, with pace cues ---------- */
   var rn = null, rnTimer = null, rnWl = null, rnWatch = null, RN_KEY = LS + '.runlive';
@@ -4143,8 +4199,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return null;
   }
   function rnNew() {
-    var d = rnDefaultTgt(), now = Date.now();
-    return { stage: 'setup', goal: '5k', tgt: d.pace, src: d.src, custom: false, tol: rnPrefs.tol, voice: rnPrefs.voice,
+    var d = rnDefaultTgt(), now = Date.now(), ez = easeOn();
+    return { easy: ez, stage: 'setup', goal: ez ? '2' : '5k', tgt: ez ? Math.min(1200, d.pace + EASE_SLOW) : d.pace, src: ez ? 'Easing back: ' + d.src.replace(/\.$/, '') + ', plus ' + EASE_SLOW + ' sec for an easy pace.' : d.src, custom: false, tol: rnPrefs.tol, voice: rnPrefs.voice,
       fix: null, fixAt: 0, err: '', openAt: now, start: 0, date: '', paused: false, auto: false, pAt: 0, pTot: 0, frozen: null,
       last: null, bad: 0, miles: 0, pts: [], cross: [], splits: [], t5k: 0, goalHit: false, rec: false, discard: false, sv: 0,
       cue: { state: 'wait', since: now, say: now, spokeBad: false, wp: null, diff: 0 } };
@@ -4278,6 +4334,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       else if (c.state === 'fast') st = diff < -h ? 'fast' : diff > tol ? 'slow' : 'on';
       else st = diff > tol ? 'slow' : diff < -tol ? 'fast' : 'on';
     }
+    c.easyOk = false;
+    if (rn.easy && st === 'slow') { st = 'on'; c.easyOk = true; }
     if (st !== c.state) { c.state = st; c.since = now; }
     c.wp = wp; c.diff = diff;
     var hold = (now - c.since) / 1000;
@@ -4380,6 +4438,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var h = '', a = '';
     if (rn.stage === 'setup') {
       h = '<h3 style="margin:0 0 4px;font-size:24px;letter-spacing:.05em">LIVE RUN</h3><p class="note" style="margin:0 0 14px">Tracks distance, time and pace with GPS and tells you when to speed up or ease off. Keep this screen open and the phone on you.</p>' +
+        (rn.easy ? '<p class="note" style="margin:0 0 14px"><b>Easing back.</b> The target is a ceiling, so slower is fine. Stop and walk if the Achilles goes past 3 out of 10.</p>' : '') +
         '<div class="fld"><span>GPS</span><div id="rn-gps" class="rn-gps"></div></div>' +
         '<div class="fld"><span>DISTANCE</span><div class="chips" id="rn-goals">' + RN_GOALS.map(function (g) { return '<button class="chip" data-action="rn-goal" data-g="' + g[0] + '" aria-pressed="' + (rn.goal === g[0]) + '">' + g[1] + '</button>'; }).join('') + '</div></div>' +
         '<div class="fld"><span>TARGET PACE PER MILE</span><div class="rn-step"><button class="btn" data-action="rn-tgt" data-s="-5" aria-label="5 seconds faster">-5</button><b id="rn-tv">0:00</b><button class="btn" data-action="rn-tgt" data-s="5" aria-label="5 seconds slower">+5</button></div><p class="note" id="rn-src" style="text-align:center;margin:6px 0 0"></p></div>' +
@@ -4393,7 +4452,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         '<div class="rn-pace" id="rn-pace">--:--</div><div class="rn-pl">PER MILE NOW &middot; TARGET <span id="rn-tg"></span></div>' +
         '<div class="tiles3"><div class="tile"><label>Time</label><div class="v" id="rn-time">0:00</div></div><div class="tile"><label>Miles</label><div class="v" id="rn-mi">0.00</div></div><div class="tile"><label>Avg pace</label><div class="v" id="rn-avg">--:--</div></div></div>' +
         (gm ? '<div class="rn-bar"><span id="rn-prog"></span></div>' : '') +
-        '<p class="note" id="rn-proj" style="margin:8px 0 0"></p><p class="note" id="rn-lastm" style="margin:2px 0 10px"></p>' + '<div class="row">' + rnVoiceChip() + '</div>';
+        '<p class="note" id="rn-proj" style="margin:8px 0 0"></p><p class="note" id="rn-lastm" style="margin:2px 0 10px"></p>' + (rn.easy ? '<p class="note" style="margin:0 0 10px"><b>Easing back.</b> Stop and walk if the Achilles pain goes past 3 out of 10.</p>' : '') + '<div class="row">' + rnVoiceChip() + '</div>';
       a = (rn.paused ? '<button class="btn primary" data-action="rn-resume">Resume</button>' : '<button class="btn" data-action="rn-pause">Pause</button>') +
         '<button class="btn' + (rn.paused ? '' : ' primary') + '" data-action="rn-finish">Finish</button>';
     } else {
@@ -4436,7 +4495,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var el = rnElapsed(now), c = rn.cue, gm = rnGoalMi(rn.goal), age = (now - rn.fixAt) / 1000, cls2 = '', t1, t2;
     rnSet('rn-gps', !rn.fix || age > 10 ? 'GPS SIGNAL LOST' : rn.fix.acc <= 25 ? 'GPS GOOD' : 'GPS WEAK');
     if (rn.paused) { t1 = 'PAUSED'; t2 = rn.auto ? 'Paused because the app left the screen. Tap Resume.' : 'The clock and distance are stopped.'; }
-    else if (c.state === 'on') { cls2 = 'on'; t1 = '✓ ON PACE'; t2 = 'Within ' + rn.tol + ' sec of your target.'; }
+    else if (c.state === 'on') { cls2 = 'on'; t1 = c.easyOk ? '✓ EASY, GOOD' : '✓ ON PACE'; t2 = c.easyOk ? 'Slower than target is fine while you ease back.' : 'Within ' + rn.tol + ' sec of your target.'; }
     else if (c.state === 'slow') { var d1 = Math.round(c.diff); cls2 = 'slow'; t1 = '▲ ' + (d1 >= 30 ? 'SPEED UP' : 'SPEED UP A LITTLE'); t2 = d1 + ' sec per mile slower than target.'; }
     else if (c.state === 'fast') { var d2 = Math.round(-c.diff); cls2 = 'fast'; t1 = '▼ ' + (d2 >= 30 ? 'EASE OFF' : 'EASE OFF A LITTLE'); t2 = d2 + ' sec per mile faster than target.'; }
     else if (c.state === 'idle') { t1 = 'WALKING OR STOPPED'; t2 = 'Pace cues pause until you pick it back up.'; }
@@ -4720,7 +4779,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     quad:    { n: 'Standing quad', s: 30, sides: true, c: 'Hold a wall. Pull your heel toward your butt, knees together, hips tucked under.' },
     fig4:    { n: 'Figure-four glute', s: 40, sides: true, c: 'Lie on your back. Cross one ankle over the opposite knee and pull that thigh toward your chest.' },
     hams:    { n: 'Lying hamstring', s: 40, sides: true, c: 'Lie on your back with a towel or belt around one foot. Raise the leg, knee soft, head and hips down.' },
-    calf:    { n: 'Wall calf', s: 40, sides: true, c: 'Hands on a wall, one foot back, heel down, knee straight. Bend that knee a little for the last 10 seconds.' },
+    calf:    { n: 'Wall calf', s: 40, sides: true, c: 'Hands on a wall, one foot back, heel down, knee straight. Bend that knee a little for the last 10 seconds. Go gentle, and skip it if your Achilles is sore.' },
     chest:   { n: 'Doorway chest', s: 30, sides: true, c: 'Forearm on a door frame, elbow at shoulder height. Turn your body away gently.' },
     child:   { n: 'Child\'s pose, arms long', s: 45, sides: false, c: 'Sit back on your heels and reach both arms long in front. Breathe into your lats and mid back.' },
     tri:     { n: 'Overhead triceps', s: 30, sides: true, c: 'Reach one hand down your back and press that elbow back with the other hand.' },
