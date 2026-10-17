@@ -218,6 +218,27 @@ button { font: inherit; color: inherit; cursor: pointer; }
 body.gwk-on .rest { z-index: 25; }
 body.rest-on .gwk-act { padding-bottom: 100px; }
 body.gwk-on { overflow: hidden; }
+#rn-act .btn { flex: 1 1 0; }
+.rn-st { display: flex; justify-content: space-between; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: .1em; color: var(--dim); margin-bottom: 8px; }
+.rn-cue { border: 2px solid var(--line); background: var(--panel-2); border-radius: 12px; padding: 12px; text-align: center; min-height: 78px; }
+.rn-cue b { display: block; font-family: var(--font-display); font-weight: 800; font-size: 30px; letter-spacing: .05em; line-height: 1.1; }
+.rn-cue small { display: block; color: var(--dim); font-size: 14px; margin-top: 4px; }
+.rn-cue.on { border-color: var(--good-t); } .rn-cue.on b { color: var(--good-t); }
+.rn-cue.slow { border-color: var(--warn-t); } .rn-cue.slow b { color: var(--warn-t); }
+.rn-cue.fast { border-color: var(--accent); } .rn-cue.fast b { color: var(--accent); }
+.rn-pace { font-family: var(--font-display); font-weight: 800; font-size: clamp(88px, 30vw, 132px); line-height: 1; text-align: center; font-variant-numeric: tabular-nums; margin: 10px 0 0; }
+.rn-pl { text-align: center; color: var(--dim); font-size: 13px; font-weight: 700; letter-spacing: .1em; margin-bottom: 4px; }
+.rn-bar { height: 8px; border-radius: 4px; background: var(--panel-2); overflow: hidden; margin-top: 12px; }
+.rn-bar span { display: block; height: 100%; width: 0; background: var(--accent); }
+#rn-in .fld { margin: 16px 0 0; }
+.rn-gps { font-weight: 600; font-size: 14px; }
+.rn-gps.ok { color: var(--good-t); } .rn-gps.warn { color: var(--warn-t); } .rn-gps.bad { color: var(--bad-t); }
+.rn-step { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.rn-step b { font-family: var(--font-display); font-weight: 800; font-size: 56px; line-height: 1; min-width: 150px; text-align: center; font-variant-numeric: tabular-nums; }
+.rn-step .btn { min-width: 64px; min-height: 52px; font-size: 18px; }
+.rn-sp { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 0 12px; align-items: baseline; padding: 8px 0; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.rn-sp b { font-family: var(--font-display); font-weight: 800; font-size: 24px; }
+.rn-sp em { font-style: normal; color: var(--dim); font-size: 13px; min-width: 76px; text-align: right; }
 .gw-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 8px; min-height: 36px; }
 .gw-top b { font-family: var(--font-display); font-weight: 800; font-size: 16px; letter-spacing: .12em; }
 .prof-id { display: flex; align-items: center; gap: 12px; }
@@ -604,6 +625,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       <input type="file" id="lp-file" accept="application/json,.json" hidden>
     </div>
     <div class="tab" id="tab-run" role="tabpanel" hidden>
+      <section id="run-live" class="card" aria-label="Unsaved run" hidden></section>
       <section id="run-hero" class="card" aria-label="5K Saturday"></section>
       <section id="run-prep" class="card" aria-label="Warm-up and stretch"></section>
       <section id="run-plan" class="card" aria-label="5K plan"></section>
@@ -616,6 +638,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   <div class="foot" id="foot"></div>
 </div>
 <div id="gwk" class="gwk" hidden role="dialog" aria-modal="true" aria-label="Guided workout"><div class="gwk-in" id="gwk-in"></div><div class="gwk-act" id="gwk-act"></div></div>
+<div id="rn" class="gwk" hidden role="dialog" aria-modal="true" aria-label="Live run"><div class="gwk-in" id="rn-in"></div><div class="gwk-act" id="rn-act"></div></div>
 
 <div id="gate" class="gate" hidden><div class="gate-in" id="gate-in"></div></div>
 <div id="modal" class="modal" hidden>
@@ -1441,7 +1464,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     else if (tab === 'bible') { var hb = hModel('bible'); h = 'Streak <b>' + hb.dayStreak + '</b><i class="rbr"></i>' + hb.total + ' days read'; }
     else if (tab === 'books') { var hr = readModel(); h = 'Streak <b>' + hr.cur + '</b><i class="rbr"></i>' + nfmt(hr.total) + ' pts'; }
     else if (tab === 'gym') { var hg = hModel('gym'); h = 'Week streak <b>' + hg.wrun + '</b><i class="rbr"></i>' + hg.total + ' sessions'; }
-    else if (tab === 'run') { var hu = runModel(); h = 'Week streak <b>' + hu.cur + '</b><i class="rbr"></i>' + plural(hu.n, 'run', 'runs'); }
+    else if (tab === 'run') { var hu = runModel(); h = 'Week streak <b>' + hu.cur + '</b><i class="rbr"></i>' + plural(hu.nAll, 'run', 'runs'); }
     else h = 'Today <b>' + todayTally() + '/4</b>';
     $('#rec').innerHTML = h;
     $('#gear').hidden = !(settings && tab === 'wake');
@@ -1928,7 +1951,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 17 #cb4ef2', fbEmail = '';
+  var APP_BUILD = 'Oct 17 #795c96', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -2215,6 +2238,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
     var ru = runModel(), rMain, rSub, rAct, nsd = nextSat(new Date());
     if (ru.thisWk) { rMain = fmt(ru.thisWk.seconds); rSub = (ru.n > 1 && ru.pr === ru.thisWk ? 'New best' : 'Best ' + fmt(ru.pr.seconds)) + (ru.cur > 1 ? ' &middot; ' + ru.cur + ' weeks in a row' : ''); rAct = '<span class="pill bg-ontime">Done</span>'; }
+    else if (ru.allWk) { rMain = ru.allWk.miles.toFixed(2) + ' mi'; rSub = fmt(ru.allWk.seconds) + ' &middot; ' + paceOf(ru.allWk) + ' /mi' + (ru.cur > 1 ? ' &middot; ' + ru.cur + ' weeks in a row' : ''); rAct = '<span class="pill bg-ontime">Done</span>'; }
     else if (new Date().getDay() === 6) { rMain = '5K day'; rSub = (ru.last ? 'Last ' + fmt(ru.last.seconds) + ' &middot; best ' + fmt(ru.pr.seconds) : 'Log your first one') + (rpTargetNow() ? ' &middot; target ' + fmt(rpTargetNow()) : ''); rAct = '<button class="btn primary" data-action="run-log">Log</button>'; }
     else { rMain = 'Saturday'; rSub = 'Next 5K ' + dateLabel(dkey(nsd)) + (rpTargetNow() ? ' &middot; target ' + fmt(rpTargetNow()) : ru.last ? ' &middot; last ' + fmt(ru.last.seconds) : ''); rAct = '<button class="btn" data-action="tab" data-tab="run">Open</button>'; }
     function row(l, main, sub, act) {
@@ -3639,14 +3663,25 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   });
 
   /* ---------- 5K Saturday ---------- */
-  var runs = {};          // date -> { date, seconds, note, at }
+  var runs = {};          // date -> { date, seconds, note, at } plus, for GPS runs: miles, split5k, splits
   var RUN_MI = 3.10686;
   function cleanRun(id, o) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(id) || !o || typeof o !== 'object') return null;
     var s = Math.round(Number(o.seconds));
     if (!isFinite(s) || s < 60 || s > 14400) return null;
-    return { date: id, seconds: s, note: lpStr(o.note, 300), at: typeof o.at === 'string' ? o.at : '' };
+    var r = { date: id, seconds: s, note: lpStr(o.note, 300), at: typeof o.at === 'string' ? o.at : '' };
+    var mi = Math.round(Number(o.miles) * 100) / 100;
+    if (isFinite(mi) && mi >= 0.1 && mi <= 60) {
+      r.miles = mi;
+      var t5 = Math.round(Number(o.split5k));
+      r.split5k = isFinite(t5) && t5 >= 60 && t5 <= s ? t5 : 0;
+      r.splits = Array.isArray(o.splits) ? o.splits.slice(0, 60).map(function (x) { return Math.round(Number(x)); }).filter(function (x) { return isFinite(x) && x >= 60 && x <= 7200; }) : [];
+    }
+    return r;
   }
+  function r5(r) { return r.miles ? (r.split5k || 0) : r.seconds; }   // the run's 5K time, or 0 if it was not a 5K
+  function runMiles(r) { return r.miles || RUN_MI; }
+  function paceOf(r) { return fmt(Math.round(r.seconds / runMiles(r))); }
   function runPace(s) { return fmt(Math.round(s / RUN_MI)); }
   function runWeekKey(k) { return dkey(weekStart(fromKey(k))); }
   function secTxt(n) { n = Math.abs(Math.round(n)); return n < 60 ? n + ' sec' : fmt(n); }
@@ -3657,22 +3692,28 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return secTxt(d) + (d < 0 ? ' faster' : ' slower') + ' than last time';
   }
   function runModel() {
-    var list = Object.keys(runs).sort().map(function (k) { return runs[k]; });
-    var m = { list: list, n: list.length, pr: null, last: null, prev: null, avg4: 0, cur: 0, best: 0, thisWk: null, tkW: dkey(weekStart(new Date())) };
+    var all = Object.keys(runs).sort().map(function (k) { return runs[k]; }), list = [];
+    all.forEach(function (r) {
+      var t = r5(r);
+      if (t > 0) list.push(r.miles ? { date: r.date, seconds: t, note: r.note, at: r.at, miles: r.miles, split5k: r.split5k } : r);
+    });
+    var m = { all: all, nAll: all.length, totalMi: 0, allWk: null, list: list, n: list.length, pr: null, last: null, prev: null, avg4: 0, cur: 0, best: 0, thisWk: null, tkW: dkey(weekStart(new Date())) };
+    if (!all.length) return m;
+    var wk = {};
+    all.forEach(function (r) { wk[runWeekKey(r.date)] = 1; m.totalMi += runMiles(r); });
+    m.allWk = all.filter(function (r) { return runWeekKey(r.date) === m.tkW; }).pop() || null;
+    var d = fromKey(m.tkW);
+    if (!wk[m.tkW]) d = addDays(d, -7);
+    while (wk[dkey(d)]) { m.cur++; d = addDays(d, -7); }
+    var ws = Object.keys(wk).sort(), run = 0, pv = null;
+    ws.forEach(function (k) { run = pv && dkey(addDays(fromKey(pv), 7)) === k ? run + 1 : 1; if (run > m.best) m.best = run; pv = k; });
     if (!list.length) return m;
     m.last = list[list.length - 1];
     m.prev = list.length > 1 ? list[list.length - 2] : null;
     list.forEach(function (r) { if (!m.pr || r.seconds < m.pr.seconds) m.pr = r; });
     var l4 = list.slice(-4);
     m.avg4 = Math.round(l4.reduce(function (a, r) { return a + r.seconds; }, 0) / l4.length);
-    var wk = {};
-    list.forEach(function (r) { wk[runWeekKey(r.date)] = 1; });
     m.thisWk = list.filter(function (r) { return runWeekKey(r.date) === m.tkW; }).pop() || null;
-    var d = fromKey(m.tkW);
-    if (!wk[m.tkW]) d = addDays(d, -7);
-    while (wk[dkey(d)]) { m.cur++; d = addDays(d, -7); }
-    var ws = Object.keys(wk).sort(), run = 0, pv = null;
-    ws.forEach(function (k) { run = pv && dkey(addDays(fromKey(pv), 7)) === k ? run + 1 : 1; if (run > m.best) m.best = run; pv = k; });
     return m;
   }
   function nextSat(now) { var d = fromKey(dkey(now)); return addDays(d, (6 - d.getDay() + 7) % 7); }
@@ -3680,33 +3721,38 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   function renderRun() {
     if (!$('#run-hero')) return;
     var m = runModel(), now = new Date(), isSat = now.getDay() === 6, h = '';
-    var tw = m.thisWk;
+    var tw = m.thisWk, ta = m.allWk, gpsBtn = function (p) { return '<button class="btn' + (p ? ' primary' : '') + '" data-action="run-live">Start GPS run</button>'; };
     h = '<h2>5K SATURDAY</h2>';
     if (tw) {
       var bf = runBefore(m, tw), isPR = m.n > 1 && m.pr === tw;
       h += '<div class="rbig">' + fmt(tw.seconds) + '</div><p class="lead" style="margin:0 0 4px">' + (isPR ? '<b>New best.</b> ' : '') + runVs(tw.seconds, bf) + '. ' + runPace(tw.seconds) + ' per mile.</p>' +
         '<p class="note" style="margin:0 0 12px">' + DOWL[fromKey(tw.date).getDay()] + ', ' + dateLabel(tw.date) + (m.cur > 1 ? ' &middot; ' + m.cur + ' weeks in a row' : '') + '</p>' +
-        '<div class="row"><button class="btn" data-action="run-edit" data-key="' + tw.date + '">Edit this run</button></div>';
+        '<div class="row"><button class="btn" data-action="run-edit" data-key="' + tw.date + '">Edit this run</button>' + gpsBtn(false) + '</div>';
+    } else if (ta) {
+      h += '<div class="rbig">' + ta.miles.toFixed(2) + ' mi</div><p class="lead" style="margin:0 0 4px">' + fmt(ta.seconds) + ' at ' + paceOf(ta) + ' per mile. Short of a full 5K, so it keeps your weekly streak but is not a 5K time.</p>' +
+        '<p class="note" style="margin:0 0 12px">' + DOWL[fromKey(ta.date).getDay()] + ', ' + dateLabel(ta.date) + (m.cur > 1 ? ' &middot; ' + m.cur + ' weeks in a row' : '') + '</p>' +
+        '<div class="row"><button class="btn" data-action="run-edit" data-key="' + ta.date + '">Run details</button>' + gpsBtn(false) + '</div>';
     } else if (isSat) {
-      h += '<p class="lead" style="margin-bottom:12px"><b>Today is 5K day.</b> ' + (m.pr ? 'Your best is ' + fmt(m.pr.seconds) + '.' : 'Log your first time when you finish.') + '</p>' +
-        '<div class="row"><button class="btn primary" data-action="run-log">Log my 5K</button></div>';
+      h += '<p class="lead" style="margin-bottom:12px"><b>Today is 5K day.</b> ' + (m.pr ? 'Your best is ' + fmt(m.pr.seconds) + '.' : 'Run it with the GPS tracker, or log your time when you finish.') + '</p>' +
+        '<div class="row">' + gpsBtn(true) + '<button class="btn" data-action="run-log">Log my 5K</button></div>';
     } else {
       var ns = nextSat(now), days = Math.round((ns - fromKey(dkey(now))) / 86400000);
       h += '<div class="rbig">' + (days === 1 ? 'Tomorrow' : 'Saturday') + '</div><p class="lead" style="margin:0 0 12px">Next 5K: ' + dateLabel(dkey(ns)) + ' (' + (days === 1 ? 'tomorrow' : 'in ' + days + ' days') + ').' + (m.cur ? ' Run it to keep your ' + plural(m.cur, 'week', 'weeks') + ' going.' : '') + '</p>' +
-        '<div class="row"><button class="btn" data-action="run-log">Log a run</button></div>';
+        '<div class="row">' + gpsBtn(true) + '<button class="btn" data-action="run-log">Log a run</button></div>';
     }
     $('#run-hero').innerHTML = h;
 
     var t = '<h2>YOUR TIMES</h2>';
-    if (!m.n) t += '<p class="lead" style="margin:0">Nothing logged yet. Your best, average, pace and weekly streak show up here after your first run.</p>';
+    if (!m.n) t += '<p class="lead" style="margin:0' + (m.nAll ? ' 0 12px' : '') + '">' + (m.nAll ? 'No 5K time yet. Go the full 3.11 miles with the GPS tracker, or log a 5K, and your best, average and pace show up here.' : 'Nothing logged yet. Your best, average, pace and weekly streak show up here after your first run.') + '</p>' +
+      (m.nAll ? '<div class="tiles"><div class="tile"><label>Total runs</label><div class="v">' + m.nAll + '</div><div class="s">' + nfmt(Math.round(m.totalMi * 10) / 10) + ' mi</div></div><div class="tile"><label>Weeks in a row</label><div class="v">' + m.cur + '</div><div class="s">Best ' + m.best + '</div></div></div>' : '');
     else {
       t += '<div class="tiles">' +
         '<div class="tile"><label>Best</label><div class="v">' + fmt(m.pr.seconds) + '</div><div class="s">' + dateLabel(m.pr.date) + ' &middot; ' + runPace(m.pr.seconds) + ' /mi</div></div>' +
         '<div class="tile"><label>Latest</label><div class="v">' + fmt(m.last.seconds) + '</div><div class="s">' + (m.prev ? runVs(m.last.seconds, m.prev) : 'First one logged') + '</div></div>' +
         '<div class="tile"><label>Average</label><div class="v">' + fmt(m.avg4) + '</div><div class="s">' + (m.n >= 4 ? 'last 4 runs' : 'all ' + plural(m.n, 'run', 'runs')) + '</div></div>' +
-        '<div class="tile"><label>Pace</label><div class="v">' + runPace(m.last.seconds) + '</div><div class="s">per mile, latest run</div></div>' +
+        '<div class="tile"><label>Pace</label><div class="v">' + runPace(m.last.seconds) + '</div><div class="s">per mile, latest 5K</div></div>' +
         '<div class="tile"><label>Weeks in a row</label><div class="v">' + m.cur + '</div><div class="s">Best ' + m.best + '</div></div>' +
-        '<div class="tile"><label>Total runs</label><div class="v">' + m.n + '</div><div class="s">' + nfmt(Math.round(m.n * 5)) + ' km</div></div></div>';
+        '<div class="tile"><label>Total runs</label><div class="v">' + m.nAll + '</div><div class="s">' + nfmt(Math.round(m.totalMi * 10) / 10) + ' mi</div></div></div>';
     }
     var g = goals.runGoal || 0;
     t += '<div class="rgoal">';
@@ -3717,7 +3763,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     $('#run-stats').innerHTML = t;
 
     var c = '<h2>TIME BY RUN<small>lower is faster</small></h2>';
-    if (m.n < 2) c += '<p class="lead" style="margin:0">Log two runs to see your trend.</p>';
+    if (m.n < 2) c += '<p class="lead" style="margin:0">Log two 5K times to see your trend.</p>';
     else {
       var L = m.list.slice(-20), vals = L.map(function (r) { return r.seconds; }), lo = Math.min.apply(null, vals), hi = Math.max.apply(null, vals);
       if (g) { lo = Math.min(lo, g); hi = Math.max(hi, g); }
@@ -3739,13 +3785,15 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     $('#run-chart').innerHTML = c;
 
     var l = '<h2>RECENT RUNS</h2>';
-    if (!m.n) l += '<p class="lead" style="margin:0">No runs yet.</p>';
-    else l += '<div class="rlist">' + m.list.slice().reverse().slice(0, 30).map(function (r) {
-      return '<button class="rrow" data-action="run-edit" data-key="' + r.date + '"><span class="rd">' + DOW[fromKey(r.date).getDay()] + ' ' + dateLabel(r.date) + '</span><b>' + fmt(r.seconds) + '</b><span class="rp">' + runPace(r.seconds) + ' /mi' + (r === m.pr ? ' &middot; best' : '') + '</span>' + (r.note ? '<span class="rn">' + esc(r.note) + '</span>' : '') + '</button>';
+    if (!m.nAll) l += '<p class="lead" style="margin:0">No runs yet.</p>';
+    else l += '<div class="rlist">' + m.all.slice().reverse().slice(0, 30).map(function (r) {
+      var best = m.pr && m.pr.date === r.date, sub = r.miles ? r.miles.toFixed(2) + ' mi &middot; ' + paceOf(r) + ' /mi' + (r.split5k ? ' &middot; 5K ' + fmt(r.split5k) : '') : runPace(r.seconds) + ' /mi';
+      return '<button class="rrow" data-action="run-edit" data-key="' + r.date + '"><span class="rd">' + DOW[fromKey(r.date).getDay()] + ' ' + dateLabel(r.date) + '</span><b>' + fmt(r.seconds) + '</b><span class="rp">' + sub + (best ? ' &middot; best' : '') + '</span>' + (r.note ? '<span class="rn">' + esc(r.note) + '</span>' : '') + '</button>';
     }).join('') + '</div>';
     $('#run-log').innerHTML = l;
     renderRunPlan();
     renderRunPrep();
+    renderRunLive();
   }
   /* ---------- 5K build plan: weekly target time, easing from today's pace to the goal ---------- */
   var RP_DEF = { start: 2040, goal: 1500, weeks: 24 };
@@ -3789,7 +3837,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var actual = [];
     for (var i = 0; i < n; i++) {
       var key = dkey(addDays(from, i * 7)), best = null;
-      Object.keys(runs).forEach(function (k) { if (runWeekKey(k) === key && (best === null || runs[k].seconds < best)) best = runs[k].seconds; });
+      Object.keys(runs).forEach(function (k) { var t5 = r5(runs[k]); if (t5 > 0 && runWeekKey(k) === key && (best === null || t5 < best)) best = t5; });
       actual.push(best);
     }
     return { c: c, n: n, T: T, dl: dl, wk: wk, over: over, actual: actual, ph: rpPhases(n) };
@@ -3907,7 +3955,28 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     toast('Plan removed. Your goal time stays.');
     await persist(function (d) { return d.doc('app/habits').set(goalsOut()); });
   }
+  function rnSplitsHTML(splits, miles, secs, tgt) {
+    var h = '', cum = 0;
+    splits.forEach(function (x, i) {
+      cum += x;
+      var d = tgt ? Math.round(x - tgt) : null;
+      h += '<div class="rn-sp"><span>Mile ' + (i + 1) + '</span><b>' + fmt(x) + '</b><em>' + (d === null ? '' : d === 0 ? 'on target' : Math.abs(d) + ' sec ' + (d < 0 ? 'under' : 'over')) + '</em></div>';
+    });
+    var pm = miles - splits.length, pt = secs - cum;
+    if (pm >= 0.05 && pt > 5) h += '<div class="rn-sp"><span>Last ' + pm.toFixed(2) + ' mi</span><b>' + fmt(pt) + '</b><em>' + fmt(pt / pm) + ' /mi</em></div>';
+    return h;
+  }
+  function runDetailHTML(e) {
+    var d = fromKey(e.date);
+    return '<h3>YOUR RUN</h3><p class="note" style="margin:0">Measured with GPS on ' + DOW[d.getDay()] + ', ' + dateLabel(e.date) + '. The numbers stay as measured. You can edit the note or delete the run.</p>' +
+      '<div class="tiles3"><div class="tile"><label>Time</label><div class="v">' + fmt(e.seconds) + '</div></div><div class="tile"><label>Miles</label><div class="v">' + e.miles.toFixed(2) + '</div></div><div class="tile"><label>Pace</label><div class="v">' + paceOf(e) + '</div></div></div>' +
+      (e.split5k ? '<p class="lead" style="margin:10px 0 0">5K time: <b>' + fmt(e.split5k) + '</b></p>' : '<p class="note" style="margin:10px 0 0">Short of a full 5K, so this is not a 5K time.</p>') +
+      '<div style="margin-top:8px">' + rnSplitsHTML(e.splits || [], e.miles, e.seconds, 0) + '</div>' +
+      '<label class="fld lfld"><span>NOTES</span><textarea id="q-note" rows="2" maxlength="300" placeholder="Route, weather, how it felt">' + esc(e.note) + '</textarea></label>' +
+      '<div class="row"><button class="btn primary" data-action="run-save" data-key="' + e.date + '">Save note</button><button class="btn danger" data-action="run-del" data-key="' + e.date + '">Delete</button><button class="btn" data-action="close-modal">Close</button></div>';
+  }
   function runSheetHTML(k) {
+    if (k && runs[k] && runs[k].miles) return runDetailHTML(runs[k]);
     var e = k ? runs[k] : null, dv = k || dkey(new Date()), mm = e ? Math.floor(e.seconds / 60) : '', ss = e ? e.seconds % 60 : '';
     return '<h3>' + (e ? 'EDIT YOUR 5K' : 'LOG A 5K') + '</h3>' +
       '<label class="fld"><span>DATE</span><input type="date" id="q-date" value="' + dv + '" max="' + dkey(new Date()) + '"></label>' +
@@ -3932,6 +4001,15 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     p.textContent = fmt(t) + '  ·  ' + runPace(t) + ' per mile';
   }
   async function runSave(old) {
+    if (old && runs[old] && runs[old].miles) {
+      var e0 = runs[old];
+      e0.note = lpStr($('#q-note').value, 300);
+      closeModal();
+      renderAll();
+      toast('Note saved.');
+      await persist(function (d) { return d.doc('runs/' + old).set(e0); });
+      return;
+    }
     var k = $('#q-date').value, t = runSecs('#q-min', '#q-sec'), note = $('#q-note').value;
     if (!/^\d{4}-\d{2}-\d{2}$/.test(k)) { toast('Pick the date of the run.'); return; }
     if (k > dkey(new Date())) { toast('That date is in the future.'); return; }
@@ -3984,6 +4062,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     else if (a === 'run-plan-save') rpSave();
     else if (a === 'run-plan-clear') rpClear();
     else if (a === 'run-plan-view') { rpView = rpView === 'table' ? 'chart' : 'table'; renderRunPlan(); }
+    else if (a === 'run-live') rnOpen();
     else if (a === 'run-goal-save') runGoalSave(false);
     else if (a === 'run-goal-clear') runGoalSave(true);
     else return false;
@@ -3992,6 +4071,388 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   document.addEventListener('input', function (ev) {
     var t = ev.target;
     if (t && (t.id === 'q-min' || t.id === 'q-sec')) runPrev();
+  });
+
+  /* ---------- live run: GPS distance, time and pace, with pace cues ---------- */
+  var rn = null, rnTimer = null, rnWl = null, rnWatch = null, RN_KEY = LS + '.runlive';
+  var rnPrefs = { voice: true, tol: 10 };
+  try {
+    rnPrefs.voice = localStorage.getItem(LS + '.runvoice') !== '0';
+    var rnT0 = parseInt(localStorage.getItem(LS + '.runtol'), 10);
+    if (rnT0 === 5 || rnT0 === 10 || rnT0 === 20) rnPrefs.tol = rnT0;
+  } catch (e) {}
+  var RN_GOALS = [['5k', '5K', RUN_MI], ['2', '2 miles', 2], ['1', '1 mile', 1], ['free', 'Free run', 0]];
+  function rnGoalMi(g) { for (var i = 0; i < RN_GOALS.length; i++) if (RN_GOALS[i][0] === g) return RN_GOALS[i][2]; return 0; }
+  function rnGoalName(g) { for (var i = 0; i < RN_GOALS.length; i++) if (RN_GOALS[i][0] === g) return RN_GOALS[i][1]; return 'Free run'; }
+  function rnSayTime(s) {
+    s = Math.max(0, Math.round(s));
+    var m = Math.floor(s / 60), r = s % 60;
+    return m + (m === 1 ? ' minute' : ' minutes') + (r ? ' ' + r + (r === 1 ? ' second' : ' seconds') : '');
+  }
+  function rnDefaultTgt() {
+    var t = rpTargetNow(), m;
+    if (t) return { pace: Math.round(t / RUN_MI), src: 'From this week\'s plan target of ' + fmt(t) + ' for a 5K.' };
+    if (goals.runGoal) return { pace: Math.round(goals.runGoal / RUN_MI), src: 'From your goal time of ' + fmt(goals.runGoal) + ' for a 5K.' };
+    m = runModel();
+    if (m.last) return { pace: Math.round(m.last.seconds / RUN_MI), src: 'From your latest 5K of ' + fmt(m.last.seconds) + '.' };
+    return { pace: 660, src: 'A starting point. Change it to the pace you want.' };
+  }
+  function rnSnapGet() {
+    try {
+      var o = JSON.parse(localStorage.getItem(RN_KEY) || 'null');
+      if (o && /^\d{4}-\d{2}-\d{2}$/.test(o.date) && o.secs >= 0 && o.miles >= 0) return o;
+    } catch (e) {}
+    return null;
+  }
+  function rnNew() {
+    var d = rnDefaultTgt(), now = Date.now();
+    return { stage: 'setup', goal: '5k', tgt: d.pace, src: d.src, custom: false, tol: rnPrefs.tol, voice: rnPrefs.voice,
+      fix: null, fixAt: 0, err: '', openAt: now, start: 0, date: '', paused: false, auto: false, pAt: 0, pTot: 0, frozen: null,
+      last: null, bad: 0, miles: 0, pts: [], cross: [], splits: [], t5k: 0, goalHit: false, rec: false, discard: false, sv: 0,
+      cue: { state: 'wait', since: now, say: now, spokeBad: false, wp: null, diff: 0 } };
+  }
+  function rnOpen() {
+    if (rn) { $('#rn').hidden = false; rnShow(); return; }
+    if (rnSnapGet()) { toast('Save or discard your unsaved run first.'); return; }
+    rn = rnNew();
+    document.body.classList.add('gwk-on');
+    $('#rn').hidden = false;
+    rnLock();
+    rnWatchStart();
+    if (!rnTimer) rnTimer = setInterval(rnTick, 500);
+    rnShow();
+  }
+  function rnClose(clear) {
+    if (rnWatch !== null) { try { navigator.geolocation.clearWatch(rnWatch); } catch (e) {} rnWatch = null; }
+    clearInterval(rnTimer); rnTimer = null; rnUnlock();
+    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+    rn = null;
+    $('#rn').hidden = true; $('#rn-in').innerHTML = ''; $('#rn-act').innerHTML = '';
+    document.body.classList.remove('gwk-on');
+    if (clear) { try { localStorage.removeItem(RN_KEY); } catch (e) {} }
+    renderAll();
+  }
+  async function rnLock() { try { if (navigator.wakeLock && !rnWl) { rnWl = await navigator.wakeLock.request('screen'); rnWl.addEventListener('release', function () { rnWl = null; }); } } catch (e) { rnWl = null; } }
+  function rnUnlock() { try { if (rnWl) rnWl.release(); } catch (e) {} rnWl = null; }
+  function rnWatchStart() {
+    if (!navigator.geolocation) { rn.err = 'unsupported'; return; }
+    try { rnWatch = navigator.geolocation.watchPosition(rnFix, rnGeoErr, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 }); }
+    catch (e) { rn.err = 'unsupported'; }
+  }
+  function rnGeoErr(e) {
+    if (!rn) return;
+    rn.err = e && e.code === 1 ? 'denied' : 'nosignal';
+    rnPaint();
+  }
+  function rnDist(a, b, c, d) {
+    var R = 6371000, p = Math.PI / 180, dl = (c - a) * p, dg = (d - b) * p;
+    var x = Math.pow(Math.sin(dl / 2), 2) + Math.cos(a * p) * Math.cos(c * p) * Math.pow(Math.sin(dg / 2), 2);
+    return 2 * R * Math.asin(Math.min(1, Math.sqrt(x)));
+  }
+  function rnElapsed(now) {
+    if (rn.frozen !== null) return rn.frozen;
+    if (!rn.start) return 0;
+    return Math.max(0, (now - rn.start - rn.pTot - (rn.paused ? now - rn.pAt : 0)) / 1000);
+  }
+  function rnFix(p) {
+    if (!rn || !p || !p.coords) return;
+    var c = p.coords, now = Date.now(), acc = Number(c.accuracy);
+    if (!isFinite(acc)) acc = 999;
+    rn.err = '';
+    rn.fix = { lat: c.latitude, lng: c.longitude, acc: acc };
+    rn.fixAt = now;
+    if (rn.stage !== 'run' || rn.paused || acc > 35) return;
+    var t = rnElapsed(now);
+    if (!rn.last) { rn.last = { lat: c.latitude, lng: c.longitude, at: now, t: t }; rn.pts.push({ t: t, d: rn.miles }); return; }
+    var m = rnDist(rn.last.lat, rn.last.lng, c.latitude, c.longitude), dt = (now - rn.last.at) / 1000;
+    if (dt <= 0) return;
+    if (m / dt > 9) {                                  // a jump faster than any runner: ignore it, but re-anchor if it keeps happening
+      rn.bad++;
+      if (rn.bad >= 4) { rn.last = { lat: c.latitude, lng: c.longitude, at: now, t: t }; rn.bad = 0; }
+      return;
+    }
+    rn.bad = 0;
+    if (m < Math.max(3, Math.min(10, acc * 0.5))) return;   // standing-still jitter
+    var d0 = rn.miles, t0 = rn.last.t;
+    rn.miles += m / 1609.344;
+    rn.last = { lat: c.latitude, lng: c.longitude, at: now, t: t };
+    rn.pts.push({ t: t, d: rn.miles });
+    if (rn.pts.length > 400) rn.pts.splice(0, rn.pts.length - 400);
+    var span = rn.miles - d0;
+    function at(mile) { return t0 + (mile - d0) / span * (t - t0); }
+    while (rn.miles >= rn.cross.length + 1) {
+      var n = rn.cross.length + 1, tc = at(n), prev = rn.cross.length ? rn.cross[rn.cross.length - 1] : 0;
+      rn.cross.push(tc); rn.splits.push(Math.round(tc - prev));
+      rnMileDone(n, tc - prev);
+    }
+    if (!rn.t5k && rn.miles >= RUN_MI) rn.t5k = at(RUN_MI);
+    var gm = rnGoalMi(rn.goal);
+    if (gm && !rn.goalHit && rn.miles >= gm) {
+      rn.goalHit = true;
+      var gt = gm === RUN_MI && rn.t5k ? rn.t5k : at(gm);
+      rnSpeak('That is ' + (gm === RUN_MI ? 'a 5K' : rnGoalName(rn.goal)) + '. Time ' + rnSayTime(gt) + '. Tap finish when you are done.', true);
+      stBuzz([300, 100, 300, 100, 300]);
+    }
+  }
+  function rnMileDone(n, sp) {
+    var d = Math.round(sp - rn.tgt);
+    rnSpeak('Mile ' + n + '. ' + rnSayTime(sp) + '. ' + (Math.abs(d) >= 3 ? Math.abs(d) + ' seconds ' + (d < 0 ? 'ahead of' : 'behind') + ' target pace.' : 'Right on target pace.'), true);
+    stBuzz([200, 100, 200]);
+  }
+  function rnSpeak(txt, urgent) {
+    if (!rn) return;
+    rn.said = txt;
+    if (!rn.voice) return;
+    try {
+      var ss = window.speechSynthesis;
+      if (ss && window.SpeechSynthesisUtterance) {
+        var nw = Date.now();
+        if (ss.speaking && !urgent && nw - (rn.spAt || 0) < 8000) return;   // let a short phrase finish; do not trust a stuck flag for long
+        if (urgent || ss.speaking) ss.cancel();
+        rn.spAt = nw;
+        var u = new window.SpeechSynthesisUtterance(txt);
+        u.lang = 'en-US'; u.rate = 1; u.volume = 1;
+        ss.speak(u);
+        return;
+      }
+    } catch (e) {}
+    stBeep([[900, 0]]);
+  }
+  function rnWinPace(el) {
+    var P = rn.pts, n = P.length;
+    if (n < 2) return null;
+    var last = P[n - 1];
+    if (el - last.t > 10) return Date.now() - rn.fixAt < 6000 ? 9999 : null;   // fixes keep arriving but nothing moved: stopped
+    var i = n - 1;
+    while (i > 0 && last.t - P[i - 1].t <= 45) i--;
+    var base = P[i > 0 ? i - 1 : 0], dtv = last.t - base.t, dd = last.d - base.d;
+    if (dtv < 20) return null;
+    if (dd < 0.006) return 9999;
+    return Math.min(9999, dtv / dd);
+  }
+  function rnCueEval(el) {
+    var c = rn.cue, now = Date.now(), wp = rn.miles >= 0.1 && el >= 60 ? rnWinPace(el) : null, st, diff = 0, tol = rn.tol, h = tol * 0.6;
+    if (wp === null) st = 'wait';
+    else {
+      diff = wp - rn.tgt;
+      if (diff > 300) st = 'idle';
+      else if (c.state === 'slow') st = diff > h ? 'slow' : diff < -tol ? 'fast' : 'on';
+      else if (c.state === 'fast') st = diff < -h ? 'fast' : diff > tol ? 'slow' : 'on';
+      else st = diff > tol ? 'slow' : diff < -tol ? 'fast' : 'on';
+    }
+    if (st !== c.state) { c.state = st; c.since = now; }
+    c.wp = wp; c.diff = diff;
+    var hold = (now - c.since) / 1000;
+    if ((st === 'slow' || st === 'fast') && hold >= 12 && (now - c.say) / 1000 >= 45) {
+      var amt = Math.max(5, Math.round(Math.abs(diff) / 5) * 5), big = amt >= 30;
+      c.say = now; c.spokeBad = true;
+      if (st === 'slow') { rnSpeak((big ? 'Speed up. You are about ' : 'Speed up a little. About ') + amt + ' seconds per mile behind.', false); stBuzz([200]); }
+      else { rnSpeak((big ? 'Ease off. You are about ' : 'Ease off a little. About ') + amt + ' seconds per mile ahead.', false); stBuzz([100, 80, 100]); }
+    } else if (st === 'on' && c.spokeBad && hold >= 8) {
+      c.spokeBad = false; c.say = now;
+      rnSpeak('Right on pace.', false);
+    }
+  }
+  function rnSnap() {
+    if (!rn || rn.stage === 'setup' || rn.rec || !rn.start) return;
+    try {
+      localStorage.setItem(RN_KEY, JSON.stringify({ date: rn.date, start: rn.start, secs: Math.round(rnElapsed(Date.now())), miles: Math.round(rn.miles * 1000) / 1000,
+        t5k: Math.round(rn.t5k), splits: rn.splits, tgt: rn.tgt, goal: rn.goal, at: Date.now() }));
+    } catch (e) {}
+  }
+  function rnTick() {
+    if (!rn) return;
+    var now = Date.now();
+    if (rn.stage === 'run' && !rn.paused) {
+      rnCueEval(rnElapsed(now));
+      if (now - rn.sv >= 5000) { rn.sv = now; rnSnap(); }
+    }
+    rnPaint();
+  }
+  function rnBegin() {
+    if (!rn || rn.stage !== 'setup') return;
+    var now = Date.now();
+    rn.stage = 'run'; rn.start = now; rn.date = dkey(new Date(now)); rn.pTot = 0; rn.paused = false;
+    rn.miles = 0; rn.pts = []; rn.cross = []; rn.splits = []; rn.t5k = 0; rn.goalHit = false; rn.last = null; rn.sv = now;
+    rn.cue = { state: 'wait', since: now, say: now, spokeBad: false, wp: null, diff: 0 };
+    if (rn.fix && rn.fix.acc <= 35 && now - rn.fixAt < 15000) { rn.last = { lat: rn.fix.lat, lng: rn.fix.lng, at: now, t: 0 }; rn.pts.push({ t: 0, d: 0 }); }
+    unlockAudio();
+    rnSpeak('Run started. Target pace ' + rnSayTime(rn.tgt) + ' per mile.', true);
+    rnSnap();
+    rnShow();
+  }
+  function rnPause(auto) {
+    if (!rn || rn.stage !== 'run' || rn.paused) return;
+    rn.paused = true; rn.auto = !!auto; rn.pAt = Date.now(); rn.last = null;
+    rnSnap(); rnShow();
+  }
+  function rnResume() {
+    if (!rn || rn.stage !== 'run' || !rn.paused) return;
+    var now = Date.now();
+    rn.pTot += now - rn.pAt; rn.paused = false; rn.auto = false; rn.last = null; rn.pts = [];
+    rn.cue = { state: 'wait', since: now, say: now, spokeBad: false, wp: null, diff: 0 };
+    rnLock(); rnShow();
+  }
+  function rnFinish() {
+    if (!rn || rn.stage !== 'run') return;
+    if (!rn.paused) { rn.paused = true; rn.auto = false; rn.pAt = Date.now(); rn.last = null; }
+    rn.stage = 'sum'; rn.discard = false;
+    rnSnap(); rnShow();
+  }
+  function rnKeep() {
+    if (!rn || rn.stage !== 'sum' || rn.rec) return;
+    rn.stage = 'run'; rn.discard = false;
+    rnResume();
+  }
+  async function rnSave() {
+    if (!rn || rn.stage !== 'sum') return;
+    var el = Math.round(rnElapsed(Date.now())), mi = Math.round(rn.miles * 100) / 100, nt = $('#rn-note');
+    if (el < 60 || mi < 0.1) { toast('Too short to save. Discard it, or keep running.'); return; }
+    var k = rn.date, before = runModel(), e = cleanRun(k, { seconds: el, miles: mi, split5k: rn.t5k, splits: rn.splits, note: nt ? nt.value : '', at: new Date().toISOString() });
+    if (!e) { toast('Could not save that run.'); return; }
+    runs[k] = e;
+    var t5 = r5(e), pr = t5 > 0 && before.n && t5 < before.pr.seconds;
+    rnClose(true);
+    toast(pr ? 'New 5K best: ' + fmt(t5) + '.' : 'Run saved. ' + mi.toFixed(2) + ' mi at ' + paceOf(e) + ' per mile.');
+    await persist(function (d) { return d.doc('runs/' + k).set(e); });
+  }
+  function rnRecover() {
+    var o = rnSnapGet();
+    if (!o || rn) return;
+    rn = rnNew();
+    rn.stage = 'sum'; rn.rec = true; rn.frozen = o.secs; rn.miles = o.miles; rn.t5k = o.t5k || 0; rn.splits = Array.isArray(o.splits) ? o.splits : [];
+    rn.tgt = o.tgt || 660; rn.goal = o.goal || 'free'; rn.date = o.date; rn.start = o.start || 1;
+    document.body.classList.add('gwk-on');
+    $('#rn').hidden = false;
+    rnShow();
+  }
+  function renderRunLive() {
+    var el = $('#run-live');
+    if (!el) return;
+    var o = rn ? null : rnSnapGet();
+    if (!o || !(o.miles >= 0.1)) { el.hidden = true; el.innerHTML = ''; return; }
+    el.hidden = false;
+    el.innerHTML = '<h2>UNSAVED RUN</h2><p class="lead" style="margin:0 0 10px">A run was interrupted before it was saved: <b>' + o.miles.toFixed(2) + ' mi</b> in <b>' + fmt(o.secs) + '</b> on ' + dateLabel(o.date) + '.</p>' +
+      '<div class="row"><button class="btn primary" data-action="rn-recover">Review and save</button></div>';
+  }
+  function rnSet(id, txt) { var el = $('#' + id); if (el && el.textContent !== txt) el.textContent = txt; }
+  function rnVoiceChip() { return '<button class="chip" data-action="rn-voice" aria-pressed="' + rn.voice + '">Spoken cues: ' + (rn.voice ? 'On' : 'Off') + '</button>'; }
+  function rnShow() {
+    if (!rn) return;
+    var h = '', a = '';
+    if (rn.stage === 'setup') {
+      h = '<h3 style="margin:0 0 4px;font-size:24px;letter-spacing:.05em">LIVE RUN</h3><p class="note" style="margin:0 0 14px">Tracks distance, time and pace with GPS and tells you when to speed up or ease off. Keep this screen open and the phone on you.</p>' +
+        '<div class="fld"><span>GPS</span><div id="rn-gps" class="rn-gps"></div></div>' +
+        '<div class="fld"><span>DISTANCE</span><div class="chips" id="rn-goals">' + RN_GOALS.map(function (g) { return '<button class="chip" data-action="rn-goal" data-g="' + g[0] + '" aria-pressed="' + (rn.goal === g[0]) + '">' + g[1] + '</button>'; }).join('') + '</div></div>' +
+        '<div class="fld"><span>TARGET PACE PER MILE</span><div class="rn-step"><button class="btn" data-action="rn-tgt" data-s="-5" aria-label="5 seconds faster">-5</button><b id="rn-tv">0:00</b><button class="btn" data-action="rn-tgt" data-s="5" aria-label="5 seconds slower">+5</button></div><p class="note" id="rn-src" style="text-align:center;margin:6px 0 0"></p></div>' +
+        '<div class="fld"><span>TELL ME WHEN I AM OFF BY</span><div class="chips" id="rn-tols">' + [5, 10, 20].map(function (v) { return '<button class="chip" data-action="rn-tol" data-v="' + v + '" aria-pressed="' + (rn.tol === v) + '">' + v + ' sec</button>'; }).join('') + '</div></div>' +
+        '<div class="fld"><span>VOICE</span><div class="chips">' + rnVoiceChip() + '</div></div>';
+      a = '<button class="btn" data-action="rn-cancel">Cancel</button><button class="btn" id="rn-force" data-action="rn-force" style="display:none">Start anyway</button><button class="btn primary" id="rn-begin" data-action="rn-begin" disabled>Start run</button>';
+    } else if (rn.stage === 'run') {
+      var gm = rnGoalMi(rn.goal);
+      h = '<div class="rn-st"><span id="rn-gps"></span><span>' + (gm ? 'GOAL ' + esc(rnGoalName(rn.goal).toUpperCase()) : 'FREE RUN') + '</span></div>' +
+        '<div class="rn-cue" id="rn-cue" role="status" aria-live="polite"><b id="rn-ct"></b><small id="rn-cs"></small></div>' +
+        '<div class="rn-pace" id="rn-pace">--:--</div><div class="rn-pl">PER MILE NOW &middot; TARGET <span id="rn-tg"></span></div>' +
+        '<div class="tiles3"><div class="tile"><label>Time</label><div class="v" id="rn-time">0:00</div></div><div class="tile"><label>Miles</label><div class="v" id="rn-mi">0.00</div></div><div class="tile"><label>Avg pace</label><div class="v" id="rn-avg">--:--</div></div></div>' +
+        (gm ? '<div class="rn-bar"><span id="rn-prog"></span></div>' : '') +
+        '<p class="note" id="rn-proj" style="margin:8px 0 0"></p><p class="note" id="rn-lastm" style="margin:2px 0 10px"></p>' + '<div class="row">' + rnVoiceChip() + '</div>';
+      a = (rn.paused ? '<button class="btn primary" data-action="rn-resume">Resume</button>' : '<button class="btn" data-action="rn-pause">Pause</button>') +
+        '<button class="btn' + (rn.paused ? '' : ' primary') + '" data-action="rn-finish">Finish</button>';
+    } else {
+      var el = Math.round(rnElapsed(Date.now())), mi = rn.miles, avg = mi >= 0.05 ? el / mi : 0, pd = avg ? Math.round(avg - rn.tgt) : 0, ex = runs[rn.date];
+      var five = rn.t5k ? '<p class="lead" style="margin:10px 0 0">5K time: <b>' + fmt(rn.t5k) + '</b>, target ' + fmt(rn.tgt * RUN_MI) + '.</p>' :
+        mi >= 2.9 ? '<p class="note" style="margin:10px 0 0">GPS can read a little short. If you ran the full 5K, count it as one.</p><div class="row" style="margin-top:6px"><button class="btn" data-action="rn-count5k">Count it as a full 5K</button></div>' :
+        '<p class="note" style="margin:10px 0 0">Short of a full 5K. It saves as a training run and keeps your weekly streak, but is not a 5K time.</p>';
+      h = '<h3 style="margin:0 0 4px;font-size:24px;letter-spacing:.05em">' + (rn.rec ? 'UNSAVED RUN' : 'RUN DONE') + '</h3>' +
+        '<div class="tiles3"><div class="tile"><label>Time</label><div class="v">' + fmt(el) + '</div></div><div class="tile"><label>Miles</label><div class="v">' + mi.toFixed(2) + '</div></div><div class="tile"><label>Avg pace</label><div class="v">' + (avg ? fmt(avg) : '--:--') + '</div></div></div>' +
+        (avg ? '<p class="lead" style="margin:10px 0 0">' + (pd === 0 ? 'Right on' : Math.abs(pd) + ' sec per mile ' + (pd < 0 ? 'faster than' : 'slower than')) + ' your target pace of ' + fmt(rn.tgt) + '.</p>' : '') + five +
+        '<div style="margin-top:10px">' + rnSplitsHTML(rn.splits, mi, el, rn.tgt) + '</div>' +
+        (ex ? '<p class="note" style="margin:10px 0 0">You already have a run logged for ' + dateLabel(rn.date) + '. Saving replaces it.</p>' : '') +
+        '<label class="fld lfld"><span>NOTES</span><textarea id="rn-note" rows="2" maxlength="300" placeholder="Route, weather, how it felt"></textarea></label>' +
+        '<div class="row"><button class="btn danger" data-action="rn-discard">' + (rn.discard ? 'Tap again to discard' : 'Discard this run') + '</button></div>';
+      a = (rn.rec ? '<button class="btn" data-action="rn-cancel">Not now</button>' : '<button class="btn" data-action="rn-keep">Keep running</button>') + '<button class="btn primary" data-action="rn-save">' + (ex ? 'Replace and save' : 'Save run') + '</button>';
+    }
+    var keep = rn.stage === 'sum' && $('#rn-note') ? $('#rn-note').value : null;
+    $('#rn-in').innerHTML = h;
+    $('#rn-act').innerHTML = a;
+    if (keep !== null && $('#rn-note')) $('#rn-note').value = keep;
+    rnPaint();
+  }
+  function rnPaint() {
+    if (!rn) return;
+    var now = Date.now(), g;
+    if (rn.stage === 'setup') {
+      var ok = !!rn.fix && rn.fix.acc <= 25 && now - rn.fixAt < 15000, msg, cls = 'warn';
+      if (rn.err === 'unsupported') { msg = 'This browser cannot use GPS.'; cls = 'bad'; }
+      else if (rn.err === 'denied') { msg = 'Location is blocked. On iPhone: Settings, Privacy & Security, Location Services, find Safari Websites (or Daily Discipline), choose While Using the App. Then reopen this screen.'; cls = 'bad'; }
+      else if (!rn.fix || now - rn.fixAt >= 15000) msg = 'Finding GPS. Step outside if you are indoors.';
+      else if (ok) { msg = 'GPS ready. Accurate to about ' + Math.round(rn.fix.acc * 3.28) + ' ft.'; cls = 'ok'; }
+      else msg = 'Weak signal, accurate to about ' + Math.round(rn.fix.acc * 3.28) + ' ft. Wait a few seconds.';
+      g = $('#rn-gps'); if (g) { rnSet('rn-gps', msg); g.className = 'rn-gps ' + cls; }
+      var bt = $('#rn-begin'); if (bt && bt.disabled === ok) bt.disabled = !ok;
+      var fb = $('#rn-force'); if (fb) fb.style.display = !ok && !rn.err.match(/denied|unsupported/) && now - rn.openAt >= 20000 ? '' : 'none';
+      rnSet('rn-tv', fmt(rn.tgt)); rnSet('rn-src', rn.custom ? 'Set by you for this run.' : rn.src);
+      return;
+    }
+    if (rn.stage !== 'run') return;
+    var el = rnElapsed(now), c = rn.cue, gm = rnGoalMi(rn.goal), age = (now - rn.fixAt) / 1000, cls2 = '', t1, t2;
+    rnSet('rn-gps', !rn.fix || age > 10 ? 'GPS SIGNAL LOST' : rn.fix.acc <= 25 ? 'GPS GOOD' : 'GPS WEAK');
+    if (rn.paused) { t1 = 'PAUSED'; t2 = rn.auto ? 'Paused because the app left the screen. Tap Resume.' : 'The clock and distance are stopped.'; }
+    else if (c.state === 'on') { cls2 = 'on'; t1 = '✓ ON PACE'; t2 = 'Within ' + rn.tol + ' sec of your target.'; }
+    else if (c.state === 'slow') { var d1 = Math.round(c.diff); cls2 = 'slow'; t1 = '▲ ' + (d1 >= 30 ? 'SPEED UP' : 'SPEED UP A LITTLE'); t2 = d1 + ' sec per mile slower than target.'; }
+    else if (c.state === 'fast') { var d2 = Math.round(-c.diff); cls2 = 'fast'; t1 = '▼ ' + (d2 >= 30 ? 'EASE OFF' : 'EASE OFF A LITTLE'); t2 = d2 + ' sec per mile faster than target.'; }
+    else if (c.state === 'idle') { t1 = 'WALKING OR STOPPED'; t2 = 'Pace cues pause until you pick it back up.'; }
+    else { t1 = 'GETTING YOUR PACE'; t2 = rn.miles < 0.1 ? 'Pace cues start after about a tenth of a mile.' : 'Hold steady for a few seconds.'; }
+    rnSet('rn-ct', t1); rnSet('rn-cs', t2);
+    var ce = $('#rn-cue'); if (ce && ce.className !== 'rn-cue ' + cls2) ce.className = 'rn-cue ' + cls2;
+    rnSet('rn-pace', !rn.paused && c.wp && c.wp < 9999 ? fmt(c.wp) : '--:--');
+    rnSet('rn-tg', fmt(rn.tgt));
+    rnSet('rn-time', fmt(el)); rnSet('rn-mi', rn.miles.toFixed(2));
+    rnSet('rn-avg', rn.miles >= 0.1 ? fmt(el / rn.miles) : '--:--');
+    var pg = $('#rn-prog'); if (pg && gm) pg.style.width = Math.min(100, rn.miles / gm * 100) + '%';
+    var pj = '';
+    if (!gm) pj = 'Free run. No distance goal.';
+    else if (rn.goalHit) pj = 'Goal reached. Keep going, or tap Finish.';
+    else if (rn.miles >= 0.25) {
+      var fin = el + (gm - rn.miles) * (el / rn.miles), tg = rn.tgt * gm, dd = Math.round(fin - tg);
+      pj = 'On pace to finish in ' + fmt(fin) + ' (target ' + fmt(tg) + (dd === 0 ? ', right on' : ', ' + Math.abs(dd) + ' sec ' + (dd < 0 ? 'under' : 'over')) + ').';
+    } else pj = 'Finish estimate shows after a quarter mile.';
+    rnSet('rn-proj', pj);
+    var ls = rn.splits.length;
+    rnSet('rn-lastm', ls ? 'Mile ' + ls + ': ' + fmt(rn.splits[ls - 1]) + ' (' + (Math.round(rn.splits[ls - 1] - rn.tgt) <= 0 ? '' : '+') + Math.round(rn.splits[ls - 1] - rn.tgt) + ' sec vs target)' : '');
+  }
+  function rnAction(a, b) {
+    if (a === 'rn-recover') { rnRecover(); return true; }
+    if (!rn) return true;
+    if (a === 'rn-goal') { rn.goal = b.dataset.g; rnShow(); }
+    else if (a === 'rn-tgt') { rn.tgt = Math.max(300, Math.min(1200, rn.tgt + parseInt(b.dataset.s, 10))); rn.custom = true; rnPaint(); }
+    else if (a === 'rn-tol') { rn.tol = parseInt(b.dataset.v, 10); rnPrefs.tol = rn.tol; try { localStorage.setItem(LS + '.runtol', String(rn.tol)); } catch (e) {} rnShow(); }
+    else if (a === 'rn-voice') {
+      rn.voice = !rn.voice; rnPrefs.voice = rn.voice;
+      try { localStorage.setItem(LS + '.runvoice', rn.voice ? '1' : '0'); } catch (e) {}
+      try { if (!rn.voice && window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+      rnShow();
+    }
+    else if (a === 'rn-begin') { var bt = $('#rn-begin'); if (bt && !bt.disabled) rnBegin(); }
+    else if (a === 'rn-force') rnBegin();
+    else if (a === 'rn-cancel') rnClose(false);
+    else if (a === 'rn-pause') rnPause(false);
+    else if (a === 'rn-resume') rnResume();
+    else if (a === 'rn-finish') rnFinish();
+    else if (a === 'rn-keep') rnKeep();
+    else if (a === 'rn-save') rnSave();
+    else if (a === 'rn-count5k') { rn.t5k = Math.round(rnElapsed(Date.now())); rnShow(); }
+    else if (a === 'rn-discard') {
+      if (!rn.discard) { rn.discard = true; rnShow(); }
+      else rnClose(true);
+    }
+    else return false;
+    return true;
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (!rn) return;
+    if (document.hidden) { if (rn.stage === 'run' && !rn.paused) rnPause(true); }
+    else if (rn.stage !== 'sum' || !rn.rec) rnLock();
   });
 
   /* ---------- rest timer ---------- */
@@ -4855,8 +5316,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     });
     h += profTry(function () {
       var rm = runModel();
-      if (!rm.n) return profBlock('5K', profTile('Best', 'n/a', 'no runs yet') + profTile('Runs', 0, 'every Saturday'));
-      return profBlock('5K', profTile('Best', fmt(rm.pr.seconds), dateLabel(rm.pr.date)) + profTile('Last', fmt(rm.last.seconds), dateLabel(rm.last.date)) + profTile('Runs', rm.n, 'logged') + profTile('Last 4 avg', fmt(rm.avg4), runPace(rm.avg4) + ' per mile'));
+      if (!rm.n) return profBlock('5K', profTile('Best', 'n/a', 'no 5K time yet') + profTile('Runs', rm.nAll, 'every Saturday'));
+      return profBlock('5K', profTile('Best', fmt(rm.pr.seconds), dateLabel(rm.pr.date)) + profTile('Last', fmt(rm.last.seconds), dateLabel(rm.last.date)) + profTile('Runs', rm.nAll, 'logged') + profTile('Last 4 avg', fmt(rm.avg4), runPace(rm.avg4) + ' per mile'));
     });
     h += profTry(function () {
       var hb = hModel('bible');
@@ -4929,6 +5390,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var a = b.dataset.action;
     if ((a.indexOf('lift-') === 0 || a.indexOf('lp-') === 0 || a === 'ad-type') && liftAction(a, b)) { if (gwk) gwkShow(); return; }
     if (a.indexOf('run-') === 0 && runAction(a, b)) return;
+    if (a.indexOf('rn-') === 0 && rnAction(a, b)) return;
     if (a.indexOf('bw-') === 0 && bwAction(a, b)) return;
     if (a.indexOf('st-') === 0 && stAction(a, b)) return;
     if (a.indexOf('gw-') === 0 && gwkAction(a, b)) return;
