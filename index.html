@@ -2561,8 +2561,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       '<label class="fld"><span>BOOK</span><select id="r-book">' + opts.map(function (b) { return '<option value="' + b.id + '"' + (b.id === sel ? ' selected' : '') + '>' + esc(b.title) + '</option>'; }).join('') +
       '<option value=""' + (sel === '' ? ' selected' : '') + '>Something else</option></select></label>' +
       '<div class="two"><label class="fld"><span>MINUTES</span><input type="number" id="r-min" inputmode="numeric" min="1" max="720" value="' + (r ? r.minutes : '') + '"></label>' +
-      '<label class="fld"><span>PAGES</span><input type="number" id="r-pg" inputmode="numeric" min="1" max="2000" value="' + (r ? r.pages : '') + '"></label></div>' +
-      '<p class="note" style="margin:-4px 0 0">For an audiobook, estimate the pages you covered.</p>' +
+      '<label class="fld" id="r-pgwrap"' + (sel ? ' hidden' : '') + '><span>PAGES</span><input type="number" id="r-pg" inputmode="numeric" min="1" max="2000" value="' + (r && !sel ? r.pages : '') + '"></label>' +
+      '<label class="fld" id="r-endwrap"' + (sel ? '' : ' hidden') + '><span>LAST PAGE YOU READ</span><input type="number" id="r-end" inputmode="numeric" min="1" max="5000" value="' + (r && sel ? readStartPage(sel, r.id) + r.pages : '') + '"></label></div>' +
+      '<p class="note" style="margin:-4px 0 0" id="r-from"></p>' +
       '<div class="fld"><span>HOW</span><div class="chips">' + ['P', 'E', 'A'].map(function (k) {
         return '<button type="button" class="chip" data-action="r-fmt" data-f="' + k + '" aria-pressed="' + (k === sheetFmt) + '">' + FMT[k] + '</button>';
       }).join('') + '</div></div>' +
@@ -2571,15 +2572,46 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       '<div class="row"><button class="btn primary" data-action="read-save">Save</button>' + (r ? '<button class="btn danger" data-action="read-delete" data-id="' + r.id + '">Delete</button>' : '') + '<button class="btn" data-action="close-modal">Cancel</button></div>';
     return h;
   }
+  /* The page you were on before a session: the book's starting page plus every earlier session of that book. */
+  function readStartPage(bid, excludeId) {
+    var b = books[bid];
+    if (!b) return 0;
+    var rec = excludeId ? reads[excludeId] : null, n = b.base || 0;
+    Object.keys(reads).forEach(function (k) {
+      var x = reads[k];
+      if (x.bookId !== bid || (rec && x.id === rec.id)) return;
+      if (rec && rec.bookId === bid && !(x.date < rec.date || (x.date === rec.date && x.at < rec.at))) return;
+      n += x.pages;
+    });
+    return n;
+  }
+  /* Pages for the log form: last page minus the page you started on when a book is picked, else the typed pages. */
+  function readFormPages() {
+    var bid = $('#r-book').value;
+    if (bid && books[bid]) {
+      var end = parseInt($('#r-end').value, 10), from = readStartPage(bid, readEdit);
+      return isNaN(end) ? NaN : end - from;
+    }
+    return parseInt($('#r-pg').value, 10);
+  }
+  function syncReadBook() {
+    var bid = $('#r-book').value, withBook = !!(bid && books[bid]), note = $('#r-from');
+    $('#r-pgwrap').hidden = withBook; $('#r-endwrap').hidden = !withBook;
+    if (!withBook) { note.textContent = ''; return; }
+    var from = readStartPage(bid, readEdit), end = parseInt($('#r-end').value, 10);
+    note.textContent = 'You were on page ' + from + '.' + (end > from ? ' That is ' + plural(end - from, 'page', 'pages') + '. For an audiobook, enter the page you would be on.' : ' For an audiobook, enter the page you would be on.');
+  }
   function openLog(editId, bookId) {
     readEdit = editId || null;
     openModal(logSheetHTML(editId, bookId), editId ? null : '#r-min');
+    syncReadBook();
     updateReadPrev();
   }
   function updateReadPrev() {
     var el = $('#r-prev');
     if (!el || !$('#r-min')) return;
-    var min = parseInt($('#r-min').value, 10), pg = parseInt($('#r-pg').value, 10), date = $('#r-date').value;
+    syncReadBook();
+    var min = parseInt($('#r-min').value, 10), pg = readFormPages(), date = $('#r-date').value;
     if (!(min > 0 && pg > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(date)) { el.textContent = ''; return; }
     var m = readModel(), old = readEdit ? reads[readEdit] : null;
     var run = m.dates[date] ? m.runAt[date] : (m.dates[dkey(addDays(fromKey(date), -1))] ? m.runAt[dkey(addDays(fromKey(date), -1))] + 1 : 1);
@@ -2588,8 +2620,14 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     el.textContent = 'About +' + pts + ' pts (' + multTxt(mult) + ' streak' + (others === 0 ? ', +' + SHOWUP + ' first read' : '') + ')';
   }
   async function saveRead() {
-    var min = parseInt($('#r-min').value, 10), pg = parseInt($('#r-pg').value, 10), date = $('#r-date').value, bid = $('#r-book').value, tk = dkey(new Date());
+    var min = parseInt($('#r-min').value, 10), pg = readFormPages(), date = $('#r-date').value, bid = $('#r-book').value, tk = dkey(new Date());
     if (!(min >= 1 && min <= 720)) { toast('Enter minutes, 1 to 720.'); return; }
+    if (bid && books[bid]) {
+      var endPg = parseInt($('#r-end').value, 10), fromPg = readStartPage(bid, readEdit);
+      if (isNaN(endPg)) { toast('Enter the last page you read.'); return; }
+      if (endPg <= fromPg) { toast('You were already on page ' + fromPg + '. Enter a page past it.'); return; }
+      if (endPg > books[bid].pages) { toast('This book has ' + books[bid].pages + ' pages.'); return; }
+    }
     if (!(pg >= 1 && pg <= 2000)) { toast('Enter pages, 1 to 2000.'); return; }
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date > tk) { toast('Pick today or an earlier date.'); return; }
     var old = readEdit ? reads[readEdit] : null, roll = 1;
@@ -4780,7 +4818,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       for (i = 6; i >= 0; i--) { d = new Date(); d.setDate(d.getDate() - i); var kk = dkey(d); strip += '<span class="' + (stDone(kk) ? 'on' : '') + (i === 0 ? ' td' : '') + '" title="' + DOW[d.getDay()] + '">' + DOW[d.getDay()].slice(0, 2) + '</span>'; }
       h += '<div class="stweek">' + strip + '</div><p class="note" style="margin:0">' + (sk ? sk + '-day streak.' : 'No streak yet.') + ' Filled days are stretch days.</p>';
     }
-    if (v.n < v.total) h += '<div class="row"><button class="btn primary" data-action="st-start">' + (v.n ? 'Continue with the timer' : 'Start the timer') + '</button></div>';
+    if (stNextIndex(v) >= 0) h += '<div class="row"><button class="btn primary" data-action="st-start">' + (v.n ? 'Continue with the timer' : 'Start the timer') + '</button></div>';
+    else if (v.n < v.total) h += '<p class="note" style="margin:0">You skipped the rest. Tick any you did, then finish below.</p>';
     h += '<div class="stlist">' + v.R.ids.map(function (id, i) {
       var s = ST_LIB[id], on = v.e && v.e.done.indexOf(id) >= 0;
       return '<div class="strow"><button class="stck" data-action="st-tick" data-id="' + id + '" aria-pressed="' + on + '" aria-label="Done: ' + esc(s.n) + '"></button>' +
@@ -4797,8 +4836,13 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
     return h;
   }
-  function stOpen() { stOpened = true; openModal(stListHTML()); }
-  var stOpened = false, stT = null, stTick = null, stWl = null, stHourSeen = new Date().getHours(), stCur = '';
+  function stOpen() { stOpened = true; stSkipped = {}; openModal(stListHTML()); }
+  var stOpened = false, stT = null, stTick = null, stWl = null, stHourSeen = new Date().getHours(), stCur = '', stSkipped = {};
+  /* First stretch that is neither ticked nor skipped this visit, so Skip on the last one cannot bring it back forever. */
+  function stNextIndex(v) {
+    for (var i = 0; i < v.R.ids.length; i++) if ((!v.e || v.e.done.indexOf(v.R.ids[i]) < 0) && !stSkipped[v.R.ids[i]]) return i;
+    return -1;
+  }
   function stBusy() { return !!stT && !stT.paused; }
   function stBeep(list) {
     unlockAudio();
@@ -4832,7 +4876,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
   function stCleanup() {
     if (!stOpened && !stT) return;
-    clearInterval(stTick); stTick = null; stT = null; stUnlock(); stOpened = false; stCur = '';
+    clearInterval(stTick); stTick = null; stT = null; stUnlock(); stOpened = false; stCur = ''; stSkipped = {};
   }
   function stItem() { return ST_LIB[stT.ids[stT.i]]; }
   function stShowTimer() {
@@ -4872,6 +4916,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (!stT.warm) e.secs += Math.round(stT.held);
     stT.held = 0;
     if (tick && e.done.indexOf(id) < 0) e.done.push(id);
+    if (!tick) stSkipped[id] = true;
     stCommit(k);
     if (stT.ids[stT.i + 1]) {
       stT.i++; stT.side = 1; stBeep([[880, 0], [880, 0.22], [880, 0.44]]); stBuzz([200, 100, 200]);
@@ -4885,7 +4930,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (a === 'st-open') { stCur = b.dataset.r || ''; stOpen(); }
     else if (a === 'st-tick') { stSetTick(b.dataset.id, b.getAttribute('aria-pressed') !== 'true'); var sc = $('#sheet').scrollTop; $('#sheet').innerHTML = stListHTML(); $('#sheet').scrollTop = sc; }
     else if (a === 'st-go') stBegin(parseInt(b.dataset.i, 10));
-    else if (a === 'st-start') { var v = stView(stCur), i = 0; for (; i < v.R.ids.length; i++) if (!v.e || v.e.done.indexOf(v.R.ids[i]) < 0) break; stBegin(i >= v.R.ids.length ? 0 : i); }
+    else if (a === 'st-start') { var v = stView(stCur), i = stNextIndex(v); if (i < 0) { $('#sheet').innerHTML = stListHTML(); return true; } stBegin(i); }
     else if (a === 'st-pause') {
       if (!stT) return true;
       if (stT.paused) { stT.end = Date.now() + stT.left * 1000; stT.paused = false; }
@@ -5563,9 +5608,10 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (ev.target.id === 'n-search') { nvQuery = ev.target.value; renderNotesView(); }
     if (ev.target.id === 'bk-q') { shelfQ = ev.target.value; renderShelf(); }
     if (ev.target.id === 'al-t') alDraft = { k: alarmTarget().k, v: ev.target.value };
-    if (ev.target.id === 'r-min' || ev.target.id === 'r-pg' || ev.target.id === 'r-date') updateReadPrev();
+    if (ev.target.id === 'r-min' || ev.target.id === 'r-pg' || ev.target.id === 'r-end' || ev.target.id === 'r-date') updateReadPrev();
   });
   document.addEventListener('change', function (ev) {
+    if (ev.target.id === 'r-book') { updateReadPrev(); return; }
     if (ev.target.id !== 'imp-file') return;
     var f = ev.target.files && ev.target.files[0];
     if (!f) return;
