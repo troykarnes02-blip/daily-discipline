@@ -1928,7 +1928,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 17 #8bbd26', fbEmail = '';
+  var APP_BUILD = 'Oct 17 #cb4ef2', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -4238,7 +4238,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     wswings: { n: 'Leg swings, side to side', s: 30, sides: true, c: 'Face the wall and hold it. Swing one leg across your body and out to the side. Loose and easy, not forced.' },
     wlunge:  { n: 'Walking lunges', s: 40, sides: false, c: 'Long step forward, drop your back knee toward the ground, push through the front heel and step into the next one. About 8 each leg.' },
     wknees:  { n: 'High knees, easy', s: 20, sides: false, c: 'March or skip in place, driving your knees up at an easy tempo. Stay light on your feet.' },
-    wbridge: { n: 'Glute bridge', s: 40, sides: false, c: 'On your back, knees bent. Press through your heels, squeeze your glutes at the top, lower slowly. About 10 reps.' },
+    wsquat:  { n: 'Bodyweight squats', s: 40, sides: false, c: 'Feet shoulder width apart. Sit your hips back and down, chest up, then stand tall and squeeze your glutes. About 10 easy reps.' },
     wjog:    { n: 'Easy jog', s: 90, sides: false, c: 'Jog the slowest pace you can manage. Short, quiet steps. Pick it up a touch for the last 20 seconds, then go run.' }
   };
   var ST_ROUTINES = {
@@ -4248,7 +4248,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     cardio: { name: 'Cardio day', focus: 'Legs and hips after the cardio and core work', ids: ['calf', 'hams', 'quad', 'hipflex', 'fig4', 'knees', 'twist', 'cat'] },
     run:    { name: '5K day', focus: 'Calves, hips and hamstrings after the run', ids: ['calf', 'quad', 'hipflex', 'hams', 'fig4', 'butter', 'knees', 'twist'] },
     rest:   { name: 'Rest day', focus: 'An easy full-body reset', ids: ['cat', 'child', 'hipflex', 'fig4', 'hams', 'chest', 'needle', 'twist'] },
-    runwarm: { name: 'Run warm-up', focus: 'Loosen your calves, hips and hamstrings before the run', warm: true, ids: ['wwalk', 'wankle', 'wswingf', 'wswings', 'wlunge', 'wknees', 'wbridge', 'wjog'] }
+    runwarm: { name: 'Run warm-up', focus: 'Loosen your calves, hips and hamstrings before the run', warm: true, ids: ['wwalk', 'wankle', 'wswingf', 'wswings', 'wlunge', 'wknees', 'wsquat', 'wjog'] }
   };
   function cleanStretch(id, o) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(id) || !o || typeof o !== 'object') return null;
