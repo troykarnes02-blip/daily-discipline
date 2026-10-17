@@ -499,6 +499,16 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
 .brow .open { background: none; border: 0; padding: 0; text-align: left; color: var(--ink); min-width: 0; min-height: 44px; }
 .brow .t { font-weight: 600; font-size: 17px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .brow .a { color: var(--dim); font-size: 13px; }
+.shelf-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; margin-bottom: 10px; }
+.shelf-top input { font-size: 17px; }
+.seg { display: flex; gap: 6px; margin-bottom: 12px; }
+.seg .chip { flex: 1 1 0; min-width: 0; padding: 0 4px; font-size: 14px; }
+.seg .chip b { font-weight: 800; margin-left: 5px; }
+.al-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) 56px; gap: 8px; align-items: center; }
+.al-row .btn { padding: 0; }
+.al-row input[type="time"] { text-align: center; font-size: 22px; font-weight: 700; padding: 10px 4px; min-width: 0; }
+.al-row input[type="time"]::-webkit-calendar-picker-indicator { display: none; }
+@media (max-width: 360px) { .al-row { grid-template-columns: 48px minmax(0, 1fr) 48px; } .al-row input[type="time"] { font-size: 18px; } }
 .bar { height: 8px; background: var(--panel-2); border-radius: 4px; overflow: hidden; margin: 6px 0 2px; }
 .bar i { display: block; height: 100%; background: var(--accent); border-radius: 4px; }
 .prow.srow { grid-template-columns: minmax(0, 1fr) auto; }
@@ -548,6 +558,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     </div>
     <div class="tab" id="tab-wake" role="tabpanel" hidden>
     <section id="clockCard" class="card clock-card" aria-label="Game clock"></section>
+    <section id="alarmCard" class="card" aria-label="Alarm" hidden></section>
     <section id="streakCard" class="grid2" aria-label="Streak and week"></section>
     <section id="formCard" class="card" aria-label="Form"></section>
     <section id="chartCard" class="card" aria-label="Last 14 mornings">
@@ -591,6 +602,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     </div>
     <div class="tab" id="tab-run" role="tabpanel" hidden>
       <section id="run-hero" class="card" aria-label="5K Saturday"></section>
+      <section id="run-plan" class="card" aria-label="5K plan"></section>
       <section id="run-stats" class="card" aria-label="Your 5K times"></section>
       <section id="run-chart" class="card" aria-label="5K time chart"></section>
       <section id="run-log" class="card" aria-label="Recent runs"></section>
@@ -635,11 +647,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   var RANKS = [[0, 'Reader'], [250, 'Page Turner'], [750, 'Bookworm'], [1500, 'Scholar'], [3000, 'Bibliophile'], [6000, 'Sage'], [12000, 'Legend']];
   var books = {};     // book id -> { id, title, author, pages, done, queued, doneDate, added }
   var reads = {};     // session id -> { id, bookId, title, date, minutes, pages, fmt, lucky, at }
-  var fmtSel = 'P', sheetFmt = 'P', lastBook = '', readPop = false, readEdit = null, libOpen = false, finOpen = false;
+  var fmtSel = 'P', sheetFmt = 'P', lastBook = '', readPop = false, readEdit = null, shelfTab = '', shelfQ = '', alTarget = 'n', alDraft = null;
   var settings = null;
   var checkins = {};
   var habits = { bible: {}, gym: {} };
-  var goals = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1 };
+  var goals = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1, runStart: 0, runWeeks: 0, runFrom: '' };
   var tab = 'home';
   var habPop = null;
   var db = null;
@@ -682,6 +694,16 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
   function zoneOf(d) { return d <= 30 ? 'elite' : d <= WIN ? 'win' : 'late'; }
   function alarmFor(dow) { return settings && settings.alarms ? (settings.alarms[dow] || null) : null; }
+  // The alarm that applies to one calendar day: a one-day change wins over the usual weekday time.
+  function alarmOn(k) {
+    if (!settings) return null;
+    var o = settings.over && settings.over[k];
+    return o || alarmFor(fromKey(k).getDay());
+  }
+  function hhmmAdd(v, mins) {
+    var p = v.split(':').map(Number), t = (((p[0] * 60 + p[1] + mins) % 1440) + 1440) % 1440;
+    return pad(Math.floor(t / 60)) + ':' + pad(t % 60);
+  }
   function walkSecs() { return settings && settings.walk ? settings.walk : 0; }
   function scored(diff) { return Math.max(0, diff - walkSecs()); }
   function tierOf(s) {
@@ -711,7 +733,25 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var wt = Math.min(7, Math.max(1, parseInt(o.weeklyTarget, 10) || 5));
     var sd = /^\d{4}-\d{2}-\d{2}$/.test(o.startDate || '') ? o.startDate : dkey(new Date());
     var wk = Math.min(60, Math.max(0, parseInt(o.walk, 10) || 0));
-    return { alarms: alarms, days: days, weeklyTarget: wt, startDate: sd, walk: wk };
+    var over = {};
+    if (o.over && typeof o.over === 'object') {
+      Object.keys(o.over).forEach(function (k) {
+        if (/^\d{4}-\d{2}-\d{2}$/.test(k) && /^\d{2}:\d{2}$/.test(o.over[k] || '')) over[k] = o.over[k];
+      });
+    }
+    return { alarms: alarms, days: days, weeklyTarget: wt, startDate: sd, walk: wk, over: over };
+  }
+  function settingsOut(s) {
+    var out = { alarms: {}, over: {}, weeklyTarget: s.weeklyTarget, startDate: s.startDate, walk: s.walk || 0 };
+    Object.keys(s.alarms).forEach(function (k) { out.alarms[k] = s.alarms[k]; });
+    Object.keys(s.over || {}).forEach(function (k) { out.over[k] = s.over[k]; });
+    return out;
+  }
+  function cloneSettings() {
+    var c = { alarms: {}, days: settings.days.slice(), weeklyTarget: settings.weeklyTarget, startDate: settings.startDate, walk: settings.walk || 0, over: {} };
+    Object.keys(settings.alarms).forEach(function (k) { c.alarms[k] = settings.alarms[k]; });
+    Object.keys(settings.over || {}).forEach(function (k) { c.over[k] = settings.over[k]; });
+    return c;
   }
   function cleanEntry(id, o) {
     if (!o || typeof o !== 'object' || !/^\d{4}-\d{2}-\d{2}$/.test(id)) return null;
@@ -741,7 +781,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         habits[kd] = {};
         Object.keys(o[kd] || {}).forEach(function (k) { var e = cleanHabit(k, o[kd][k]); if (e) habits[kd][k] = e; });
       });
-      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read, runGoal: o.goals && o.goals.runGoal, weighDay: o.goals && o.goals.weighDay });
+      goals = cleanGoals({ bibleTarget: o.goals && o.goals.bible, gymTarget: o.goals && o.goals.gym, readMinutes: o.goals && o.goals.read, runGoal: o.goals && o.goals.runGoal, weighDay: o.goals && o.goals.weighDay, runStart: o.goals && o.goals.runStart, runWeeks: o.goals && o.goals.runWeeks, runFrom: o.goals && o.goals.runFrom });
       planDone = cleanPlan({ done: o.plan });
       planlog = {}; Object.keys(o.planlog || {}).forEach(function (k) { var r = cleanPlanLog('r' + k, o.planlog[k]); if (r) planlog[r.i] = r; });
       notes = {}; Object.keys(o.notes || {}).forEach(function (k) { var n = cleanNote(k, o.notes[k]); if (n) notes[k] = n; });
@@ -773,9 +813,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var at = typeof o.at === 'string' ? o.at : '';
     return { id: id, ref: typeof o.ref === 'string' ? o.ref.slice(0, 60) : id, text: o.text.slice(0, 4000), at: at, born: typeof o.born === 'string' && o.born ? o.born : at };
   }
-  function goalsOut() { return { bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read, runGoal: goals.runGoal || 0, weighDay: goals.weighDay }; }
+  function goalsOut() { return { bibleTarget: goals.bible, gymTarget: goals.gym, readMinutes: goals.read, runGoal: goals.runGoal || 0, weighDay: goals.weighDay, runStart: goals.runStart || 0, runWeeks: goals.runWeeks || 0, runFrom: goals.runFrom || '' }; }
   function cleanGoals(o) {
-    var g = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1 };
+    var g = { bible: 6, gym: 4, read: 120, runGoal: 0, weighDay: 1, runStart: 0, runWeeks: 0, runFrom: '' };
     if (o && typeof o === 'object') {
       var b = parseInt(o.bibleTarget, 10), y = parseInt(o.gymTarget, 10);
       if (b >= 1 && b <= 7) g.bible = b;
@@ -784,6 +824,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       if (rm >= 30 && rm <= 1200) g.read = rm;
       var rgl = parseInt(o.runGoal, 10);
       if (rgl >= 600 && rgl <= 10800) g.runGoal = rgl;
+      var rst = parseInt(o.runStart, 10);
+      if (rst >= 600 && rst <= 10800) g.runStart = rst;
+      var rwk = parseInt(o.runWeeks, 10);
+      if (rwk >= 4 && rwk <= 52) g.runWeeks = rwk;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(o.runFrom || '')) g.runFrom = o.runFrom;
       var wdy = parseInt(o.weighDay, 10);
       if (wdy >= 0 && wdy <= 6) g.weighDay = wdy;
     }
@@ -858,7 +903,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
   }
   async function saveEntry(key, seconds, manual) {
-    var e = cleanEntry(key, { seconds: seconds, alarm: alarmFor(fromKey(key).getDay()) || '', at: new Date().toISOString(), manual: manual });
+    var e = cleanEntry(key, { seconds: seconds, alarm: alarmOn(key) || '', at: new Date().toISOString(), manual: manual });
     checkins[key] = e;
     renderAll();
     await persist(function (d) { return d.doc('checkins/' + key).set(e); });
@@ -871,8 +916,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   async function saveSettings(s) {
     settings = s;
     renderAll();
-    var out = { alarms: {}, weeklyTarget: s.weeklyTarget, startDate: s.startDate, walk: s.walk || 0 };
-    Object.keys(s.alarms).forEach(function (k) { out.alarms[k] = s.alarms[k]; });
+    var out = settingsOut(s);
     await persist(function (d) { return d.doc('app/settings').set(out); });
   }
 
@@ -997,11 +1041,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var keys = Object.keys(checkins).sort();
     if (keys.length && keys[0] < start) start = keys[0];
     if (start > tk) start = tk;
-    var aStr = alarmFor(now.getDay());
+    var aStr = alarmOn(tk);
     var todayClosed = aStr ? (now - alarmAt(tk, aStr)) / 1000 > END : false;
     var days = [], byKey = {};
     for (var d = fromKey(start); dkey(d) <= tk; d = addDays(d, 1)) {
-      var k = dkey(d), e = checkins[k] || null, active = settings.days.indexOf(d.getDay()) >= 0, st;
+      var k = dkey(d), e = checkins[k] || null, active = !!alarmOn(k), st;
       if (e) st = e.win ? 'win' : 'loss';
       else if (k < tk) st = active ? 'miss' : 'rest';
       else st = !active ? 'rest' : (todayClosed ? 'miss' : 'pending');
@@ -1036,8 +1080,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     for (var i = 0; i < 7; i++) {
       var dd = addDays(now, i);
       if (((dd.getDay() + 6) % 7) < ((now.getDay() + 6) % 7)) break;
-      if (settings.days.indexOf(dd.getDay()) < 0) continue;
       var kk = dkey(dd);
+      if (!alarmOn(kk)) continue;
       if (kk > tk) weekLeft++;
       else if (kk === tk && !checkins[tk] && !todayClosed) weekLeft++;
     }
@@ -1060,8 +1104,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (!settings) return { p: 'setup' };
     var now = new Date(), k = dkey(now), e = checkins[k];
     if (e) return { p: 'done', e: e, k: k };
-    if (settings.days.indexOf(now.getDay()) < 0) return { p: 'rest', k: k };
-    var aT = alarmAt(k, alarmFor(now.getDay())), diff = (now - aT) / 1000;
+    var aS = alarmOn(k);
+    if (!aS) return { p: 'rest', k: k };
+    var aT = alarmAt(k, aS), diff = (now - aT) / 1000;
     if (diff < -10) return { p: 'wait', diff: diff, aT: aT, k: k };
     if (diff <= END) return { p: 'live', diff: diff, aT: aT, k: k };
     return { p: 'missed', k: k };
@@ -1070,8 +1115,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var now = new Date();
     for (var i = 0; i < 8; i++) {
       var d = addDays(now, i);
-      if (settings.days.indexOf(d.getDay()) < 0) continue;
-      var aT = alarmAt(dkey(d), alarmFor(d.getDay()));
+      var aS = alarmOn(dkey(d));
+      if (!aS) continue;
+      var aT = alarmAt(dkey(d), aS);
       if (aT > now) return { aT: aT, i: i, d: d };
     }
     return null;
@@ -1175,7 +1221,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         '<button class="link" data-action="edit" data-key="' + ph.k + '">Fix this entry</button></div>';
       justSaved = false;
     } else if (ph.p === 'missed') {
-      h = '<div class="bar-top"><span>Morning missed</span><span>Alarm ' + clock12(alarmAt(ph.k, alarmFor(fromKey(ph.k).getDay()))) + '</span></div>' +
+      h = '<div class="bar-top"><span>Morning missed</span><span>Alarm ' + clock12(alarmAt(ph.k, alarmOn(ph.k))) + '</span></div>' +
         '<div class="pad center" data-zone="late"><div class="clock sm">0<small>PTS</small></div>' +
         '<p class="lead" style="margin:0">No check-in within 3 hours of the alarm, so this one counts as a loss. Your records stay.</p>' +
         '<div class="next">Next game: <b>' + nextLabel() + '</b></div>' +
@@ -1193,6 +1239,62 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var r = Math.round(-diff);
     if (r >= 3600) return 'Alarm in ' + Math.floor(r / 3600) + 'h ' + pad(Math.floor((r % 3600) / 60)) + 'm';
     return 'Alarm in ' + Math.floor(r / 60) + ':' + pad(r % 60);
+  }
+
+  /* ---------- alarm card: change tomorrow's alarm (or today's, before it rings) ---------- */
+  function alarmTarget() {
+    var now = new Date(), canToday = phase().p === 'wait', useToday = canToday && alTarget === 't';
+    var d = useToday ? now : addDays(now, 1);
+    return { d: d, k: dkey(d), today: useToday, canToday: canToday };
+  }
+  function renderAlarm() {
+    var el = $('#alarmCard');
+    if (!settings || !el) return;
+    var ae = document.activeElement;
+    if (ae && ae.id === 'al-t' && el.contains(ae)) return;
+    var T = alarmTarget(), dow = T.d.getDay(), usual = alarmFor(dow), over = (settings.over && settings.over[T.k]) || '', cur = alarmOn(T.k);
+    var word = T.today ? 'Today' : 'Tomorrow', lw = word.toLowerCase(), dayL = DOWL[dow];
+    var v = alDraft && alDraft.k === T.k ? alDraft.v : (cur || settings.alarms[settings.days[0]] || '06:00');
+    var status;
+    if (!cur) status = word + ' is a rest day. Set a time to make it a game day.';
+    else if (over && usual) status = 'Changed for ' + lw + ' only. Your usual ' + dayL + ' alarm is ' + clock12(alarmAt(T.k, usual)) + '.';
+    else if (over) status = 'Added for ' + lw + ' only.';
+    else status = 'Your usual ' + dayL + ' alarm is ' + clock12(alarmAt(T.k, cur)) + '.';
+    var h = '<h2>ALARM<small>' + word + ', ' + dayL + ' ' + dateLabel(T.k) + '</small></h2>';
+    if (T.canToday) {
+      h += '<div class="seg"><button type="button" class="chip" data-action="al-day" data-t="t" aria-pressed="' + T.today + '">Today</button>' +
+        '<button type="button" class="chip" data-action="al-day" data-t="n" aria-pressed="' + !T.today + '">Tomorrow</button></div>';
+    }
+    h += '<div class="al-row"><button class="btn" data-action="al-step" data-m="-15" aria-label="15 minutes earlier">&minus;15</button>' +
+      '<input type="time" id="al-t" value="' + v + '" aria-label="Alarm time for ' + lw + '">' +
+      '<button class="btn" data-action="al-step" data-m="15" aria-label="15 minutes later">+15</button></div>' +
+      '<p class="note" style="margin:8px 0 0">' + status + '</p>' +
+      '<div class="row" style="margin-top:12px"><button class="btn primary" data-action="al-once" style="flex:1 1 0">' + (cur ? word + ' only' : 'Add for ' + lw) + '</button>' +
+      (usual ? '<button class="btn" data-action="al-every" style="flex:1 1 0">Every ' + dayL + '</button>' : '') + '</div>' +
+      (over ? '<button class="link" data-action="al-reset" style="margin-top:8px">' + (usual ? 'Back to usual' : 'Remove this alarm') + '</button>' : '');
+    el.innerHTML = h;
+  }
+  function setAlarm(kind) {
+    var T = alarmTarget(), dow = T.d.getDay(), s = cloneSettings(), usual = alarmFor(dow), word = T.today ? 'Today' : 'Tomorrow';
+    if (kind === 'al-reset') {
+      delete s.over[T.k];
+      toast(usual ? word + ' is back to ' + clock12(alarmAt(T.k, usual)) + '.' : word + ' is a rest day again.');
+    } else {
+      var inp = $('#al-t'), v = inp ? inp.value : '';
+      if (!/^\d{2}:\d{2}$/.test(v)) { toast('Pick a time first.'); return; }
+      if (T.today && alarmAt(T.k, v) - new Date() < 60000) { toast('That time has already passed today. Pick a later one.'); return; }
+      if (kind === 'al-every') {
+        s.alarms[dow] = v;
+        if (s.days.indexOf(dow) < 0) s.days.push(dow);
+        delete s.over[T.k];
+        toast('Every ' + DOWL[dow] + ' is now ' + clock12(alarmAt(T.k, v)) + '.');
+      } else {
+        if (usual && usual === v) delete s.over[T.k]; else s.over[T.k] = v;
+        toast(word + '\'s alarm is ' + clock12(alarmAt(T.k, v)) + (usual && usual !== v ? ', for this one day only.' : '.'));
+      }
+    }
+    alDraft = null;
+    saveSettings(s);
   }
 
   function renderStreak(m) {
@@ -1319,8 +1421,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     curModel = m;
     renderHeader(m);
     renderClock(m);
-    ['streakCard', 'formCard', 'chartCard', 'recordsCard', 'logCard'].forEach(function (id) { $('#' + id).hidden = !settings; });
-    if (m) { renderStreak(m); renderForm(m); renderRecords(m); renderLog(m); drawChart(); }
+    ['alarmCard', 'streakCard', 'formCard', 'chartCard', 'recordsCard', 'logCard'].forEach(function (id) { $('#' + id).hidden = !settings; });
+    if (m) { renderAlarm(); renderStreak(m); renderForm(m); renderRecords(m); renderLog(m); drawChart(); }
     renderHome();
     renderHabit('bible');
     renderHabit('gym');
@@ -1792,7 +1894,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 17 #52731a', fbEmail = '';
+  var APP_BUILD = 'Oct 17 #d134fb', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -1947,8 +2049,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var w = [], sets = { checkins: checkins, bible: habits.bible, gym: habits.gym, books: books, reads: reads, notes: notes, lifts: lifts, runs: runs, weights: weights, stretches: stretches, feedback: feedback, planlog: {} };
     Object.keys(planlog).forEach(function (k) { sets.planlog['r' + k] = planlog[k]; });
     if (settings) {
-      var out = { alarms: {}, weeklyTarget: settings.weeklyTarget, startDate: settings.startDate, walk: settings.walk || 0 };
-      Object.keys(settings.alarms).forEach(function (k) { out.alarms[k] = settings.alarms[k]; });
+      var out = settingsOut(settings);
       w.push(db.doc('app/settings').set(out));
     } else if (replace) w.push(db.doc('app/settings').delete());
     w.push(db.doc('app/habits').set(goalsOut()));
@@ -2075,8 +2176,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
     var ru = runModel(), rMain, rSub, rAct, nsd = nextSat(new Date());
     if (ru.thisWk) { rMain = fmt(ru.thisWk.seconds); rSub = (ru.n > 1 && ru.pr === ru.thisWk ? 'New best' : 'Best ' + fmt(ru.pr.seconds)) + (ru.cur > 1 ? ' &middot; ' + ru.cur + ' weeks in a row' : ''); rAct = '<span class="pill bg-ontime">Done</span>'; }
-    else if (new Date().getDay() === 6) { rMain = '5K day'; rSub = ru.last ? 'Last ' + fmt(ru.last.seconds) + ' &middot; best ' + fmt(ru.pr.seconds) : 'Log your first one'; rAct = '<button class="btn primary" data-action="run-log">Log</button>'; }
-    else { rMain = 'Saturday'; rSub = 'Next 5K ' + dateLabel(dkey(nsd)) + (ru.last ? ' &middot; last ' + fmt(ru.last.seconds) : ''); rAct = '<button class="btn" data-action="tab" data-tab="run">Open</button>'; }
+    else if (new Date().getDay() === 6) { rMain = '5K day'; rSub = (ru.last ? 'Last ' + fmt(ru.last.seconds) + ' &middot; best ' + fmt(ru.pr.seconds) : 'Log your first one') + (rpTargetNow() ? ' &middot; target ' + fmt(rpTargetNow()) : ''); rAct = '<button class="btn primary" data-action="run-log">Log</button>'; }
+    else { rMain = 'Saturday'; rSub = 'Next 5K ' + dateLabel(dkey(nsd)) + (rpTargetNow() ? ' &middot; target ' + fmt(rpTargetNow()) : ru.last ? ' &middot; last ' + fmt(ru.last.seconds) : ''); rAct = '<button class="btn" data-action="tab" data-tab="run">Open</button>'; }
     function row(l, main, sub, act) {
       return '<div class="trow"><span class="lbl">' + l + '</span><div class="main">' + main + (sub ? '<div class="sub">' + sub + '</div>' : '') + '</div><div>' + act + '</div></div>';
     }
@@ -2244,23 +2345,39 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       '<button class="btn" data-action="book-prior" data-id="' + b.id + '" aria-label="Already read ' + esc(b.title) + '">Read</button>' +
       '<button class="btn" data-action="read-log" data-book="' + b.id + '">Start</button></div>';
   }
-  function readShelf() {
+  function bookDoneRow(b) {
+    return '<button class="prow srow" data-action="book-open" data-id="' + b.id + '"><span><div class="ref">' + esc(b.title) + '</div><div class="meta">' + (b.author ? esc(b.author) + ' &middot; ' : '') + b.pages + ' pages</div></span><span class="late ok">' + (b.prior ? 'Before tracking' : dateLabel(b.doneDate)) + '</span></button>';
+  }
+  function shelfView() {
     var cur = bookRowsSorted('reading'), que = bookRowsSorted('queued'), fin = bookRowsSorted('done');
-    var h = '<h2>SHELF<small>' + cur.length + ' reading &middot; ' + que.length + ' up next &middot; ' + fin.length + ' finished</small></h2>';
-    if (!cur.length) h += '<p class="lead" style="margin:0 0 10px">' + (que.length ? 'Nothing in progress. Start one from your library below.' : 'Nothing on the shelf yet.') + '</p>';
-    else h += '<div class="blist">' + cur.map(bookRow).join('') + '</div>';
-    h += '<button class="btn primary" data-action="book-add" style="width:100%;margin-top:10px">Add a book</button>';
-    if (que.length) {
-      h += '<div class="plist"><h3>Library, not started</h3>' +
-        '<button class="link" data-action="lib-toggle" style="margin:0 0 4px">' + (libOpen ? 'Hide' : 'Show all ' + que.length) + '</button>' +
-        (libOpen ? '<div class="blist">' + que.map(bookRowLite).join('') + '</div>' : '') + '</div>';
+    var tab = shelfTab || (cur.length ? 'reading' : que.length ? 'queued' : 'reading');
+    var q = shelfQ.trim().toLowerCase(), body;
+    function hit(b) { return (b.title + ' ' + (b.author || '')).toLowerCase().indexOf(q) >= 0; }
+    function chip(t, label, n) { return '<button type="button" class="chip" data-action="shelf-tab" data-t="' + t + '" aria-pressed="' + (!q && tab === t) + '">' + label + '<b>' + n + '</b></button>'; }
+    if (q) {
+      var mc = cur.filter(hit), mq = que.filter(hit), mf = fin.filter(hit), n = mc.length + mq.length + mf.length;
+      body = '<p class="note" style="margin:0 0 6px">' + (n ? plural(n, 'match', 'matches') : 'No books match &ldquo;' + esc(shelfQ.trim()) + '&rdquo;.') + '</p>';
+      if (mc.length) body += '<div class="plist"><h3>Reading</h3><div class="blist">' + mc.map(bookRow).join('') + '</div></div>';
+      if (mq.length) body += '<div class="plist"><h3>Up next</h3><div class="blist">' + mq.map(bookRowLite).join('') + '</div></div>';
+      if (mf.length) body += '<div class="plist"><h3>Finished</h3>' + mf.map(bookDoneRow).join('') + '</div>';
+    } else if (tab === 'reading') {
+      body = cur.length ? '<div class="blist">' + cur.map(bookRow).join('') + '</div>'
+        : '<p class="lead" style="margin:0">' + (que.length ? 'Nothing in progress. Pick one from Up next.' : 'Nothing on the shelf yet. Add a book to get started.') + '</p>';
+    } else if (tab === 'queued') {
+      body = que.length ? '<div class="blist">' + que.map(bookRowLite).join('') + '</div>'
+        : '<p class="lead" style="margin:0">Nothing lined up. When you add a book, set its status to Up next.</p>';
+    } else {
+      body = fin.length ? '<div class="plist">' + fin.map(bookDoneRow).join('') + '</div>' : '<p class="lead" style="margin:0">No finished books yet.</p>';
     }
-    if (fin.length) {
-      h += '<div class="plist"><h3>Finished</h3>' + (finOpen ? fin : fin.slice(0, 8)).map(function (b) {
-        return '<button class="prow srow" data-action="book-open" data-id="' + b.id + '"><span><div class="ref">' + esc(b.title) + '</div><div class="meta">' + (b.author ? esc(b.author) + ' &middot; ' : '') + b.pages + ' pages</div></span><span class="late ok">' + (b.prior ? 'Before tracking' : dateLabel(b.doneDate)) + '</span></button>';
-      }).join('') + (fin.length > 8 ? '<button class="link" data-action="fin-toggle" style="margin-top:6px">' + (finOpen ? 'Show fewer' : 'Show all ' + fin.length + ' finished') + '</button>' : '') + '</div>';
-    }
-    return h;
+    return { seg: chip('reading', 'Reading', cur.length) + chip('queued', 'Up next', que.length) + chip('done', 'Finished', fin.length), body: body, total: cur.length + que.length + fin.length };
+  }
+  function renderShelf() {
+    var host = $('#books-shelf'), v = shelfView(), ae = document.activeElement;
+    if (ae && ae.id === 'bk-q' && host.contains(ae) && $('#shelf-body')) { $('#shelf-seg').innerHTML = v.seg; $('#shelf-body').innerHTML = v.body; return; }
+    host.innerHTML = '<h2>SHELF<small>' + plural(v.total, 'book', 'books') + '</small></h2>' +
+      '<div class="shelf-top"><input type="text" id="bk-q" placeholder="Search books" autocomplete="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-label="Search your books" value="' + esc(shelfQ) + '">' +
+      '<button class="btn primary" data-action="book-add">Add book</button></div>' +
+      '<div class="seg" id="shelf-seg">' + v.seg + '</div><div id="shelf-body">' + v.body + '</div>';
   }
   function readStats(m) {
     var t = [
@@ -2299,7 +2416,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var m = readModel();
     $('#books-hero').innerHTML = readHero(m);
     $('#books-rank').innerHTML = readRank(m);
-    $('#books-shelf').innerHTML = readShelf();
+    renderShelf();
     $('#books-stats').innerHTML = readStats(m);
     $('#books-log').innerHTML = readLog(m);
     $('#books-goal').innerHTML = readGoalHTML();
@@ -2334,9 +2451,10 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
     var b = { id: old ? old.id : newId('b'), base: Math.min(pages, base), title: title.slice(0, 120), author: author.slice(0, 80), pages: pages, done: old ? old.done : false, prior: old ? !!old.prior : false, queued: old && old.done ? false : ($('#b-status') ? $('#b-status').value === 'queued' && !(cur > 0) : false), doneDate: old ? old.doneDate : '', added: old ? old.added : new Date().toISOString() };
     books[b.id] = b;
+    shelfQ = ''; shelfTab = b.done ? 'done' : b.queued ? 'queued' : 'reading';
     closeModal();
     renderAll();
-    toast(old ? 'Saved.' : 'Added to your shelf.');
+    toast(old ? 'Saved.' : (b.queued ? 'Added to Up next.' : 'Added to your shelf.'));
     await persist(function (d) { return d.doc('books/' + b.id).set(b); });
   }
   function bookDetailHTML(id) {
@@ -3585,6 +3703,154 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       return '<button class="rrow" data-action="run-edit" data-key="' + r.date + '"><span class="rd">' + DOW[fromKey(r.date).getDay()] + ' ' + dateLabel(r.date) + '</span><b>' + fmt(r.seconds) + '</b><span class="rp">' + runPace(r.seconds) + ' /mi' + (r === m.pr ? ' &middot; best' : '') + '</span>' + (r.note ? '<span class="rn">' + esc(r.note) + '</span>' : '') + '</button>';
     }).join('') + '</div>';
     $('#run-log').innerHTML = l;
+    renderRunPlan();
+  }
+  /* ---------- 5K build plan: weekly target time, easing from today's pace to the goal ---------- */
+  var RP_DEF = { start: 2040, goal: 1500, weeks: 24 };
+  var rpView = 'chart';
+  function rpCfg() {
+    var saved = goals.runStart > 0 && goals.runGoal > 0 && !!goals.runFrom;
+    return {
+      saved: saved,
+      start: saved ? goals.runStart : RP_DEF.start,
+      goal: saved ? goals.runGoal : RP_DEF.goal,
+      weeks: saved ? (goals.runWeeks || RP_DEF.weeks) : RP_DEF.weeks,
+      from: saved ? goals.runFrom : dkey(weekStart(new Date()))
+    };
+  }
+  function rpDeloads(n) { var d = []; for (var w = 8; w < n; w += 8) d.push(w); return d; }
+  function rpTargets(c) {
+    var n = c.weeks, dl = rpDeloads(n), live = [], out = [], w;
+    for (w = 1; w <= n; w++) if (dl.indexOf(w) < 0) live.push(w);
+    var last = live.length - 1;
+    live.forEach(function (wk, j) {
+      var p = last > 0 ? j / last : 1;
+      out[wk - 1] = Math.round((c.goal + (c.start - c.goal) * Math.pow(1 - p, 1.3)) / 5) * 5;
+    });
+    dl.forEach(function (d) { out[d - 1] = out[d - 2]; });
+    out[n - 1] = c.goal;
+    return out;
+  }
+  function rpPhases(n) {
+    var a = Math.round(n / 6), b = Math.round(n / 2), d = Math.round(n * 5 / 6);
+    return [
+      { from: 1, to: a, name: 'Easy start', note: 'Conversational pace. Walk whenever you need to. The target is a ceiling, not a race. Finishing matters more than the clock.' },
+      { from: a + 1, to: b, name: 'Build', note: 'Steady effort. Your walk breaks get shorter and your jogs get longer.' },
+      { from: b + 1, to: d, name: 'Speed', note: 'Run the first two miles comfortable, then push the last one.' },
+      { from: d + 1, to: n, name: 'Sharpen', note: 'Even pacing. Start slower than feels right and save it for the end.' }
+    ];
+  }
+  function rpModel() {
+    var c = rpCfg(), n = c.weeks, T = rpTargets(c), from = fromKey(c.from), dl = rpDeloads(n);
+    var days = Math.round((fromKey(dkey(new Date())) - from) / 86400000);
+    var wk = days < 0 ? 0 : Math.min(n, Math.floor(days / 7) + 1), over = days >= n * 7;
+    var actual = [];
+    for (var i = 0; i < n; i++) {
+      var key = dkey(addDays(from, i * 7)), best = null;
+      Object.keys(runs).forEach(function (k) { if (runWeekKey(k) === key && (best === null || runs[k].seconds < best)) best = runs[k].seconds; });
+      actual.push(best);
+    }
+    return { c: c, n: n, T: T, dl: dl, wk: wk, over: over, actual: actual, ph: rpPhases(n) };
+  }
+  function rpTargetNow() {
+    var c = rpCfg();
+    if (!c.saved) return 0;
+    var M = rpModel();
+    return M.wk && !M.over ? M.T[M.wk - 1] : 0;
+  }
+  function renderRunPlan() {
+    var el = $('#run-plan');
+    if (!el) return;
+    var M = rpModel(), c = M.c, n = M.n, wk = M.wk || 1, tgt = M.T[wk - 1], isD = M.dl.indexOf(wk) >= 0, a = M.actual[wk - 1];
+    var ph = M.ph.filter(function (p) { return wk >= p.from && wk <= p.to; })[0] || M.ph[0];
+    var sub = M.over ? 'finished' : M.wk ? 'week ' + M.wk + ' of ' + n : 'starts ' + dateLabel(c.from);
+    var h = '<h2>5K PLAN<small>' + sub + '</small></h2>';
+    if (!c.saved) {
+      h += '<p class="note" style="margin:0 0 10px">A preview: ' + n + ' weeks from ' + fmt(c.start) + ' down to ' + fmt(c.goal) + '. Tap Start to lock it in, or change the numbers first.</p>' +
+        '<div class="row" style="margin-bottom:12px"><button class="btn primary" data-action="run-plan-start">Start this plan</button><button class="btn" data-action="run-plan-open">Change numbers</button></div>';
+    }
+    h += '<div class="rbig">' + fmt(tgt) + '</div><p class="lead" style="margin:0 0 4px">' + (M.over ? 'Final target' : M.wk ? 'This week\'s target' : 'Week 1 target') + '. ' + runPace(tgt) + ' per mile.</p>';
+    if (M.wk && a !== null) {
+      var df = a - tgt;
+      h += '<p class="lead" style="margin:0 0 4px">Logged <b>' + fmt(a) + '</b>' + (df === 0 ? ', right on target.' : df < 0 ? ', ' + secTxt(df) + ' under target. Target hit.' : ', ' + secTxt(df) + ' over target.') + '</p>';
+    } else if (M.wk && !M.over) {
+      h += '<p class="lead" style="margin:0 0 4px">Nothing logged this week yet.</p>';
+    }
+    h += '<p class="note" style="margin:0 0 12px"><b>' + esc(ph.name) + '.</b> ' + esc(ph.note) + (isD ? ' Easy week: the target holds at last week\'s time. Run it comfortably.' : '') + '</p>';
+
+    function wkDate(i) { return dateLabel(dkey(addDays(fromKey(c.from), i * 7))); }
+    if (rpView === 'table') {
+      var rows = '';
+      for (var i = 0; i < n; i++) {
+        rows += '<tr' + (i + 1 === M.wk ? ' class="now"' : '') + '><td>' + (i + 1) + (M.dl.indexOf(i + 1) >= 0 ? ' (easy)' : '') + '</td><td>' + wkDate(i) + '</td><td>' + fmt(M.T[i]) + '</td><td>' + (M.actual[i] === null ? '-' : fmt(M.actual[i])) + '</td></tr>';
+      }
+      h += '<div class="pc-table"><table><thead><tr><th>Week</th><th>Starts</th><th>Target</th><th>Best run</th></tr></thead><tbody>' + rows + '</tbody></table></div>';
+    } else {
+      var all = M.T.slice();
+      M.actual.forEach(function (v) { if (v !== null) all.push(v); });
+      var lo = Math.min.apply(null, all), hi = Math.max.apply(null, all), span = hi - lo;
+      var step = span <= 360 ? 60 : span <= 900 ? 120 : 300;
+      var yMin = Math.max(0, Math.floor((lo - step * 0.5) / step) * step), yMax = Math.ceil((hi + step * 0.5) / step) * step;
+      var ticks = [0], stp = n <= 12 ? 2 : n <= 26 ? 4 : 13;
+      for (var t = stp; t < n - 1; t += stp) ticks.push(t);
+      if (n > 1) ticks.push(n - 1);
+      h += '<div class="pc-leg"><span><svg width="28" height="10" aria-hidden="true"><line class="pc-line plan" x1="1" x2="27" y1="5" y2="5"/></svg>Target</span>' +
+        '<span><svg width="28" height="10" aria-hidden="true"><line class="pc-line log" x1="1" x2="27" y1="5" y2="5"/><circle class="pc-mk log" cx="14" cy="5" r="4.5"/></svg>Best run that week</span></div>';
+      h += pcChart({
+        id: 'rplan', n: n, yMin: yMin, yMax: yMax, yStep: step, yFmt: function (v) { return fmt(v); },
+        label: '5K target time by week and the best run you logged each week. Lower is faster. Use the table view for the numbers.',
+        bands: M.ph.map(function (p) { return { a: p.from - 1, b: p.to - 1, name: p.name }; }),
+        xTicks: ticks, xAt: function (i) { return 'Wk ' + (i + 1); },
+        nowI: M.wk ? M.wk - 1 : -1, start: M.wk ? M.wk - 1 : 0,
+        series: [
+          { cls: 'plan', vals: M.T, marker: false },
+          { cls: 'log', vals: M.actual, marker: true }
+        ],
+        tip: function (i) {
+          var p = M.T[i], r = M.actual[i];
+          return '<b>Week ' + (i + 1) + '</b> <span>' + wkDate(i) + (M.dl.indexOf(i + 1) >= 0 ? ' &middot; easy week' : '') + '</span><br>Target: ' + fmt(p) + '<br>Best run: ' + (r === null ? 'nothing' : fmt(r));
+        }
+      });
+      h += '<p class="note" style="margin:6px 0 0">Lower is faster. The flat spots are easy weeks. Tap or drag on the chart to read a week.</p>';
+    }
+    h += '<div class="row" style="margin-top:8px"><button class="link" data-action="run-plan-view">' + (rpView === 'table' ? 'Show the chart' : 'Show as a table') + '</button>' +
+      (c.saved ? '<button class="link" data-action="run-plan-open" style="margin-left:16px">Change plan</button>' : '') + '</div>';
+    el.innerHTML = h;
+  }
+  function rpSheetHTML() {
+    var c = rpCfg(), wopts = [12, 16, 20, 24, 32, 40, 52];
+    if (wopts.indexOf(c.weeks) < 0) wopts.push(c.weeks);
+    wopts.sort(function (x, y) { return x - y; });
+    return '<h3>5K PLAN</h3><p class="note" style="margin:0">Your weekly target starts at the time you can run today and eases down to your goal. Every 8th week holds steady so you can recover.</p>' +
+      '<div class="fld"><span>STARTING TIME TODAY</span><div class="two"><input id="rp-smin" type="number" inputmode="numeric" min="0" max="180" aria-label="Starting minutes" value="' + Math.floor(c.start / 60) + '"><input id="rp-ssec" type="number" inputmode="numeric" min="0" max="59" aria-label="Starting seconds" value="' + (c.start % 60) + '"></div></div>' +
+      '<div class="fld"><span>GOAL TIME</span><div class="two"><input id="rp-gmin" type="number" inputmode="numeric" min="0" max="180" aria-label="Goal minutes" value="' + Math.floor(c.goal / 60) + '"><input id="rp-gsec" type="number" inputmode="numeric" min="0" max="59" aria-label="Goal seconds" value="' + (c.goal % 60) + '"></div></div>' +
+      '<label class="fld"><span>LENGTH</span><select id="rp-weeks">' + wopts.map(function (w) { return '<option value="' + w + '"' + (w === c.weeks ? ' selected' : '') + '>' + w + ' weeks</option>'; }).join('') + '</select></label>' +
+      '<label class="fld"><span>FIRST WEEK STARTS</span><input type="date" id="rp-from" value="' + c.from + '"></label>' +
+      '<div class="row"><button class="btn primary" data-action="run-plan-save">Save plan</button>' + (c.saved ? '<button class="btn danger" data-action="run-plan-clear">Remove plan</button>' : '') +
+      '<button class="btn" data-action="close-modal">Cancel</button></div>';
+  }
+  async function rpCommit(st, g, wks, fr, msg) {
+    goals.runStart = st; goals.runGoal = g; goals.runWeeks = wks; goals.runFrom = dkey(weekStart(fromKey(fr)));
+    closeModal();
+    renderAll();
+    toast(msg);
+    await persist(function (d) { return d.doc('app/habits').set(goalsOut()); });
+  }
+  function rpSave() {
+    var st = runSecs('#rp-smin', '#rp-ssec'), g = runSecs('#rp-gmin', '#rp-gsec'), wks = parseInt($('#rp-weeks').value, 10), fr = $('#rp-from').value;
+    if (st === null || st < 600 || st > 10800) { toast('Enter a starting time between 10:00 and 3:00:00.'); return; }
+    if (g === null || g < 600 || g > 10800) { toast('Enter a goal time between 10:00 and 3:00:00.'); return; }
+    if (st - g < 60) { toast('Your starting time needs to be at least a minute slower than your goal.'); return; }
+    if (!(wks >= 4 && wks <= 52)) { toast('Pick a plan length.'); return; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(fr)) { toast('Pick the first week.'); return; }
+    rpCommit(st, g, wks, fr, '5K plan saved.');
+  }
+  async function rpClear() {
+    goals.runStart = 0; goals.runWeeks = 0; goals.runFrom = '';
+    closeModal();
+    renderAll();
+    toast('Plan removed. Your goal time stays.');
+    await persist(function (d) { return d.doc('app/habits').set(goalsOut()); });
   }
   function runSheetHTML(k) {
     var e = k ? runs[k] : null, dv = k || dkey(new Date()), mm = e ? Math.floor(e.seconds / 60) : '', ss = e ? e.seconds % 60 : '';
@@ -3658,6 +3924,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     else if (a === 'run-save') runSave(b.dataset.key || '');
     else if (a === 'run-del') runRemove(b.dataset.key);
     else if (a === 'run-goal') { openModal(goalSheetHTML(), '#g-min'); }
+    else if (a === 'run-plan-open') { openModal(rpSheetHTML(), '#rp-smin'); }
+    else if (a === 'run-plan-start') { var pc = rpCfg(); rpCommit(pc.start, pc.goal, pc.weeks, pc.from, 'Plan started. Week 1 target ' + fmt(rpTargets(pc)[0]) + '.'); }
+    else if (a === 'run-plan-save') rpSave();
+    else if (a === 'run-plan-clear') rpClear();
+    else if (a === 'run-plan-view') { rpView = rpView === 'table' ? 'chart' : 'table'; renderRunPlan(); }
     else if (a === 'run-goal-save') runGoalSave(false);
     else if (a === 'run-goal-clear') runGoalSave(true);
     else return false;
@@ -4651,10 +4922,16 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       if (rb) openModal('<h3>REMOVE BOOK?</h3><p>' + esc(rb.title) + ' comes off your shelf. Sessions you logged for it stay in your stats.</p><div class="row"><button class="btn danger" data-action="book-remove-yes" data-id="' + rb.id + '">Remove</button><button class="btn" data-action="close-modal">Cancel</button></div>');
     } else if (a === 'book-remove-yes') {
       removeBook(b.dataset.id);
-    } else if (a === 'fin-toggle') {
-      finOpen = !finOpen; renderAll();
-    } else if (a === 'lib-toggle') {
-      libOpen = !libOpen; renderAll();
+    } else if (a === 'shelf-tab') {
+      shelfTab = b.dataset.t; shelfQ = ''; renderAll();
+    } else if (a === 'al-day') {
+      alTarget = b.dataset.t; alDraft = null; renderAlarm();
+    } else if (a === 'al-step') {
+      var ai = $('#al-t'), av = /^\d{2}:\d{2}$/.test(ai.value) ? ai.value : '06:00';
+      ai.value = hhmmAdd(av, parseInt(b.dataset.m, 10));
+      alDraft = { k: alarmTarget().k, v: ai.value };
+    } else if (a === 'al-once' || a === 'al-every' || a === 'al-reset') {
+      setAlarm(a);
     } else if (a === 'read-log') {
       openLog(null, b.dataset.book || '');
     } else if (a === 'read-edit') {
@@ -4698,7 +4975,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         if (!/^\d{2}:\d{2}$/.test(v)) bad = true; else alarms[x] = v;
       });
       if (bad) { toast('Set an alarm time for every active day.'); return; }
-      var s = { alarms: alarms, days: Object.keys(alarms).map(Number), weeklyTarget: parseInt($('#f-target').value, 10) || 5, walk: parseInt($('#f-walk').value, 10) || 0, startDate: settings ? settings.startDate : dkey(new Date()) };
+      var s = { alarms: alarms, days: Object.keys(alarms).map(Number), weeklyTarget: parseInt($('#f-target').value, 10) || 5, walk: parseInt($('#f-walk').value, 10) || 0, startDate: settings ? settings.startDate : dkey(new Date()), over: settings ? settings.over : {} };
       closeModal();
       saveSettings(s);
     } else if (a === 'open-settings') {
@@ -4723,6 +5000,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   document.addEventListener('input', function (ev) {
     if (ev.target.id === 'e-min' || ev.target.id === 'e-sec') updatePrev();
     if (ev.target.id === 'n-search') { nvQuery = ev.target.value; renderNotesView(); }
+    if (ev.target.id === 'bk-q') { shelfQ = ev.target.value; renderShelf(); }
+    if (ev.target.id === 'al-t') alDraft = { k: alarmTarget().k, v: ev.target.value };
     if (ev.target.id === 'r-min' || ev.target.id === 'r-pg' || ev.target.id === 'r-date') updateReadPrev();
   });
   document.addEventListener('change', function (ev) {
