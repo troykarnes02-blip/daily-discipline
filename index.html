@@ -409,6 +409,9 @@ input[type="time"], input[type="number"], input[type="text"], input[type="date"]
 .btn { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 0 18px; min-height: 46px; font-weight: 600; }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
 .btn.danger { color: var(--bad-t); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.wkrow { display: flex; gap: 8px; }
+.wkrow .btn { flex: 1 1 0; }
 .toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: max(20px, env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-weight: 500; z-index: 30; max-width: calc(100% - 32px); }
 .rest { position: fixed; left: 50%; transform: translateX(-50%); bottom: 0; width: 100%; max-width: 720px; z-index: 15; display: flex; align-items: center; gap: 10px; background: var(--panel-2); border-top: 1px solid var(--line); box-shadow: 0 -6px 18px rgba(0, 0, 0, .35); padding: 12px 14px; padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); padding-left: max(14px, env(safe-area-inset-left, 0px)); padding-right: max(14px, env(safe-area-inset-right, 0px)); }
 .rest[hidden] { display: none; }
@@ -602,6 +605,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     </div>
     <div class="tab" id="tab-run" role="tabpanel" hidden>
       <section id="run-hero" class="card" aria-label="5K Saturday"></section>
+      <section id="run-prep" class="card" aria-label="Warm-up and stretch"></section>
       <section id="run-plan" class="card" aria-label="5K plan"></section>
       <section id="run-stats" class="card" aria-label="Your 5K times"></section>
       <section id="run-chart" class="card" aria-label="5K time chart"></section>
@@ -626,6 +630,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   var LS = 'dailydiscipline.v1';
   var WIN = 120;          // seconds to win
   var END = 10800;        // check-in window after alarm: 3 hours
+  var EARLY = 1800;       // "I woke up early" opens this many seconds before the alarm
+  var OTHER_PTS = 60;     // what an Other morning pays
   var DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   var DOWL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
   var MON = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -755,10 +761,14 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
   function cleanEntry(id, o) {
     if (!o || typeof o !== 'object' || !/^\d{4}-\d{2}-\d{2}$/.test(id)) return null;
+    var al = /^\d{2}:\d{2}$/.test(o.alarm || '') ? o.alarm : '', at0 = typeof o.at === 'string' ? o.at : '';
+    if (o.kind === 'early' || o.kind === 'other') {
+      return { date: id, seconds: 0, points: o.kind === 'early' ? 100 : OTHER_PTS, win: true, alarm: al, at: at0, manual: !!o.manual, kind: o.kind };
+    }
     var s = Number(o.seconds);
     if (!isFinite(s) || s < 0 || s > END) return null;
     s = Math.round(s);
-    return { date: id, seconds: s, points: pts(s), win: s <= WIN, alarm: /^\d{2}:\d{2}$/.test(o.alarm || '') ? o.alarm : '', at: typeof o.at === 'string' ? o.at : '', manual: !!o.manual };
+    return { date: id, seconds: s, points: pts(s), win: s <= WIN, alarm: al, at: at0, manual: !!o.manual, kind: '' };
   }
 
   /* ---------- storage ---------- */
@@ -902,8 +912,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       await reloadFromDb();
     }
   }
-  async function saveEntry(key, seconds, manual) {
-    var e = cleanEntry(key, { seconds: seconds, alarm: alarmOn(key) || '', at: new Date().toISOString(), manual: manual });
+  async function saveEntry(key, seconds, manual, kind) {
+    var e = cleanEntry(key, { seconds: seconds, alarm: alarmOn(key) || '', at: new Date().toISOString(), manual: manual, kind: kind || '' });
     checkins[key] = e;
     renderAll();
     await persist(function (d) { return d.doc('checkins/' + key).set(e); });
@@ -1030,7 +1040,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
 
   /* ---------- model ---------- */
   function avgOf(arr) {
-    var e = arr.filter(function (x) { return x.e; });
+    var e = arr.filter(function (x) { return x.e && !x.e.kind; });
     if (!e.length) return null;
     return { avg: e.reduce(function (a, x) { return a + x.e.seconds; }, 0) / e.length, n: e.length };
   }
@@ -1058,8 +1068,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       else if (x.st === 'loss' || x.st === 'miss') { l++; run = 0; }
       if (x.e) {
         ptsT += x.e.points;
-        if (x.e.seconds <= 30) elite++;
-        if (!fastest || x.e.seconds < fastest.seconds) fastest = { seconds: x.e.seconds, k: x.k };
+        if (x.e.kind === 'early' || (!x.e.kind && x.e.seconds <= 30)) elite++;
+        if (!x.e.kind && (!fastest || x.e.seconds < fastest.seconds)) fastest = { seconds: x.e.seconds, k: x.k };
       }
     });
     var weeks = {};
@@ -1092,7 +1102,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       if (a && a.n >= 4 && (!best7 || a.avg < best7.avg)) best7 = { avg: a.avg, end: days[j].k };
     }
     var w30 = 0, l30 = 0, e30 = 0;
-    days.slice(-30).forEach(function (x) { if (x.st === 'win') w30++; else if (x.st === 'loss' || x.st === 'miss') l30++; if (x.e && x.e.seconds <= 30) e30++; });
+    days.slice(-30).forEach(function (x) { if (x.st === 'win') w30++; else if (x.st === 'loss' || x.st === 'miss') l30++; if (x.e && (x.e.kind === 'early' || (!x.e.kind && x.e.seconds <= 30))) e30++; });
     return {
       now: now, tk: tk, days: days, byKey: byKey, start: start, w: w, l: l, ptsT: ptsT, streak: run, best: best, bestEnd: bestEnd,
       elite: elite, fastest: fastest, weekWins: weekWins, weekLeft: weekLeft, bestWeek: bestWeek, bestWeekKey: bestWeekKey,
@@ -1181,16 +1191,28 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         '<div class="dwrap" aria-hidden="true"><div class="drain"><i id="drain" style="width:' + drainW(sc) + '%"></i></div><span class="dmark"></span><span class="dlab">ELITE 0:30</span></div>' +
         '<div class="onLine" id="onLine">' + lineText(sc) + '</div>' +
         '<button class="cta" id="cta" data-action="wake-up">I\'M UP</button>' +
-        '<p class="hint">Tap when you reach your phone.' + (walkSecs() ? ' The clock starts after your ' + walkSecs() + 's walk allowance.' : '') + '</p>' + targetsHTML(m) + '</div>';
+        '<p class="hint">Tap when you reach your phone.' + (walkSecs() ? ' The clock starts after your ' + walkSecs() + 's walk allowance.' : '') + '</p>' +
+        '<button class="link" data-action="wake-other">Not a normal wake? Log Other, ' + OTHER_PTS + ' pts</button>' + targetsHTML(m) + '</div>';
     } else if (ph.p === 'wait') {
       var hh = ph.aT.getHours();
       h = '<div class="bar-top"><span>Next game</span><span>' + (ph.diff < -43200 ? '' : 'Today') + '</span></div>' +
         '<div class="pad center"><div class="clock sm">' + digits(((hh % 12) || 12) + ':' + pad(ph.aT.getMinutes())) + '<small>' + (hh < 12 ? 'AM' : 'PM') + '</small></div>' +
         '<div class="countdown" id="cd">' + cdText(ph.diff) + '</div>' +
-        '<button class="cta" disabled>LOCKED UNTIL ALARM</button>' +
+        '<button class="cta" disabled>LOCKED UNTIL ALARM</button>' + earlyHTML(ph) +
         (awake ? '<p class="hint">Screen stays on while this page is open. Leave the phone on its charger.</p>'
                : '<button class="btn" data-action="keep-awake">Keep screen on overnight</button><p class="hint">Leave this page open on the charger outside your bedroom so it is ready when you get there.</p>') +
         '<p class="hint">Set your watch alarm to match this phone\'s clock.</p>' + targetsHTML(m) + '</div>';
+    } else if (ph.p === 'done' && ph.e.kind) {
+      var ke = ph.e, early = ke.kind === 'early';
+      h = '<div class="bar-top"><span>Today\'s result</span><span>' + (ke.alarm ? 'Alarm ' + clock12(alarmAt(ph.k, ke.alarm)) : '') + '</span></div>' +
+        '<div class="pad center' + (justSaved ? ' pop' : '') + '" data-zone="' + (early ? 'elite' : 'win') + '">' +
+        '<div class="verdict win">WIN</div>' +
+        '<div class="clock xs">' + (early ? 'EARLY' : 'OTHER') + '</div>' +
+        '<div class="res-line"><span class="pill bg-' + (early ? 'elite' : 'ontime') + '">' + (early ? 'No alarm needed' : 'Other') + '</span><span class="pts">+' + ke.points + ' PTS</span></div>' +
+        '<ul class="facts"><li>' + (early ? 'Up on your own before the alarm. Full points.' : 'Scored as Other, so the alarm clock did not apply today.') + '</li><li>Streak at <b>' + m.streak + '</b></li></ul>' +
+        '<div class="next">Next game: <b>' + nextLabel() + '</b></div>' +
+        '<button class="link" data-action="edit" data-key="' + ph.k + '">Fix this entry</button></div>';
+      justSaved = false;
     } else if (ph.p === 'done') {
       var e = ph.e, t = tierOf(e.seconds), cs = fmt(e.seconds);
       var others = m.days.filter(function (x) { return x.e && x.k !== ph.k; });
@@ -1234,6 +1256,14 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }
     el.innerHTML = h;
     sig = ph.p + '|' + dkey(new Date());
+  }
+  function earlyHint(ph) {
+    if (ph.diff >= -EARLY) return 'Up on your own before the alarm? Tap I woke up early for 100 pts. No alarm needed.';
+    return 'I woke up early opens at ' + clock12(new Date(ph.aT.getTime() - EARLY * 1000)) + ', 30 min before your alarm. Up earlier than that, or woken by something else? Tap Other for ' + OTHER_PTS + ' pts.';
+  }
+  function earlyHTML(ph) {
+    return '<div class="wkrow"><button class="btn primary" id="early-btn" data-action="wake-early"' + (ph.diff >= -EARLY ? '' : ' disabled') + '>I woke up early</button>' +
+      '<button class="btn" data-action="wake-other">Other</button></div><p class="hint" id="early-hint">' + earlyHint(ph) + '</p>';
   }
   function cdText(diff) {
     var r = Math.round(-diff);
@@ -1334,7 +1364,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       ['Longest streak', m.best ? String(m.best) : '-', m.bestEnd ? 'Ended ' + dateLabel(m.bestEnd) : 'Not set yet'],
       ['Best week', m.bestWeek ? m.bestWeek + (m.bestWeek === 1 ? ' win' : ' wins') : '-', m.bestWeekKey ? 'Week of ' + dateLabel(m.bestWeekKey) : 'Not set yet'],
       ['Best 7-day average', m.best7 ? fmt(m.best7.avg) : '-', m.best7 ? 'Through ' + dateLabel(m.best7.end) : 'Needs 4 mornings in one week'],
-      ['Elite mornings', String(m.elite), 'Up in under 0:30'],
+      ['Elite mornings', String(m.elite), 'Under 0:30, or up early'],
       ['Weeks hit', String(m.weeksHit), 'Goal is ' + settings.weeklyTarget + ' wins a week'],
       ['Points', String(m.ptsT), 'Season total']
     ];
@@ -1354,7 +1384,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
         if (k > tk) { cls = 'c-future'; }
         else if (day) {
           editable = true; known = true;
-          if (day.e) { var t = tierOf(day.e.seconds); cls = 'c-' + t.fill; txt = fmt(day.e.seconds); desc = txt + ', ' + t.label + (day.e.win ? ', win' : ', loss'); if (day.e.win) wins++; }
+          if (day.e && day.e.kind) { cls = day.e.kind === 'early' ? 'c-elite' : 'c-ontime'; txt = day.e.kind === 'early' ? '\u2605' : '~'; desc = (day.e.kind === 'early' ? 'woke up early' : 'other') + ', win'; wins++; }
+          else if (day.e) { var t = tierOf(day.e.seconds); cls = 'c-' + t.fill; txt = fmt(day.e.seconds); desc = txt + ', ' + t.label + (day.e.win ? ', win' : ', loss'); if (day.e.win) wins++; }
           else if (day.st === 'miss') { cls = 'c-miss'; txt = '✕'; desc = 'missed'; }
           else if (day.st === 'pending') { cls = 'c-pend'; txt = '•'; desc = 'today, not logged yet'; }
           else { cls = 'c-rest'; desc = 'rest day'; editable = true; }
@@ -1370,7 +1401,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     h += '</div><div class="legend">' +
       '<span><em class="bg-elite"></em>Under 0:30</span><span><em class="bg-sharp"></em>Under 1:00</span><span><em class="bg-ontime"></em>Under 2:00 (win)</span>' +
       '<span><em class="bg-late"></em>Late</span><span><em class="bg-lost"></em>Over 5:00</span>' +
-      '<span><em style="border-color:var(--lost)"></em>Missed</span><span><em style="border:1px dashed var(--dim)"></em>Rest day</span></div>';
+      '<span>\u2605 Woke up early</span><span>~ Other</span><span><em style="border-color:var(--lost)"></em>Missed</span><span><em style="border:1px dashed var(--dim)"></em>Rest day</span></div>';
     $('#logCard').innerHTML = h;
   }
 
@@ -1387,7 +1418,10 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     });
     for (var i = 0; i < N; i++) {
       var d = addDays(new Date(), -(N - 1 - i)), k = dkey(d), x = pl + slot * i + slot / 2, day = m.byKey[k];
-      if (day && day.e) {
+      if (day && day.e && day.e.kind) {
+        any = true;
+        g += '<text class="ax" style="fill:var(--' + (day.e.kind === 'early' ? 'elite' : 'ontime') + ')" x="' + x + '" y="' + (y(0) - 4) + '" text-anchor="middle">' + (day.e.kind === 'early' ? '\u2605' : '~') + '</text>';
+      } else if (day && day.e) {
         any = true;
         var s = day.e.seconds, t = tierOf(s), top = y(s);
         g += '<rect class="f-' + t.fill + '" x="' + (x - bw / 2) + '" y="' + top + '" width="' + bw + '" height="' + Math.max(2, pt + ih - top) + '" rx="2"/>';
@@ -1398,7 +1432,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       g += '<text class="ax' + (k === m.tk ? ' today' : '') + '" x="' + x + '" y="' + (H - 6) + '" text-anchor="middle">' + d.getDate() + '</text>';
     }
     if (!any) g += '<text class="empty-msg" x="' + (pl + iw / 2) + '" y="' + (pt + ih / 2) + '" text-anchor="middle">Your first morning shows up here</text>';
-    host.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Seconds from alarm to out of bed for the last 14 days, with the 2 minute win line">' + g + '</svg>';
+    host.innerHTML = '<svg viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="Seconds from alarm to out of bed for the last 14 days, with the 2 minute win line. A star marks a morning you woke up early and a tilde marks an Other morning.">' + g + '</svg>';
   }
 
   function renderHeader(m) {
@@ -1894,7 +1928,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 17 #d134fb', fbEmail = '';
+  var APP_BUILD = 'Oct 17 #8bbd26', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -2146,9 +2180,14 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     var tk = dkey(new Date()), ph = phase(), mb = hModel('bible'), mg = hModel('gym'), m = curModel;
     var wMain, wSub = '', wAct = '';
     if (ph.p === 'done') {
-      var t = tierOf(ph.e.seconds);
-      wMain = fmt(ph.e.seconds) + ' &middot; ' + t.label; wSub = (ph.e.win ? 'Win' : 'Loss') + ', +' + ph.e.points + ' pts';
-      wAct = '<span class="pill bg-' + t.fill + '">' + (ph.e.win ? 'Win' : 'Loss') + '</span>';
+      if (ph.e.kind) {
+        wMain = ph.e.kind === 'early' ? 'Woke up early' : 'Other'; wSub = 'Win, +' + ph.e.points + ' pts';
+        wAct = '<span class="pill bg-' + (ph.e.kind === 'early' ? 'elite' : 'ontime') + '">Win</span>';
+      } else {
+        var t = tierOf(ph.e.seconds);
+        wMain = fmt(ph.e.seconds) + ' &middot; ' + t.label; wSub = (ph.e.win ? 'Win' : 'Loss') + ', +' + ph.e.points + ' pts';
+        wAct = '<span class="pill bg-' + t.fill + '">' + (ph.e.win ? 'Win' : 'Loss') + '</span>';
+      }
     } else if (ph.p === 'setup') {
       wMain = 'Not set up'; wSub = 'Add your alarm times'; wAct = '<button class="btn primary" data-action="tab" data-tab="wake">Set up</button>';
     } else if (ph.p === 'wait') {
@@ -2579,6 +2618,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     } else if (ph.p === 'wait') {
       var cd = $('#cd');
       if (cd) cd.textContent = cdText(ph.diff);
+      var eb = $('#early-btn');
+      if (eb && eb.disabled === (ph.diff >= -EARLY)) { eb.disabled = !(ph.diff >= -EARLY); var eh = $('#early-hint'); if (eh) eh.textContent = earlyHint(ph); }
     }
   }
 
@@ -3704,6 +3745,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     }).join('') + '</div>';
     $('#run-log').innerHTML = l;
     renderRunPlan();
+    renderRunPrep();
   }
   /* ---------- 5K build plan: weekly target time, easing from today's pace to the goal ---------- */
   var RP_DEF = { start: 2040, goal: 1500, weeks: 24 };
@@ -3816,6 +3858,19 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     h += '<div class="row" style="margin-top:8px"><button class="link" data-action="run-plan-view">' + (rpView === 'table' ? 'Show the chart' : 'Show as a table') + '</button>' +
       (c.saved ? '<button class="link" data-action="run-plan-open" style="margin-left:16px">Change plan</button>' : '') + '</div>';
     el.innerHTML = h;
+  }
+  function renderRunPrep() {
+    var el = $('#run-prep');
+    if (!el) return;
+    var w = stView('runwarm'), t = stView('run'), wDone = w.n === w.total, tDone = !!(t.e && t.e.fin && t.e.routine === 'run');
+    function row(l, main, sub, act) {
+      return '<div class="trow"><span class="lbl long">' + l + '</span><div class="main">' + main + '<div class="sub">' + sub + '</div></div><div>' + act + '</div></div>';
+    }
+    el.innerHTML = '<h2>RUN PREP<small>warm up, run, stretch</small></h2>' +
+      row('WARM-UP', wDone ? 'Warmed up' : w.n ? 'In progress' : 'Before you run', (w.n ? w.n + ' of ' + w.total + ' done &middot; ' : '') + 'about ' + w.min + ' min, ends with an easy jog',
+        '<button class="btn' + (wDone ? '' : ' primary') + '" data-action="st-open" data-r="runwarm">' + (wDone ? 'Edit' : w.n ? 'Continue' : 'Start') + '</button>') +
+      row('STRETCH', tDone ? 'Stretched' : t.n ? 'In progress' : 'After you run', (t.n ? t.n + ' of ' + t.total + ' done &middot; ' : '') + 'about ' + t.min + ' min, calves, hips and hamstrings',
+        '<button class="btn' + (tDone ? '' : t.n ? ' primary' : '') + '" data-action="st-open" data-r="run">' + (tDone ? 'Edit' : t.n ? 'Continue' : 'Start') + '</button>');
   }
   function rpSheetHTML() {
     var c = rpCfg(), wopts = [12, 16, 20, 24, 32, 40, 52];
@@ -4176,7 +4231,15 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     twist:   { n: 'Lying spinal twist', s: 30, sides: true, c: 'On your back, drop both knees to one side and keep your shoulders flat. Arms out wide.' },
     knees:   { n: 'Knees to chest', s: 40, sides: false, c: 'On your back, hug both knees in and rock gently. Lets the low back release.' },
     butter:  { n: 'Butterfly', s: 45, sides: false, c: 'Seated, soles of your feet together. Sit tall and let your knees fall open. Do not force them.' },
-    wrist:   { n: 'Wrist and forearm', s: 30, sides: true, c: 'Arm out, palm up, pull your fingers back gently. For the last 10 seconds turn the palm down.' }
+    wrist:   { n: 'Wrist and forearm', s: 30, sides: true, c: 'Arm out, palm up, pull your fingers back gently. For the last 10 seconds turn the palm down.' },
+    wwalk:   { n: 'Easy walk', s: 120, sides: false, c: 'Walk at a relaxed pace and swing your arms. Let your breathing settle and your legs warm up.' },
+    wankle:  { n: 'Ankle circles', s: 20, sides: true, c: 'Stand on one leg, holding a wall if you need it. Draw slow circles with the other toes, then switch direction halfway.' },
+    wswingf: { n: 'Leg swings, front to back', s: 30, sides: true, c: 'Hold a wall. Swing one leg forward and back in a relaxed arc. Go a little higher each swing, keep your torso tall.' },
+    wswings: { n: 'Leg swings, side to side', s: 30, sides: true, c: 'Face the wall and hold it. Swing one leg across your body and out to the side. Loose and easy, not forced.' },
+    wlunge:  { n: 'Walking lunges', s: 40, sides: false, c: 'Long step forward, drop your back knee toward the ground, push through the front heel and step into the next one. About 8 each leg.' },
+    wknees:  { n: 'High knees, easy', s: 20, sides: false, c: 'March or skip in place, driving your knees up at an easy tempo. Stay light on your feet.' },
+    wbridge: { n: 'Glute bridge', s: 40, sides: false, c: 'On your back, knees bent. Press through your heels, squeeze your glutes at the top, lower slowly. About 10 reps.' },
+    wjog:    { n: 'Easy jog', s: 90, sides: false, c: 'Jog the slowest pace you can manage. Short, quiet steps. Pick it up a touch for the last 20 seconds, then go run.' }
   };
   var ST_ROUTINES = {
     a:      { name: 'Lift A', focus: 'Squat, bench press and row', ids: ['hipflex', 'quad', 'fig4', 'hams', 'chest', 'child', 'needle', 'wrist'] },
@@ -4184,7 +4247,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     c:      { name: 'Lift C', focus: 'Split squat, incline press and hip thrust', ids: ['hipflex', 'quad', 'fig4', 'hams', 'calf', 'butter', 'chest', 'child', 'tri'] },
     cardio: { name: 'Cardio day', focus: 'Legs and hips after the cardio and core work', ids: ['calf', 'hams', 'quad', 'hipflex', 'fig4', 'knees', 'twist', 'cat'] },
     run:    { name: '5K day', focus: 'Calves, hips and hamstrings after the run', ids: ['calf', 'quad', 'hipflex', 'hams', 'fig4', 'butter', 'knees', 'twist'] },
-    rest:   { name: 'Rest day', focus: 'An easy full-body reset', ids: ['cat', 'child', 'hipflex', 'fig4', 'hams', 'chest', 'needle', 'twist'] }
+    rest:   { name: 'Rest day', focus: 'An easy full-body reset', ids: ['cat', 'child', 'hipflex', 'fig4', 'hams', 'chest', 'needle', 'twist'] },
+    runwarm: { name: 'Run warm-up', focus: 'Loosen your calves, hips and hamstrings before the run', warm: true, ids: ['wwalk', 'wankle', 'wswingf', 'wswings', 'wlunge', 'wknees', 'wbridge', 'wjog'] }
   };
   function cleanStretch(id, o) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(id) || !o || typeof o !== 'object') return null;
@@ -4206,6 +4270,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     ids.forEach(function (id) { t += stSecsOf(id) + ST_PREP + (ST_LIB[id].sides ? ST_SWITCH : 0); });
     return Math.round(t / 60);
   }
+  function stTimeTxt(n) { return n >= 60 && n % 60 === 0 ? (n / 60) + ' min' : n + ' sec'; }
   function stDur(secs) { var m = Math.round(secs / 60); return m < 1 ? secs + ' sec' : m + ' min'; }
   function stDone(k) { return !!(stretches[k] && stretches[k].fin); }
   function stStreak() {
@@ -4214,8 +4279,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     while (stDone(dkey(d)) && n < 3660) { n++; d.setDate(d.getDate() - 1); }
     return n;
   }
-  function stView() {
-    var k = dkey(new Date()), e = stretches[k], rid = e && ST_ROUTINES[e.routine] ? e.routine : stRoutineId(), R = ST_ROUTINES[rid];
+  function stView(over) {
+    var k = dkey(new Date()), e = stretches[k], rid = over && ST_ROUTINES[over] ? over : (e && ST_ROUTINES[e.routine] ? e.routine : stRoutineId()), R = ST_ROUTINES[rid];
     var have = e ? e.done : [], n = 0;
     R.ids.forEach(function (id) { if (have.indexOf(id) >= 0) n++; });
     return { k: k, e: e, rid: rid, R: R, n: n, total: R.ids.length, min: stEstimate(R.ids) };
@@ -4247,24 +4312,32 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     stCommit(k);
   }
   function stListHTML() {
-    var v = stView(), h = '<h3>EVENING STRETCH</h3><p class="note" style="margin:0">' + esc(v.R.name) + ' &middot; ' + esc(v.R.focus) + '. About ' + v.min + ' min.</p>';
+    var v = stView(stCur), warm = !!v.R.warm, post = stCur === 'run';
+    var h = '<h3>' + (warm ? 'RUN WARM-UP' : post ? 'POST-RUN STRETCH' : 'EVENING STRETCH') + '</h3><p class="note" style="margin:0">' + esc(v.R.name) + ' &middot; ' + esc(v.R.focus) + '. About ' + v.min + ' min.</p>';
     var sk = stStreak(), strip = '', d, i;
-    for (i = 6; i >= 0; i--) { d = new Date(); d.setDate(d.getDate() - i); var kk = dkey(d); strip += '<span class="' + (stDone(kk) ? 'on' : '') + (i === 0 ? ' td' : '') + '" title="' + DOW[d.getDay()] + '">' + DOW[d.getDay()].slice(0, 2) + '</span>'; }
-    h += '<div class="stweek">' + strip + '</div><p class="note" style="margin:0">' + (sk ? sk + '-day streak.' : 'No streak yet.') + ' Filled days are stretch days.</p>';
+    if (!warm) {
+      for (i = 6; i >= 0; i--) { d = new Date(); d.setDate(d.getDate() - i); var kk = dkey(d); strip += '<span class="' + (stDone(kk) ? 'on' : '') + (i === 0 ? ' td' : '') + '" title="' + DOW[d.getDay()] + '">' + DOW[d.getDay()].slice(0, 2) + '</span>'; }
+      h += '<div class="stweek">' + strip + '</div><p class="note" style="margin:0">' + (sk ? sk + '-day streak.' : 'No streak yet.') + ' Filled days are stretch days.</p>';
+    }
     if (v.n < v.total) h += '<div class="row"><button class="btn primary" data-action="st-start">' + (v.n ? 'Continue with the timer' : 'Start the timer') + '</button></div>';
     h += '<div class="stlist">' + v.R.ids.map(function (id, i) {
       var s = ST_LIB[id], on = v.e && v.e.done.indexOf(id) >= 0;
       return '<div class="strow"><button class="stck" data-action="st-tick" data-id="' + id + '" aria-pressed="' + on + '" aria-label="Done: ' + esc(s.n) + '"></button>' +
-        '<button class="stgo" data-action="st-go" data-i="' + i + '"><b>' + esc(s.n) + '</b><span class="sth">' + s.s + ' sec' + (s.sides ? ' each side' : '') + '</span><span>' + esc(s.c) + '</span></button></div>';
+        '<button class="stgo" data-action="st-go" data-i="' + i + '"><b>' + esc(s.n) + '</b><span class="sth">' + stTimeTxt(s.s) + (s.sides ? ' each side' : '') + '</span><span>' + esc(s.c) + '</span></button></div>';
     }).join('') + '</div>';
-    h += '<p class="note" style="margin:0">Tick a stretch yourself, or tap its name to run the timer for just that one. The timer ticks it when the hold is finished.</p>';
-    h += '<div class="row"><button class="btn ' + (v.n === v.total ? 'primary' : '') + '" data-action="st-fin">' + (v.e && v.e.fin ? 'Save changes' : 'Done for tonight') + '</button>' +
-      (v.e && (v.e.fin || v.n) ? '<button class="btn danger" data-action="st-clear">Clear today</button>' : '') +
-      '<button class="btn" data-action="close-modal">Close</button></div>';
+    h += '<p class="note" style="margin:0">Tick ' + (warm ? 'a move' : 'a stretch') + ' yourself, or tap its name to run the timer for just that one. The timer ticks it when ' + (warm ? 'the time is up' : 'the hold is finished') + '.</p>';
+    if (warm) {
+      h += '<div class="row"><button class="btn ' + (v.n === v.total ? 'primary' : '') + '" data-action="close-modal">' + (v.n === v.total ? 'Done, go run' : 'Close') + '</button>' +
+        (v.n ? '<button class="btn danger" data-action="st-clear">Reset warm-up</button>' : '') + '</div>';
+    } else {
+      h += '<div class="row"><button class="btn ' + (v.n === v.total ? 'primary' : '') + '" data-action="st-fin">' + (v.e && v.e.fin ? 'Save changes' : (post ? 'Done stretching' : 'Done for tonight')) + '</button>' +
+        (v.e && (v.e.fin || v.n) ? '<button class="btn danger" data-action="st-clear">' + (post ? 'Reset stretch' : 'Clear today') + '</button>' : '') +
+        '<button class="btn" data-action="close-modal">Close</button></div>';
+    }
     return h;
   }
   function stOpen() { stOpened = true; openModal(stListHTML()); }
-  var stOpened = false, stT = null, stTick = null, stWl = null, stHourSeen = new Date().getHours();
+  var stOpened = false, stT = null, stTick = null, stWl = null, stHourSeen = new Date().getHours(), stCur = '';
   function stBusy() { return !!stT && !stT.paused; }
   function stBeep(list) {
     unlockAudio();
@@ -4283,10 +4356,10 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     stT.phase = phase; stT.total = secs; stT.end = now + secs * 1000; stT.paused = false; stT.left = secs; stT.lastSec = 99;
   }
   function stBegin(i) {
-    var v = stView();
+    var v = stView(stCur);
     if (!v.R.ids[i]) return;
     if (restT) restStop();
-    stT = { i: i, side: 1, held: 0, ids: v.R.ids };
+    stT = { i: i, side: 1, held: 0, ids: v.R.ids, warm: !!v.R.warm };
     stArm('prep', ST_PREP);
     stLock();
     if (!stTick) stTick = setInterval(stPaint, 250);
@@ -4298,13 +4371,13 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
   function stCleanup() {
     if (!stOpened && !stT) return;
-    clearInterval(stTick); stTick = null; stT = null; stUnlock(); stOpened = false;
+    clearInterval(stTick); stTick = null; stT = null; stUnlock(); stOpened = false; stCur = '';
   }
   function stItem() { return ST_LIB[stT.ids[stT.i]]; }
   function stShowTimer() {
     if (!stT) return;
     var it = stItem(), nx = stT.ids[stT.i + 1] ? ST_LIB[stT.ids[stT.i + 1]].n : '';
-    $('#sheet').innerHTML = '<p class="note" style="margin:0" id="st-count">Stretch ' + (stT.i + 1) + ' of ' + stT.ids.length + '</p>' +
+    $('#sheet').innerHTML = '<p class="note" style="margin:0" id="st-count">' + (stT.warm ? 'Move ' : 'Stretch ') + (stT.i + 1) + ' of ' + stT.ids.length + '</p>' +
       '<div class="st-lbl" id="st-lbl"></div><h3 id="st-name" style="margin:0;font-size:24px;letter-spacing:.05em">' + esc(it.n) + '</h3>' +
       '<div class="st-t" id="st-t">0:00</div><div class="st-prog"><span id="st-bar"></span></div>' +
       '<p class="st-cue">' + esc(it.c) + '</p>' +
@@ -4318,7 +4391,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (!stT.paused && left <= 0) { stAdvance(); return; }
     var hold = stT.phase === 'hold', t = $('#st-t');
     if (!t) return;
-    var lbl = hold ? 'HOLD' : (stT.side > 1 ? 'SWITCH SIDES' : 'GET READY');
+    var lbl = hold ? (stT.warm ? 'GO' : 'HOLD') : (stT.side > 1 ? 'SWITCH SIDES' : 'GET READY');
     $('#st-lbl').textContent = lbl + (side ? ' · ' + side.toUpperCase() : '') + (stT.paused ? ' · PAUSED' : '');
     t.textContent = restFmt(left); t.className = 'st-t' + (hold ? ' hold' : '');
     $('#st-bar').style.width = Math.max(0, Math.min(100, left / stT.total * 100)) + '%';
@@ -4335,7 +4408,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
   function stFinishItem(tick) {
     var id = stT.ids[stT.i], k = dkey(new Date()), e = stRec(k);
-    e.secs += Math.round(stT.held); stT.held = 0;
+    if (!stT.warm) e.secs += Math.round(stT.held);
+    stT.held = 0;
     if (tick && e.done.indexOf(id) < 0) e.done.push(id);
     stCommit(k);
     if (stT.ids[stT.i + 1]) {
@@ -4343,14 +4417,14 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       stArm('prep', ST_PREP); stShowTimer();
     } else {
       stBeep([[880, 0], [1100, 0.2], [1320, 0.4]]); stBuzz([300, 100, 300, 100, 300]);
-      stEnd(true); toast('Routine finished. Tap Done for tonight to save it.');
+      var wm = stT.warm; stEnd(true); toast(wm ? 'Warm-up finished. Go run.' : 'Routine finished. Tap ' + (stCur === 'run' ? 'Done stretching' : 'Done for tonight') + ' to save it.');
     }
   }
   function stAction(a, b) {
-    if (a === 'st-open') stOpen();
+    if (a === 'st-open') { stCur = b.dataset.r || ''; stOpen(); }
     else if (a === 'st-tick') { stSetTick(b.dataset.id, b.getAttribute('aria-pressed') !== 'true'); var sc = $('#sheet').scrollTop; $('#sheet').innerHTML = stListHTML(); $('#sheet').scrollTop = sc; }
     else if (a === 'st-go') stBegin(parseInt(b.dataset.i, 10));
-    else if (a === 'st-start') { var v = stView(), i = 0; for (; i < v.R.ids.length; i++) if (!v.e || v.e.done.indexOf(v.R.ids[i]) < 0) break; stBegin(i >= v.R.ids.length ? 0 : i); }
+    else if (a === 'st-start') { var v = stView(stCur), i = 0; for (; i < v.R.ids.length; i++) if (!v.e || v.e.done.indexOf(v.R.ids[i]) < 0) break; stBegin(i >= v.R.ids.length ? 0 : i); }
     else if (a === 'st-pause') {
       if (!stT) return true;
       if (stT.paused) { stT.end = Date.now() + stT.left * 1000; stT.paused = false; }
@@ -4370,9 +4444,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       else if (it.sides && stT.side < 2) { stT.side = 2; stArm('prep', ST_SWITCH); stPaint(); }
       else stFinishItem(false);
     }
-    else if (a === 'st-list') { if (stT) { var e0 = stRec(dkey(new Date())); e0.secs += Math.round(stT.held); if (stT.held) stCommit(e0.date); } stEnd(true); }
+    else if (a === 'st-list') { if (stT) { var e0 = stRec(dkey(new Date())); if (!stT.warm) e0.secs += Math.round(stT.held); if (stT.held) stCommit(e0.date); } stEnd(true); }
     else if (a === 'st-fin') {
-      var v2 = stView();
+      var v2 = stView(stCur);
       if (!v2.n) { toast('Tick at least one stretch first.'); return true; }
       var e = stRec(v2.k); e.fin = true; e.routine = v2.rid;
       closeModal();
@@ -4381,12 +4455,17 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       toast('Stretch saved.' + (sk > 1 ? ' ' + sk + '-day streak.' : ''));
     }
     else if (a === 'st-clear') {
-      var k = dkey(new Date());
-      if (!stretches[k]) return true;
-      delete stretches[k];
-      closeModal(); renderAll();
-      persist(function (x) { return x.doc('stretches/' + k).delete(); });
-      toast('Cleared today\'s stretch.');
+      var k = dkey(new Date()), e1 = stretches[k];
+      if (!e1) return true;
+      var vc = stView(stCur);
+      e1.done = e1.done.filter(function (id) { return vc.R.ids.indexOf(id) < 0; });
+      if (!vc.R.warm) e1.fin = false;
+      closeModal();
+      if (!e1.done.length) {
+        delete stretches[k]; renderAll();
+        persist(function (x) { return x.doc('stretches/' + k).delete(); });
+      } else stCommit(k);
+      toast(vc.R.warm ? 'Warm-up reset.' : 'Cleared today\'s stretch.');
     }
     else return false;
     return true;
@@ -4790,7 +4869,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     h += profTry(function () {
       var m = curModel;
       if (!m) return '';
-      return profBlock('WAKE', profTile('Wins', m.w, m.l + ' losses') + profTile('Best streak', m.best, 'wins in a row') + profTile('Fastest', m.fastest ? fmt(m.fastest.seconds) : 'n/a', m.fastest ? dateLabel(m.fastest.k) : '') + profTile('Elite', m.elite, 'under 0:30'));
+      return profBlock('WAKE', profTile('Wins', m.w, m.l + ' losses') + profTile('Best streak', m.best, 'wins in a row') + profTile('Fastest', m.fastest ? fmt(m.fastest.seconds) : 'n/a', m.fastest ? dateLabel(m.fastest.k) : '') + profTile('Elite', m.elite, 'under 0:30 or early'));
     });
     h += '<div class="row" style="margin-top:18px">' + (fbOn() ? '<button class="btn" data-action="fb-signout">Sign out</button>' : '') + '<button class="btn primary" data-action="close-modal">Close</button></div>';
     return h;
@@ -4812,10 +4891,15 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   }
   function editHTML(k) {
     var e = checkins[k], d = fromKey(k), title = DOW[d.getDay()] + ', ' + MON[d.getMonth()] + ' ' + d.getDate();
-    var mm = e ? Math.floor(e.seconds / 60) : '', ss = e ? e.seconds % 60 : '';
-    return '<h3>' + title + '</h3><p class="dim">' + (e ? 'Edit this morning.' : 'Log this morning.') + ' Enter how long after your alarm your feet hit the floor.</p>' +
+    var kind = e && e.kind ? e.kind : '';
+    var mm = e && !kind ? Math.floor(e.seconds / 60) : '', ss = e && !kind ? e.seconds % 60 : '';
+    return '<h3>' + title + '</h3><p class="dim">' + (e ? 'Edit this morning.' : 'Log this morning.') + ' Pick how it went.</p>' +
+      '<div class="chips" id="e-kind">' + [['', 'From alarm'], ['early', 'Woke up early'], ['other', 'Other']].map(function (x) {
+        return '<button type="button" class="chip" data-action="e-kind" data-k="' + x[0] + '" aria-pressed="' + (kind === x[0]) + '">' + x[1] + '</button>';
+      }).join('') + '</div>' +
+      '<div id="e-timed"' + (kind ? ' hidden' : '') + '><p class="dim" style="margin:0 0 8px">Enter how long after your alarm your feet hit the floor.</p>' +
       '<div class="two"><label class="fld"><span>MINUTES</span><input id="e-min" type="number" inputmode="numeric" min="0" max="180" value="' + mm + '"></label>' +
-      '<label class="fld"><span>SECONDS</span><input id="e-sec" type="number" inputmode="numeric" min="0" max="59" value="' + ss + '"></label></div>' +
+      '<label class="fld"><span>SECONDS</span><input id="e-sec" type="number" inputmode="numeric" min="0" max="59" value="' + ss + '"></label></div></div>' +
       '<div class="prev" id="e-prev"></div>' +
       '<div class="row"><button class="btn primary" data-action="save-entry" data-key="' + k + '">Save</button>' +
       (e ? '<button class="btn danger" data-action="clear-entry" data-key="' + k + '">Clear</button>' : '') +
@@ -4830,6 +4914,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   function updatePrev() {
     var p = $('#e-prev');
     if (!p) return;
+    var kb = $('#e-kind .chip[aria-pressed="true"]'), kd = kb ? kb.dataset.k : '';
+    if (kd) { p.textContent = (kd === 'early' ? 'Woke up early' : 'Other') + '  \u00b7  ' + (kd === 'early' ? 100 : OTHER_PTS) + ' pts  \u00b7  Win'; return; }
     var t = entrySeconds();
     if (t === null) { p.textContent = 'Enter a time between 0:00 and 3:00:00.'; return; }
     var ti = tierOf(t);
@@ -4986,10 +5072,23 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       openModal(editHTML(b.dataset.key), '#e-min');
       updatePrev();
     } else if (a === 'save-entry') {
+      var kbtn = $('#e-kind .chip[aria-pressed="true"]'), kv = kbtn ? kbtn.dataset.k : '';
+      if (kv) { closeModal(); saveEntry(b.dataset.key, 0, true, kv); return; }
       var t = entrySeconds();
       if (t === null) { toast('Enter a time between 0:00 and 3:00:00.'); return; }
       closeModal();
       saveEntry(b.dataset.key, t, true);
+    } else if (a === 'e-kind') {
+      Array.prototype.forEach.call(b.parentNode.querySelectorAll('.chip'), function (c) { c.setAttribute('aria-pressed', c === b ? 'true' : 'false'); });
+      $('#e-timed').hidden = !!b.dataset.k; updatePrev();
+    } else if (a === 'wake-early' || a === 'wake-other') {
+      if (writing) return;
+      var pw = phase();
+      if (pw.p !== 'wait' && !(a === 'wake-other' && pw.p === 'live')) return;
+      if (a === 'wake-early' && pw.diff < -EARLY) { toast('I woke up early opens at ' + clock12(new Date(pw.aT.getTime() - EARLY * 1000)) + '. Use Other for now.'); return; }
+      writing = true; justSaved = true;
+      saveEntry(pw.k, 0, false, a === 'wake-early' ? 'early' : 'other').finally(function () { writing = false; });
+      toast(a === 'wake-early' ? 'Up early. +100 pts, no alarm needed.' : 'Logged as Other. +' + OTHER_PTS + ' pts.');
     } else if (a === 'clear-entry') {
       closeModal();
       removeEntry(b.dataset.key);
