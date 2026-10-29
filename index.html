@@ -528,6 +528,14 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
 .seg { display: flex; gap: 6px; margin-bottom: 12px; }
 .seg .chip { flex: 1 1 0; min-width: 0; padding: 0 4px; font-size: 14px; }
 .seg .chip b { font-weight: 800; margin-left: 5px; }
+.wa-r { display: grid; grid-template-columns: minmax(0, 1fr) auto 78px; gap: 10px; align-items: center; width: 100%; min-height: 48px; padding: 8px 0; background: none; border: 0; border-top: 1px solid var(--line); color: var(--ink); font: inherit; text-align: left; cursor: pointer; }
+.wa-r:first-of-type { border-top: 0; }
+.wa-r .wd { font-size: 15px; font-weight: 600; }
+.wa-r .wt { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.wa-r .wg { font-size: 12px; color: var(--dim); text-align: right; font-style: normal; }
+.wa-r .wg.chg { color: var(--accent); font-weight: 700; }
+.wa-r[disabled] { cursor: default; opacity: .6; }
+.wa-sub { margin: 14px 0 4px; font-size: 12px; letter-spacing: .08em; color: var(--dim); font-weight: 700; }
 .al-row { display: grid; grid-template-columns: 56px minmax(0, 1fr) 56px; gap: 8px; align-items: center; }
 .al-row .btn { padding: 0; }
 .al-row input[type="time"] { text-align: center; font-size: 22px; font-weight: 700; padding: 10px 4px; min-width: 0; }
@@ -583,6 +591,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     <div class="tab" id="tab-wake" role="tabpanel" hidden>
     <section id="clockCard" class="card clock-card" aria-label="Game clock"></section>
     <section id="alarmCard" class="card" aria-label="Alarm" hidden></section>
+    <section id="weekAlarms" class="card" aria-label="Alarms for the week" hidden></section>
     <section id="streakCard" class="grid2" aria-label="Streak and week"></section>
     <section id="formCard" class="card" aria-label="Form"></section>
     <section id="chartCard" class="card" aria-label="Last 14 mornings">
@@ -1352,6 +1361,85 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     saveSettings(s);
   }
 
+  /* ---------- alarms for the week: see and change any day ---------- */
+  var waK = '';
+  function waLabel(k, long) {
+    var t = dkey(new Date()), d = fromKey(k);
+    if (!long && k === t) return 'Today';
+    if (!long && k === dkey(addDays(new Date(), 1))) return 'Tomorrow';
+    return DOW[d.getDay()] + ' ' + dateLabel(k);
+  }
+  function waCanEdit(k) {
+    var t = dkey(new Date());
+    if (k < t) return false;
+    if (k > t) return true;
+    var p = phase().p;
+    return p === 'wait' || p === 'rest';
+  }
+  function waRow(k) {
+    var dow = fromKey(k).getDay(), usual = alarmFor(dow), over = (settings.over && settings.over[k]) || '', cur = alarmOn(k), ok = waCanEdit(k);
+    var tag = !cur ? 'Rest day' : (over ? (usual ? 'Changed' : 'Added') : 'Usual');
+    if (k === dkey(new Date()) && !ok && cur) { var pp = phase().p; tag = pp === 'done' ? 'Done' : (pp === 'live' ? 'Live now' : 'Missed'); }
+    return '<button type="button" class="wa-r" data-action="wa-open" data-k="' + k + '"' + (ok ? '' : ' disabled') + ' aria-label="' + waLabel(k, true) + ', ' + (cur ? clock12(alarmAt(k, cur)) : 'rest day') + '. ' + (ok ? 'Tap to change.' : 'Locked.') + '">' +
+      '<span class="wd">' + waLabel(k) + '</span><span class="wt">' + (cur ? clock12(alarmAt(k, cur)) : '--') + '</span><em class="wg' + (over ? ' chg' : '') + '">' + tag + '</em></button>';
+  }
+  function renderWeekAlarms() {
+    var el = $('#weekAlarms');
+    if (!settings || !el) return;
+    var keys = [], i, last = '';
+    for (i = 0; i < 7; i++) { last = dkey(addDays(new Date(), i)); keys.push(last); }
+    var later = Object.keys(settings.over || {}).filter(function (k) { return k > last; }).sort().slice(0, 6);
+    var h = '<h2>NEXT 7 DAYS<small>tap a day to change it</small></h2>' + keys.map(waRow).join('');
+    if (later.length) h += '<p class="wa-sub">CHANGED LATER</p>' + later.map(waRow).join('');
+    h += '<label class="fld" style="margin-top:14px"><span>ANOTHER DATE</span><input type="date" id="wa-pick" min="' + dkey(new Date()) + '"></label>';
+    el.innerHTML = h;
+  }
+  function waOpen(k) {
+    if (!settings || !/^\d{4}-\d{2}-\d{2}$/.test(k || '')) return;
+    if (k < dkey(new Date())) { toast('That date has passed.'); return; }
+    if (!waCanEdit(k)) { toast('Today\'s game has already started.'); return; }
+    waK = k;
+    var dow = fromKey(k).getDay(), usual = alarmFor(dow), over = (settings.over && settings.over[k]) || '', cur = alarmOn(k), dayL = DOWL[dow];
+    var v = cur || settings.alarms[settings.days[0]] || '06:00', status;
+    if (!cur) status = 'This is a rest day. Set a time to make it a game day.';
+    else if (over && usual) status = 'Changed for this day only. Your usual ' + dayL + ' alarm is ' + clock12(alarmAt(k, usual)) + '.';
+    else if (over) status = 'Added for this day only.';
+    else status = 'Your usual ' + dayL + ' alarm is ' + clock12(alarmAt(k, cur)) + '.';
+    openModal('<h3>ALARM, ' + waLabel(k, true).toUpperCase() + '</h3>' +
+      '<div class="al-row"><button class="btn" data-action="wa-step" data-m="-15" aria-label="15 minutes earlier">&minus;15</button>' +
+      '<input type="time" id="wa-t" value="' + v + '" aria-label="Alarm time">' +
+      '<button class="btn" data-action="wa-step" data-m="15" aria-label="15 minutes later">+15</button></div>' +
+      '<p class="note" style="margin:8px 0 0">' + status + '</p>' +
+      '<div class="row" style="margin-top:12px"><button class="btn primary" data-action="wa-once" style="flex:1 1 0">' + (cur ? 'This day only' : 'Add for this day') + '</button>' +
+      '<button class="btn" data-action="wa-every" style="flex:1 1 0">Every ' + dayL + '</button></div>' +
+      (over ? '<button class="link" data-action="wa-reset" style="margin-top:8px">' + (usual ? 'Back to usual' : 'Remove this alarm') + '</button>' : '') +
+      '<div class="row" style="margin-top:12px"><button class="btn" data-action="close-modal">Cancel</button></div>');
+  }
+  function waSave(kind) {
+    var k = waK;
+    if (!k || !settings) return;
+    var dow = fromKey(k).getDay(), s = cloneSettings(), usual = alarmFor(dow);
+    if (kind === 'wa-reset') {
+      delete s.over[k];
+      toast(waLabel(k, true) + (usual ? ' is back to ' + clock12(alarmAt(k, usual)) + '.' : ' is a rest day again.'));
+    } else {
+      var inp = $('#wa-t'), v = inp ? inp.value : '';
+      if (!/^\d{2}:\d{2}$/.test(v)) { toast('Pick a time first.'); return; }
+      if (k === dkey(new Date()) && alarmAt(k, v) - new Date() < 60000) { toast('That time has already passed today. Pick a later one.'); return; }
+      if (kind === 'wa-every') {
+        s.alarms[dow] = v;
+        if (s.days.indexOf(dow) < 0) s.days.push(dow);
+        delete s.over[k];
+        toast('Every ' + DOWL[dow] + ' is now ' + clock12(alarmAt(k, v)) + '.');
+      } else {
+        if (usual && usual === v) delete s.over[k]; else s.over[k] = v;
+        toast(waLabel(k, true) + ': ' + clock12(alarmAt(k, v)) + (usual && usual !== v ? ', this day only.' : '.'));
+      }
+    }
+    closeModal();
+    saveSettings(s);
+  }
+
   function renderStreak(m) {
     var tgt = settings.weeklyTarget, need = Math.max(0, tgt - m.weekWins);
     var wkSub;
@@ -1480,8 +1568,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     curModel = m;
     renderHeader(m);
     renderClock(m);
-    ['alarmCard', 'streakCard', 'formCard', 'chartCard', 'recordsCard', 'logCard'].forEach(function (id) { $('#' + id).hidden = !settings; });
-    if (m) { renderAlarm(); renderStreak(m); renderForm(m); renderRecords(m); renderLog(m); drawChart(); }
+    ['alarmCard', 'weekAlarms', 'streakCard', 'formCard', 'chartCard', 'recordsCard', 'logCard'].forEach(function (id) { $('#' + id).hidden = !settings; });
+    if (m) { renderAlarm(); renderWeekAlarms(); renderStreak(m); renderForm(m); renderRecords(m); renderLog(m); drawChart(); }
     renderHome();
     renderHabit('bible');
     renderHabit('gym');
@@ -1954,7 +2042,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 29 #dcac52', fbEmail = '';
+  var APP_BUILD = 'Oct 29 #49c167', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
@@ -5578,6 +5666,13 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       removeBook(b.dataset.id);
     } else if (a === 'shelf-tab') {
       shelfTab = b.dataset.t; shelfQ = ''; renderAll();
+    } else if (a === 'wa-open') {
+      waOpen(b.dataset.k);
+    } else if (a === 'wa-step') {
+      var wi = $('#wa-t'), wv = /^\d{2}:\d{2}$/.test(wi.value) ? wi.value : '06:00';
+      wi.value = hhmmAdd(wv, parseInt(b.dataset.m, 10));
+    } else if (a === 'wa-once' || a === 'wa-every' || a === 'wa-reset') {
+      waSave(a);
     } else if (a === 'al-day') {
       alTarget = b.dataset.t; alDraft = null; renderAlarm();
     } else if (a === 'al-step') {
@@ -5672,6 +5767,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     if (ev.target.id === 'r-min' || ev.target.id === 'r-pg' || ev.target.id === 'r-end' || ev.target.id === 'r-date') updateReadPrev();
   });
   document.addEventListener('change', function (ev) {
+    if (ev.target.id === 'wa-pick') { var pk = ev.target.value; ev.target.value = ''; waOpen(pk); return; }
     if (ev.target.id === 'r-book') { updateReadPrev(); return; }
     if (ev.target.id !== 'imp-file') return;
     var f = ev.target.files && ev.target.files[0];
