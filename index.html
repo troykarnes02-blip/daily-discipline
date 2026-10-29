@@ -590,6 +590,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     </div>
     <div class="tab" id="tab-wake" role="tabpanel" hidden>
     <section id="clockCard" class="card clock-card" aria-label="Game clock"></section>
+    <section id="rankCard" class="card" aria-label="Wake rank" hidden></section>
     <section id="alarmCard" class="card" aria-label="Alarm" hidden></section>
     <section id="weekAlarms" class="card" aria-label="Alarms for the week" hidden></section>
     <section id="streakCard" class="grid2" aria-label="Streak and week"></section>
@@ -683,6 +684,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
   var nv = false, nvQuery = '', nvSort = 'bible';
   var FMT = { P: 'Paper', E: 'E-book', A: 'Audio' };
   var SHOWUP = 20, FINISH = 250;
+  var WAKE_RANKS = [[0, 'Snoozer'], [300, 'Early Riser'], [900, 'First Light'], [2000, 'Dawn Patrol'], [4000, 'Iron Morning'], [7000, 'Sunrise Captain'], [11000, 'Morning Master'], [17000, 'Legend']];
   var RANKS = [[0, 'Reader'], [250, 'Page Turner'], [750, 'Bookworm'], [1500, 'Scholar'], [3000, 'Bibliophile'], [6000, 'Sage'], [12000, 'Legend']];
   var books = {};     // book id -> { id, title, author, pages, done, queued, doneDate, added }
   var reads = {};     // session id -> { id, bookId, title, date, minutes, pages, fmt, lucky, at }
@@ -1210,6 +1212,43 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       '</select></label></div>';
   }
 
+  /* ---------- wake rank and the night-before preview ---------- */
+  function wakeRankOf(total) {
+    var i = 0;
+    WAKE_RANKS.forEach(function (r, n) { if (total >= r[0]) i = n; });
+    var cur = WAKE_RANKS[i], nxt = WAKE_RANKS[i + 1] || null;
+    return { i: i, name: cur[1], nxt: nxt ? nxt[1] : '', toNext: nxt ? nxt[0] - total : 0, pct: nxt ? Math.round(100 * (total - cur[0]) / (nxt[0] - cur[0])) : 100 };
+  }
+  function nfmtW(n) { return String(Math.round(n)).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function rankUpOf(m, e) {
+    if (!e) return null;
+    var before = wakeRankOf(m.ptsT - e.points), after = wakeRankOf(m.ptsT);
+    return after.i > before.i ? after : null;
+  }
+  function rankLine(m) {
+    var r = wakeRankOf(m.ptsT);
+    return r.nxt ? '<li><b>' + nfmtW(r.toNext) + '</b> pts to ' + esc(r.nxt) + '</li>' : '<li>Top rank reached</li>';
+  }
+  function renderRank(m) {
+    var el = $('#rankCard');
+    if (!el || !settings) return;
+    var ph = phase(), r = wakeRankOf(m.ptsT);
+    var h = '<h2>RANK</h2><div class="phead"><span class="big" style="font-size:40px">' + esc(r.name.toUpperCase()) + '</span><span class="what">' + nfmtW(m.ptsT) + ' PTS</span></div>' +
+      (r.nxt ? '<p class="lead" style="margin:0"><b>' + nfmtW(r.toNext) + '</b> to ' + esc(r.nxt) + '.</p>' : '<p class="lead" style="margin:0">Top rank reached.</p>') +
+      '<div class="ptrack" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="' + r.pct + '"><i style="width:' + r.pct + '%"></i></div>';
+    var done = ph.p === 'done' || ph.p === 'missed' || ph.p === 'rest';
+    var tkey = dkey(addDays(new Date(), 1)), ta = alarmOn(tkey);
+    if (done && ta) {
+      var run = m.streak, line;
+      if (run > 0) line = 'Win tomorrow and your streak goes to <b>' + (run + 1) + '</b>.';
+      else line = 'Your streak is at 0. A win tomorrow starts a new one.';
+      var gap = r.nxt ? r.toNext : 0;
+      h += '<h2 style="margin-top:18px">TOMORROW<small>' + DOW[fromKey(tkey).getDay()] + ' ' + dateLabel(tkey) + '</small></h2>' +
+        '<p class="lead" style="margin:0"><b>' + clock12(alarmAt(tkey, ta)) + '</b> alarm. Up within 2:00 is a win. Under 0:30 pays the full 100 pts.</p>' +
+        '<p class="lead" style="margin:6px 0 0">' + line + (gap > 0 && gap <= 100 ? ' A full 100 reaches <b>' + esc(r.nxt) + '</b>.' : '') + '</p>';
+    }
+    el.innerHTML = h;
+  }
   function renderClock(m) {
     var el = $('#clockCard'), ph = phase(), h = '';
     if (ph.p === 'setup') {
@@ -1240,10 +1279,11 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       var ke = ph.e, early = ke.kind === 'early';
       h = '<div class="bar-top"><span>Today\'s result</span><span>' + (ke.alarm ? 'Alarm ' + clock12(alarmAt(ph.k, ke.alarm)) : '') + '</span></div>' +
         '<div class="pad center' + (justSaved ? ' pop' : '') + '" data-zone="' + (early ? 'elite' : 'win') + '">' +
+        (rankUpOf(m, ke) ? '<div class="banner">RANK UP: ' + esc(rankUpOf(m, ke).name.toUpperCase()) + '</div>' : '') +
         '<div class="verdict win">WIN</div>' +
         '<div class="clock xs">' + (early ? 'EARLY' : 'OTHER') + '</div>' +
         '<div class="res-line"><span class="pill bg-' + (early ? 'elite' : 'ontime') + '">' + (early ? 'No alarm needed' : 'Other') + '</span><span class="pts">+' + ke.points + ' PTS</span></div>' +
-        '<ul class="facts"><li>' + (early ? 'Up on your own before the alarm. Full points.' : 'Scored as Other, so the alarm clock did not apply today.') + '</li><li>Streak at <b>' + m.streak + '</b></li></ul>' +
+        '<ul class="facts"><li>' + (early ? 'Up on your own before the alarm. Full points.' : 'Scored as Other, so the alarm clock did not apply today.') + '</li><li>Streak at <b>' + m.streak + '</b></li>' + rankLine(m) + '</ul>' +
         '<div class="next">Next game: <b>' + nextLabel() + '</b></div>' +
         '<button class="link" data-action="edit" data-key="' + ph.k + '">Fix this entry</button></div>';
       justSaved = false;
@@ -1266,6 +1306,9 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       }
       if (e.win) facts += '<li>Streak at <b>' + m.streak + '</b></li>';
       else facts += '<li>Past the 2:00 line. Your records stay. Win the next one.</li>';
+      facts += rankLine(m);
+      var ru = rankUpOf(m, e);
+      if (ru) banner = '<div class="banner">RANK UP: ' + esc(ru.name.toUpperCase()) + '</div>' + (banner ? '<div style="height:6px"></div>' + banner : '');
       h = '<div class="bar-top"><span>Today\'s result</span><span>Alarm ' + (e.alarm ? clock12(alarmAt(ph.k, e.alarm)) : '') + '</span></div>' +
         '<div class="pad center' + (justSaved ? ' pop' : '') + '" data-zone="' + zoneOf(e.seconds) + '">' +
         (banner || '') +
@@ -1568,8 +1611,8 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     curModel = m;
     renderHeader(m);
     renderClock(m);
-    ['alarmCard', 'weekAlarms', 'streakCard', 'formCard', 'chartCard', 'recordsCard', 'logCard'].forEach(function (id) { $('#' + id).hidden = !settings; });
-    if (m) { renderAlarm(); renderWeekAlarms(); renderStreak(m); renderForm(m); renderRecords(m); renderLog(m); drawChart(); }
+    ['rankCard', 'alarmCard', 'weekAlarms', 'streakCard', 'formCard', 'chartCard', 'recordsCard', 'logCard'].forEach(function (id) { $('#' + id).hidden = !settings; });
+    if (m) { renderRank(m); renderAlarm(); renderWeekAlarms(); renderStreak(m); renderForm(m); renderRecords(m); renderLog(m); drawChart(); }
     renderHome();
     renderHabit('bible');
     renderHabit('gym');
@@ -2042,7 +2085,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 29 #49c167', fbEmail = '';
+  var APP_BUILD = 'Oct 29 #0b70d1', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
