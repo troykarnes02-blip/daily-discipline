@@ -1163,6 +1163,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
       var d = addDays(now, i);
       var aS = alarmOn(dkey(d));
       if (!aS) continue;
+      if (i === 0 && checkins[dkey(d)]) continue;   /* already checked in today, e.g. woke up early before the alarm */
       var aT = alarmAt(dkey(d), aS);
       if (aT > now) return { aT: aT, i: i, d: d };
     }
@@ -2085,7 +2086,7 @@ textarea { width: 100%; background: var(--panel-2); color: var(--ink); border: 1
     return n;
   }
   /* ---------- Firebase sync (standalone app, when firebase-config.js is filled in) ---------- */
-  var APP_BUILD = 'Oct 29 #0b70d1', fbEmail = '';
+  var APP_BUILD = 'Oct 29 #2b553f', fbEmail = '';
   function fbOn() { return !window.claude && !!window.DD_FIREBASE; }
   async function fbConnect() {
     var base = 'https://www.gstatic.com/firebasejs/10.14.1/';
